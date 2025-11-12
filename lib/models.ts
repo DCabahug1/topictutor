@@ -13,7 +13,7 @@ export interface Subject {
   user_id: string;
   title: string;
   category: string;
-  status: "Unopened" | "In Progress" | "Finished";
+  status: "Not Started" | "In Progress" | "Completed";
   description: string;
   created_at: string;
   updated_at: string;

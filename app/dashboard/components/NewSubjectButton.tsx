@@ -30,6 +30,7 @@ function NewSubjectButton({ fetchSubjects }: { fetchSubjects: () => void }) {
     text: "",
   });
   const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const createSubject = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,6 +43,12 @@ function NewSubjectButton({ fetchSubjects }: { fetchSubjects: () => void }) {
         type: "success",
         text: "Subject created successfully",
       });
+      // Close dialog and reset form on success
+      setTimeout(() => {
+        setOpen(false);
+        setNewSubject({ title: "" });
+        setMessage({ type: "info", text: "" });
+      }, 1000); // Show success message briefly before closing
     }
 
     if (error) {
@@ -55,7 +62,7 @@ function NewSubjectButton({ fetchSubjects }: { fetchSubjects: () => void }) {
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className="w-full" asChild>
         <Button variant="outline" className="w-full">
           <Plus />
@@ -66,15 +73,15 @@ function NewSubjectButton({ fetchSubjects }: { fetchSubjects: () => void }) {
         <DialogHeader>
           <DialogTitle>New Subject</DialogTitle>
           <DialogDescription>
-            Generate a course for your subject
+            Describe what you want to learn, and we’ll create a course for you.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={createSubject} className="flex flex-col gap-3">
           <div className="flex flex-col gap-2">
-            <Label>Title</Label>
+            {/* <Label>Topic/Description</Label> */}
             <Input
               required
-              placeholder="Title"
+              placeholder="e.g. Basics of Web Development"
               value={newSubject.title}
               onChange={(e) =>
                 setNewSubject({ ...newSubject, title: e.target.value })
@@ -103,8 +110,10 @@ function NewSubjectButton({ fetchSubjects }: { fetchSubjects: () => void }) {
         <Button
           variant="outline"
           type="button"
-          onClick={(e) => {
+          onClick={() => {
+            setOpen(false);
             setMessage({ type: "info", text: "" });
+            setNewSubject({ title: "" });
           }}
         >
           Cancel

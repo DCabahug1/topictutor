@@ -7,12 +7,10 @@ import { ArrowRight } from "lucide-react";
 import { CircularProgress } from "@/components/customized/progress/progress-09";
 
 function SubjectItem({ subject }: { subject: Subject }) {
-  const [hover, setHover] = React.useState(false);
+
   return (
     <Card
-      className="flex flex-row justify-between items-center gap-2 border-b px-4 py-3 cursor-pointer hover:bg-black/10"
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
+      className="flex flex-row justify-between items-center gap-2 border-b px-4 py-3 cursor-pointer hover:bg-black/10 transition-colors duration-50"
     >
       {/* Text */}
       <div className="flex flex-col">
@@ -23,16 +21,16 @@ function SubjectItem({ subject }: { subject: Subject }) {
             className={`text-xs ${
               subject.status === "In Progress"
                 ? "bg-yellow-500"
-                : subject.status === "Finished"
+                : subject.status === "Completed"
                 ? "bg-green-500"
                 : "bg-red-500"
             }`}
           >
             {subject.status === "In Progress"
               ? "In Progress"
-              : subject.status === "Finished"
-              ? "Finished"
-              : "Unopened"}
+              : subject.status === "Completed"
+              ? "Completed"
+              : "Not Started"}
           </Badge>
         </div>
         <h2 className="text-lg font-semibold">{subject.title}</h2>
@@ -41,7 +39,6 @@ function SubjectItem({ subject }: { subject: Subject }) {
       {/* Icon */}
       <div className="flex items-center">
         <CircularProgress value={0} showLabel={true} size={70} strokeWidth={5} />
-        {hover && <ArrowRight />}
       </div>
     </Card>
   );

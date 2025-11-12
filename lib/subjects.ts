@@ -39,7 +39,7 @@ const getSubjects = async () => {
   return { success: true, data };
 };
 
-// Checks name, category, description
+// Checks title, category, description
 const getSubjectsByQuery = async ({ query }: { query: string }) => {
   const supabase = createClient();
 
@@ -47,7 +47,7 @@ const getSubjectsByQuery = async ({ query }: { query: string }) => {
     .from("subjects")
     .select("*")
     .or(
-      `name.ilike.%${query}%,category.ilike.%${query}%,description.ilike.%${query}%`
+      `title.ilike.%${query}%,category.ilike.%${query}%,description.ilike.%${query}%`
     );
 
   if (error) {

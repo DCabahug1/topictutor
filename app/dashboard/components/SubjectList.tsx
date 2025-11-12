@@ -22,6 +22,7 @@ function SubjectList() {
   const fetchSubjects = async () => {
     setLoadingSubjects(true);
     const { data, error } = await subjectService.getSubjects();
+    console.log("data", data);
     if (!error && data) {
       setSubjects(data);
     }
@@ -40,19 +41,19 @@ function SubjectList() {
   };
 
   const getFilteredSubjects = (
-    filter: "all" | "unopened" | "in-progress" | "finished"
+    filter: "all" | "not-started" | "in-progress" | "completed"
   ) => {
     if (filter === "all") {
       return subjects;
     }
-    if (filter === "unopened") {
-      return subjects?.filter((subject) => subject.status === "Unopened");
+    if (filter === "not-started") {
+      return subjects?.filter((subject) => subject.status === "Not Started");
     }
     if (filter === "in-progress") {
       return subjects?.filter((subject) => subject.status === "In Progress");
     }
-    if (filter === "finished") {
-      return subjects?.filter((subject) => subject.status === "Finished");
+    if (filter === "completed") {
+      return subjects?.filter((subject) => subject.status === "Completed");
     }
     return subjects;
   };
@@ -88,9 +89,9 @@ function SubjectList() {
           <Tabs defaultValue="all" className="flex-1 min-h-0">
             <TabsList>
               <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="unopened">Unopened</TabsTrigger>
+              <TabsTrigger value="not-started">Not Started</TabsTrigger>
               <TabsTrigger value="in-progress">In Progress</TabsTrigger>
-              <TabsTrigger value="finished">Finished</TabsTrigger>
+              <TabsTrigger value="completed">Completed</TabsTrigger>
             </TabsList>
             <TabsContent
               value="all"
@@ -112,16 +113,16 @@ function SubjectList() {
               )}
             </TabsContent>
             <TabsContent
-              value="unopened"
+              value="not-started"
               className="h-0 flex-1 flex flex-col overflow-y-auto rounded-md gap-2"
             >
               {loadingSubjects ? (
                 <div className="flex items-center justify-center h-full">
                   <Loader2 className="animate-spin" />
                 </div>
-              ) : getFilteredSubjects("unopened") &&
-                getFilteredSubjects("unopened")?.length > 0 ? (
-                getFilteredSubjects("unopened")?.map((subject) => (
+              ) : getFilteredSubjects("not-started") &&
+                getFilteredSubjects("not-started")?.length > 0 ? (
+                getFilteredSubjects("not-started")?.map((subject) => (
                   <SubjectItem key={subject.id} subject={subject} />
                 ))
               ) : (
@@ -150,16 +151,16 @@ function SubjectList() {
               )}
             </TabsContent>
             <TabsContent
-              value="finished"
+              value="completed"
               className="flex-1 flex flex-col overflow-y-auto rounded-md gap-2"
             >
               {loadingSubjects ? (
                 <div className="flex items-center justify-center h-full">
                   <Loader2 className="animate-spin" />
                 </div>
-              ) : getFilteredSubjects("finished") &&
-                getFilteredSubjects("finished")?.length > 0 ? (
-                getFilteredSubjects("finished")?.map((subject) => (
+              ) : getFilteredSubjects("completed") &&
+                getFilteredSubjects("completed")?.length > 0 ? (
+                getFilteredSubjects("completed")?.map((subject) => (
                   <SubjectItem key={subject.id} subject={subject} />
                 ))
               ) : (
