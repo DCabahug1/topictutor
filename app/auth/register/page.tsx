@@ -17,6 +17,7 @@ import { TablerBrandGoogleFilled } from "@/components/Icons/TablerIcons";
 import NavBar from "@/components/NavBar/NavBar";
 import { motion } from "motion/react";
 import { authService } from "@/lib/auth";
+import { signUpWithEmailAndPasswordAction } from "@/lib/actions";
 
 interface RegisterProps {
   name: string;
@@ -65,7 +66,7 @@ function page() {
       return;
     }
 
-    const { success, error } = await authService.signUpWithEmailAndPassword(
+    const { success, error } = await signUpWithEmailAndPasswordAction(
       credentials.email,
       credentials.password
     );

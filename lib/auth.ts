@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/client";
-import { getProfileByEmail } from "./profiles";
+import { createClient as createServerClient } from "@/utils/supabase/server";
+import { getProfileByEmail, ensureProfileExists } from "./profiles";
 
 const getUserAndProfile = async () => {
   const supabase = createClient();
@@ -38,6 +39,36 @@ const signUpWithEmailAndPassword = async (email: string, password: string) => {
   return { success: true, data: { authData } };
 };
 
+// Server-side signup function that creates profile
+const signUpWithEmailAndPasswordServer = async (email: string, password: string) => {
+  const supabase = await createServerClient();
+
+  const { data: authData, error: authError } = await supabase.auth.signUp({
+    email,
+    password,
+  });
+
+  if (authError || !authData.user) {
+    return { success: false, error: authError };
+  }
+
+  // Create profile immediately after successful signup
+  try {
+    const profileResult = await ensureProfileExists(authData.user, supabase);
+    if (!profileResult.success) {
+      console.error("Failed to create profile during signup:", profileResult.error);
+      // Don't fail the signup, just log the error
+    }
+  } catch (error) {
+    console.error("Error creating profile during signup:", error);
+    // Don't fail the signup, just log the error
+  }
+
+  console.log("Successfully signed up and created profile:", authData);
+
+  return { success: true, data: { authData } };
+};
+
 const signInWithEmailAndPassword = async (email: string, password: string) => {
   const supabase = createClient();
 
@@ -55,12 +86,15 @@ const signInWithEmailAndPassword = async (email: string, password: string) => {
 
 const signInWithGoogle = async () => {
   const supabase = createClient();
-  const redirectUrl = window.location.pathname + "/auth/callback";
+  const redirectUrl = window.origin + "/auth/callback";
+
+  console.log("Redirect URL:", redirectUrl);
 
   const { data: authData, error: authError } =
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
+
         redirectTo: redirectUrl,
       }
     });
@@ -87,6 +121,7 @@ const signOut = async () => {
 
 export const authService = {
   signUpWithEmailAndPassword,
+  signUpWithEmailAndPasswordServer,
   signInWithEmailAndPassword,
   signInWithGoogle,
   signOut,
