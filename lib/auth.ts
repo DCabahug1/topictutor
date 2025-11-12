@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/client";
-import { createProfile, getProfileByEmail } from "./profiles";
+import { getProfileByEmail } from "./profiles";
 
 const getUserAndProfile = async () => {
   const supabase = createClient();
@@ -24,27 +24,6 @@ const getUserAndProfile = async () => {
 const signUpWithEmailAndPassword = async (email: string, password: string) => {
   const supabase = createClient();
 
-  // Check if email is already in use
-
-  const { data: existingProfileData, error: existingProfileError } =
-    await getProfileByEmail(email);
-
-  if (existingProfileError) {
-    return { success: false, error: existingProfileError };
-  }
-
-  if (existingProfileData[0]) {
-    console.log("Email already in use:", existingProfileData);
-    return {
-      success: false,
-      error: {
-        message: "Email already in use",
-      },
-    };
-  }
-
-  // Sign up
-
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email,
     password,
@@ -52,19 +31,6 @@ const signUpWithEmailAndPassword = async (email: string, password: string) => {
 
   if (authError || !authData.user) {
     return { success: false, error: authError };
-  }
-
-  // Create profile
-  console.log("Creating profile...");
-
-  const { success: profileSuccess, error: profileError } = await createProfile({
-    user_id: authData.user.id,
-    name: "",
-    email,
-  });
-
-  if (!profileSuccess) {
-    return { success: false, error: profileError };
   }
 
   console.log("Successfully signed up:", authData);
@@ -89,49 +55,20 @@ const signInWithEmailAndPassword = async (email: string, password: string) => {
 
 const signInWithGoogle = async () => {
   const supabase = createClient();
+  const redirectUrl = window.location.pathname + "/auth/callback";
 
   const { data: authData, error: authError } =
     await supabase.auth.signInWithOAuth({
       provider: "google",
+      options: {
+        redirectTo: redirectUrl,
+      }
     });
 
   if (authError) {
     return { success: false, error: authError };
   }
 
-  // Get user data
-
-  const { data: userData, error: userError } = await supabase.auth.getUser();
-
-  if (userError || !userData.user) {
-    return { success: false, error: userError };
-  }
-
-  // Get profile data
-
-  const { data: existingProfileData, error: existingProfileError } =
-    await getProfileByEmail(userData.user.email!);
-
-  if (existingProfileError) {
-    return { success: false, error: existingProfileError };
-  }
-
-  // Create profile if not found
-
-  if (!existingProfileData) {
-    const { success: profileSuccess, error: profileError } =
-      await createProfile({
-        user_id: userData.user.id,
-        name: userData.user.user_metadata.name,
-        email: userData.user.email!,
-      });
-
-    if (!profileSuccess) {
-      return { success: false, error: profileError };
-    }
-
-    return { success: true, data: { authData } };
-  }
 
   return { success: true, data: { authData } };
 };

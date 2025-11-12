@@ -57,6 +57,7 @@ function page() {
         type: "error",
         content: error.message,
       });
+      setFormLoading(false);
     }
 
   };
