@@ -14,7 +14,7 @@ function NavBar({ profile }: { profile: Profile | null }) {
   return (
     <div className="sticky top-0 z-50 flex justify-between items-center px-4 py-2 bg-card text-card-foreground shadow-md">
       <Link href="/">
-        <h1 className="text-2xl font-bold">TopicTutor</h1>
+        <h1 className="text-2xl font-bold"><span className="text-primary">Topic</span>Tutor</h1>
       </Link>
       {isHome && !profile ? (
         <>

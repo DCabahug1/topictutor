@@ -59,7 +59,7 @@ function page() {
           </Link>
         </motion.div>
       </div>
-      <div className="h-[400px] w-full rounded-t-xl border-2 border-border shadow-[0_0_10px_0_rgba(0,0,0,0.1)] bg-card text-card-foreground"></div>
+      <div className="h-[400px] w-full rounded-t-xl border-2 border-border shadow-[0_0_2px_0_rgba(0,0,0,0.1)] bg-card text-card-foreground"></div>
     </div>
   );
 }
