@@ -10,8 +10,6 @@ const subjectSchema = z.object({
 });
 
 export const generateSubjectInfo = async (subject: { title: string }) => {
-  const apiKey = process.env.OPENAI_API_KEY;
-  console.log(apiKey);
   const openaiClient = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
   try {
