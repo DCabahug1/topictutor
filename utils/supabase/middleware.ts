@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { ensureProfileExists } from "@/lib/profiles";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -43,6 +44,23 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";
     return NextResponse.redirect(url);
+  }
+
+  // If user is authenticated, ensure profile exists
+  if (user && !request.nextUrl.pathname.startsWith("/auth")) {
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      if (userData?.user) {
+        const profileResult = await ensureProfileExists(userData.user, supabase);
+        if (!profileResult.success) {
+          console.error("Failed to ensure profile exists:", profileResult.error);
+          // Don't block the request, just log the error
+        }
+      }
+    } catch (error) {
+      console.error("Error in profile middleware:", error);
+      // Don't block the request, just log the error
+    }
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
