@@ -11,9 +11,9 @@ export interface Profile {
 export interface Subject {
   id: string;
   user_id: string;
-  name: string;
-  status: "created" | "started" | "finished";
+  title: string;
   category: string;
+  status: "Unopened" | "In Progress" | "Finished";
   description: string;
   created_at: string;
   updated_at: string;

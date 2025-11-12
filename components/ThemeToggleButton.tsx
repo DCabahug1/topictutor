@@ -15,7 +15,7 @@ function ThemeToggleButton() {
 
   if (!mounted) {
     return (
-      <Button variant='secondary' size="icon">
+      <Button variant='outline' size="icon">
         <Sun />
       </Button>
     );

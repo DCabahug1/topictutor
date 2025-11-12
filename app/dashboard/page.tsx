@@ -12,7 +12,6 @@ import SubjectList from "./components/SubjectList";
 import RecentSubject from "./components/RecentSubject";
 
 function page() {
-  const supabase = createClient();
   const [profile, setProfile] = React.useState<Profile | null>(null);
 
   useEffect(() => {
@@ -37,7 +36,7 @@ function page() {
     <div className="flex flex-col h-screen min-h-0">
       <NavBar profile={profile} />
       <div className="flex-1 min-h-0 flex flex-col items-center">
-        <div className="flex-1 min-h-0 flex flex-col p-2 gap-2 max-w-7xl w-full">
+        <div className="flex-1 min-h-0 flex flex-col p-2 gap-2 max-w-6xl w-full">
           <RecentSubject />
           <SubjectList />
         </div>
