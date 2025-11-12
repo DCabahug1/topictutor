@@ -68,10 +68,6 @@ function page() {
     setGoogleLoading(true);
     const { success, data, error } = await authService.signInWithGoogle();
 
-    if (success && data) {
-      redirect("/");
-    }
-
     if (error) {
       setMessage({
         type: "error",
