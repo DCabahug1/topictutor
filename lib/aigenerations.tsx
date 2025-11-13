@@ -1,44 +1,69 @@
 "use server"
-
 import { z } from "zod";
 import { OpenAI } from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
 
-const subjectSchema = z.object({
-  description: z.string(),
-  category: z.string(),
+// 1. Generate Placement Test
+// 2. Generate subject:
+//    a) Generate subject info (title, description, category)
+//    b) Generate 10 chapters
+//    c) Generate chapter content
+
+const placementTestSchema = z.object({
+  questions: z.array(
+    z.object({
+      question: z.string(),
+      answers: z.array(
+        z.object({ answer: z.string(), isCorrect: z.boolean() })
+      ),
+    })
+  ),
 });
 
-export const generateSubjectInfo = async (subject: { title: string }) => {
+export const generatePlacementTest = async (subject: string) => {
+  console.log("Generating placement test...");
   const openaiClient = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
   try {
     const response = await openaiClient.responses.parse({
-      model: "gpt-5-nano",
+      model: "gpt-4o-mini",
       input: [
-      {
-        role: 'system',
-        content: 'You are a helpful assistant that generates information about a course. You are to generate a description and category for the course. For the category, pick the best category from the list (Choose from: Mathematics & Logic, Science & Engineering, Technology & Computing, Arts & Design, Humanities & Culture, Social Sciences, Business & Economics, Health & Medicine, Education & Communication, Personal Development & Life Skills). For the description, use a short description of what the course covers (1-2 sentences, e.g. "This course covers the basics of calculus and its applications in real life.").'
+        {
+          role: "system",
+          content:
+            "You are a helpful assistant that generates a placement test for a course. You are to generate a placement test for the course. The placement test should have 10 multiple choice questions with 4 options each, one correct answer. The questions should be related to the course, with a mix of easy, medium, and hard questions.",
+        },
+        {
+          role: "user",
+          content: subject,
+        },
+      ],
+      text: {
+        format: zodTextFormat(placementTestSchema, "placementTestData"),
       },
-      {
-        role: 'user',
-        content: subject.title
-      }
-    ],
-    text: {
-      format: zodTextFormat(subjectSchema, "subjectData"),
-    },
-  });
+    });
 
-  const subjectData = response.output_parsed;
-  
-  return { data: subjectData, error: null };
+    const placementTestData = response.output_parsed;
+
+    return { data: placementTestData, error: null };
   } catch (error) {
-    return { 
-      data: null, 
-      error: { 
-        message: error instanceof Error ? error.message : 'Failed to generate subject information' 
-      } 
+    return {
+      data: null,
+      error: {
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to generate placement test",
+      },
     };
   }
 };
+
+const subjectSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  category: z.string(),
+});
+
+const generateSubjectFromPlacementTestResults = async () => {};
+
