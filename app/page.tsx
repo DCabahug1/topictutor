@@ -11,7 +11,6 @@ import { authService } from "@/lib/auth";
 import { Profile } from "@/lib/models";
 
 function page() {
-  const supabase = createClient();
   const [profile, setProfile] = React.useState<Profile | null>(null);
 
   useEffect(() => {
@@ -43,7 +42,7 @@ function page() {
           className="text-center text-4xl sm:text-5xl md:text-7xl font-bold max-w-[500px] md:max-w-[900px]"
         >
           {profile?.name
-            ? `Welcome, ${profile.name}`
+            ? `Welcome, ${profile.name.split(" ").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")}`
             : "Master any subject, one topic at a time."}
         </motion.h1>
         <motion.div

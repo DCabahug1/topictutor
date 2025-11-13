@@ -14,13 +14,10 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
+import { redirect } from "next/navigation";
 
 function NewSubjectButton({ fetchSubjects }: { fetchSubjects: () => void }) {
-  const [newSubject, setNewSubject] = useState<{
-    title: string;
-  }>({
-    title: "",
-  });
+  const [newSubject, setNewSubject] = useState<string>("");
 
   const [message, setMessage] = useState<{
     type: "success" | "error" | "warning" | "info";
@@ -32,39 +29,20 @@ function NewSubjectButton({ fetchSubjects }: { fetchSubjects: () => void }) {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const createSubject = async (e: React.FormEvent) => {
+  const toPlacementTest = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { data, error } = await subjectService.createSubject(newSubject);
 
-    if (!error) {
-      fetchSubjects();
-      setMessage({
-        type: "success",
-        text: "Subject created successfully",
-      });
-      // Close dialog and reset form on success
-      setTimeout(() => {
-        setOpen(false);
-        setNewSubject({ title: "" });
-        setMessage({ type: "info", text: "" });
-      }, 1000); // Show success message briefly before closing
-    }
-
-    if (error) {
-      setMessage({
-        type: "error",
-        text: error.message || "An error occurred while creating the subject",
-      });
-      console.log("error", error);
-    }
-    setLoading(false);
+    redirect(
+      "/placement-test?subject=" + encodeURIComponent(newSubject)
+    );
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className="w-full" asChild>
         <Button variant="outline" className="w-full">
+          <p>New Subject</p>
           <Plus />
         </Button>
       </DialogTrigger>
@@ -76,16 +54,14 @@ function NewSubjectButton({ fetchSubjects }: { fetchSubjects: () => void }) {
             Describe what you want to learn, and we’ll create a course for you.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={createSubject} className="flex flex-col gap-3">
+        <form onSubmit={toPlacementTest} className="flex flex-col gap-3">
           <div className="flex flex-col gap-2">
             {/* <Label>Topic/Description</Label> */}
             <Input
               required
               placeholder="e.g. Basics of Web Development"
-              value={newSubject.title}
-              onChange={(e) =>
-                setNewSubject({ ...newSubject, title: e.target.value })
-              }
+              value={newSubject}
+              onChange={(e) => setNewSubject(e.target.value)}
             />
           </div>
           {message.text && (
@@ -113,7 +89,7 @@ function NewSubjectButton({ fetchSubjects }: { fetchSubjects: () => void }) {
           onClick={() => {
             setOpen(false);
             setMessage({ type: "info", text: "" });
-            setNewSubject({ title: "" });
+            setNewSubject("");
           }}
         >
           Cancel

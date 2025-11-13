@@ -13,7 +13,7 @@ function NavBar({ profile }: { profile: Profile | null }) {
   const isHome = pathname === "/";
 
   return (
-    <div className="sticky top-0 z-50 flex justify-between items-center px-4 py-2 bg-card text-card-foreground shadow-md">
+    <div className="sticky top-0 z-50 flex justify-between items-center w-full px-4 py-2 bg-card text-card-foreground shadow-md">
       <Link href="/" className="flex items-center gap-2">
         <GraduationCap className="w-8 h-8" strokeWidth={2} />
         <h1 className="text-2xl font-bold">
