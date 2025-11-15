@@ -57,7 +57,7 @@ function QuestionCard({
             ) : (
               ""
             )}
-            <h1 className="font-bold">
+            <h1 className="flex-1 min-w-0 font-bold">
               Q{index + 1}: {question.prompt}
             </h1>
           </div>
