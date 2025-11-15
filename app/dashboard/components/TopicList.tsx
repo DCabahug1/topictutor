@@ -1,3 +1,4 @@
+"use client"
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,8 +8,9 @@ import TopicItem from "./TopicItem";
 import { Topic } from "@/lib/models";
 import NewTopicButton from "./NewTopicButton";
 import { useState } from "react";
-import {topicService} from "@/lib/topics"
+import { getTopics, getTopicsByQuery } from "@/lib/topics";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { motion } from "motion/react";
 
 function TopicList() {
   const [topics, setTopics] = useState<Topic[]>([]);
@@ -21,7 +23,7 @@ function TopicList() {
 
   const fetchTopics = async () => {
     setLoadingTopics(true);
-    const { data, error } = await topicService.getTopics();
+    const { data, error } = await getTopics();
     console.log("data", data);
     if (!error && data) {
       setTopics(data);
@@ -31,7 +33,7 @@ function TopicList() {
 
   const fetchTopicsByQuery = async () => {
     setLoadingTopics(true);
-    const { data, error } = await topicService.getTopicsByQuery({
+    const { data, error } = await getTopicsByQuery({
       query: searchQuery,
     });
     if (!error && data) {
@@ -47,13 +49,15 @@ function TopicList() {
       return topics;
     }
     if (filter === "not-started") {
-      return topics?.filter((topic) => topic.status === "Not Started");
+      return topics?.filter((topic) => topic.chapters_completed === 0);
     }
     if (filter === "in-progress") {
-      return topics?.filter((topic) => topic.status === "In Progress");
+      return topics?.filter((topic) => topic.chapters_completed > 0);
     }
     if (filter === "completed") {
-      return topics?.filter((topic) => topic.status === "Completed");
+      return topics?.filter(
+        (topic) => topic.chapters_completed === topic.chapters_count
+      );
     }
     return topics;
   };
@@ -103,8 +107,8 @@ function TopicList() {
                 </div>
               ) : getFilteredTopics("all") &&
                 getFilteredTopics("all")?.length > 0 ? (
-                getFilteredTopics("all")?.map((topic) => (
-                  <TopicItem key={topic.id} topic={topic} />
+                getFilteredTopics("all")?.map((topic, index) => (
+                  <TopicItem key={topic.id} topic={topic} index={index} />
                 ))
               ) : (
                 <div className="flex items-center justify-center h-full text-muted-foreground">
@@ -122,8 +126,8 @@ function TopicList() {
                 </div>
               ) : getFilteredTopics("not-started") &&
                 getFilteredTopics("not-started")?.length > 0 ? (
-                getFilteredTopics("not-started")?.map((topic) => (
-                  <TopicItem key={topic.id} topic={topic} />
+                getFilteredTopics("not-started")?.map((topic, index) => (
+                  <TopicItem key={topic.id} topic={topic} index={index} />
                 ))
               ) : (
                 <div className="flex items-center justify-center h-full text-muted-foreground">
@@ -141,8 +145,8 @@ function TopicList() {
                 </div>
               ) : getFilteredTopics("in-progress") &&
                 getFilteredTopics("in-progress")?.length > 0 ? (
-                getFilteredTopics("in-progress")?.map((topic) => (
-                  <TopicItem key={topic.id} topic={topic} />
+                getFilteredTopics("in-progress")?.map((topic, index) => (
+                  <TopicItem key={topic.id} topic={topic} index={index} />
                 ))
               ) : (
                 <div className="flex items-center justify-center h-full text-muted-foreground">
@@ -160,8 +164,8 @@ function TopicList() {
                 </div>
               ) : getFilteredTopics("completed") &&
                 getFilteredTopics("completed")?.length > 0 ? (
-                getFilteredTopics("completed")?.map((topic) => (
-                  <TopicItem key={topic.id} topic={topic} />
+                getFilteredTopics("completed")?.map((topic, index) => (
+                  <TopicItem key={topic.id} topic={topic} index={index} />
                 ))
               ) : (
                 <div className="flex items-center justify-center h-full text-muted-foreground">

@@ -6,11 +6,13 @@ import { usePathname } from "next/navigation";
 import { Button } from "../ui/button";
 import { Profile } from "@/lib/models";
 import AvatarMenu from "./AvatarMenu";
-import { GraduationCap } from "lucide-react";
+import { ArrowLeftFromLine, GraduationCap } from "lucide-react";
 
 function NavBar({ profile }: { profile: Profile | null }) {
   const pathname = usePathname();
   const isHome = pathname === "/";
+  const isInTopicOrPlacementTest =
+    pathname.startsWith("/topic/") || pathname.startsWith("/placement-test");
 
   return (
     <div className="sticky top-0 z-50 flex justify-between items-center w-full px-4 py-2 bg-card text-card-foreground shadow-md">
@@ -32,7 +34,17 @@ function NavBar({ profile }: { profile: Profile | null }) {
           </div>
         </>
       ) : profile ? (
-        <AvatarMenu profile={profile} />
+        <div className="flex gap-2">
+          {isInTopicOrPlacementTest && (
+            <Link href="/dashboard">
+              <Button variant="ghost">
+                <ArrowLeftFromLine className="w-4 h-4" />
+                {pathname.includes("/chapter") ? "Content" : "Dashboard"}
+              </Button>
+            </Link>
+          )}
+          <AvatarMenu profile={profile} />
+        </div>
       ) : (
         <></>
       )}

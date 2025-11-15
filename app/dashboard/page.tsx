@@ -10,6 +10,7 @@ import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TopicList from "./components/TopicList";
 import RecentTopic from "./components/RecentTopic";
+import { motion } from "motion/react";
 
 function page() {
   const [profile, setProfile] = React.useState<Profile | null>(null);
@@ -36,10 +37,15 @@ function page() {
     <div className="flex flex-col h-screen min-h-0">
       <NavBar profile={profile} />
       <div className="flex-1 min-h-0 flex flex-col items-center">
-        <div className="flex-1 min-h-0 flex flex-col p-2 gap-2 max-w-6xl w-full">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="flex-1 min-h-0 flex flex-col p-2 gap-2 max-w-6xl w-full"
+        >
           <RecentTopic />
           <TopicList />
-        </div>
+        </motion.div>
       </div>
     </div>
   );

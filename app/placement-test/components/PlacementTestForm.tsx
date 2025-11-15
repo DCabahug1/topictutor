@@ -1,47 +1,57 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
-import { redirect, useSearchParams } from "next/navigation";
-import { generatePlacementTest } from "@/lib/aigenerations";
-import { PlacementTest, PlacementTestResults } from "@/lib/models";
+import { useRouter } from "next/navigation";
+import { generatePlacementTest } from "@/lib/placementTests";
+import { Test, TestResults } from "@/lib/models";
 import { Loader2 } from "lucide-react";
 import QuestionCard from "./QuestionCard";
 import { Button } from "@/components/ui/button";
 import { motion } from "motion/react";
 import { QuestionResult } from "@/lib/models";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import ResultsCard from "./ResultsCard";
 
 function PlacementTestForm() {
-  const searchParams = useSearchParams();
-  const topic = searchParams.get("topic");
-
-  const [placementTest, setPlacementTest] = useState<PlacementTest | null>(
-    null
-  );
+  const router = useRouter();
+  const [topic, setTopic] = useState<string>("");
+  const [placementTest, setPlacementTest] = useState<Test | null>(null);
   const [placementTestCompleted, setPlacementTestCompleted] = useState(false);
-  const [placementTestResults, setPlacementTestResults] =
-    useState<PlacementTestResults>({
-      topic: topic || "",
+  const [placementTestResults, setPlacementTestResults] = useState<TestResults>(
+    {
+      topic: "",
       questions: [],
-    });
+    }
+  );
   const [showResults, setShowResults] = useState(false);
   const [loading, setLoading] = useState(true);
   const hasRequestedTest = useRef(false);
 
-  // Redirect if no Topic
-  if (!topic) {
-    redirect("/dashboard");
-  }
+  // Get topic from sessionStorage and redirect if not found
+  useEffect(() => {
+    const storedTopic = sessionStorage.getItem("placementTestTopic");
+
+    if (!storedTopic) {
+      router.push("/dashboard");
+      return;
+    }
+
+    setTopic(storedTopic);
+    setPlacementTestResults((prev) => ({ ...prev, topic: storedTopic }));
+  }, []);
 
   // Initialize placement test results when Topic changes
   useEffect(() => {
+    // Only run if topic is available
+    if (!topic) {
+      return;
+    }
+
     // Prevent duplicate API calls in Strict Mode
     if (hasRequestedTest.current) {
       return;
     }
-    
+
     hasRequestedTest.current = true;
-    
+
     const getPlacementTest = async () => {
       const { data, error } = await generatePlacementTest(topic);
       if (error) {
@@ -137,31 +147,35 @@ function PlacementTestForm() {
         ))}
       </div>
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1 }}
-        viewport={{once: true, amount: "all" }}
-        className="w-full"
-      >
-        <Button
-          className="w-full max-w-3xl"
-          disabled={!placementTestCompleted || showResults}
-          onClick={() => {
-            setShowResults(true);
-            // Wait for the results card to render before scrolling
-            setTimeout(() => {
-              const resultsCard = document.getElementById("resultsCard");
-              if (resultsCard) {
-                resultsCard.scrollIntoView({ behavior: "smooth" });
-              }
-            }, 100); // Small delay to ensure the component has rendered
-          }}
-        >
-          Submit
-        </Button>
-      </motion.div>
-      
-      <ResultsCard placementTestResults={placementTestResults} showResults={showResults} />
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 1 }}
+            viewport={{ once: true, amount: "all" }}
+            className="w-full"
+          >
+            <Button
+              className="w-full max-w-3xl"
+              disabled={!placementTestCompleted || showResults}
+              onClick={() => {
+                setShowResults(true);
+                // Wait for the results card to render before scrolling
+                setTimeout(() => {
+                  const resultsCard = document.getElementById("resultsCard");
+                  if (resultsCard) {
+                    resultsCard.scrollIntoView({ behavior: "smooth" });
+                  }
+                }, 100); // Small delay to ensure the component has rendered
+              }}
+            >
+              Submit
+            </Button>
+          </motion.div>
+
+      <ResultsCard
+        topic={topic}
+        placementTestResults={placementTestResults}
+        showResults={showResults}
+      />
     </div>
   );
 }
