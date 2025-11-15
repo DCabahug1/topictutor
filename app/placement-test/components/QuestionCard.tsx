@@ -87,14 +87,8 @@ function QuestionCard({
                       : ""
                   }`}
                 />
-                <Label htmlFor={answerOption.answer}>
+                <Label htmlFor={answerOption.answer} className="cursor-pointer">
                   {answerOption.answer}
-                  {/* {showResults
-                    ? answerOption.answer ===
-                      placementTestResults.questions[index].correctAnswer
-                      ? <Check strokeWidth={3} stroke="green" size={20} />
-                      : <X strokeWidth={3} stroke="red" size={20} />
-                    : ""} */}
                 </Label>
               </div>
             ))}

@@ -145,7 +145,7 @@ function PlacementTestForm() {
       >
         <Button
           className="w-full max-w-3xl"
-          disabled={!placementTestCompleted}
+          disabled={!placementTestCompleted || showResults}
           onClick={() => {
             setShowResults(true);
             // Wait for the results card to render before scrolling
