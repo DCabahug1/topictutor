@@ -8,7 +8,7 @@ import { Profile } from "@/lib/models";
 import AvatarMenu from "./AvatarMenu";
 import { ArrowLeftFromLine, GraduationCap } from "lucide-react";
 
-function NavBar({ profile }: { profile: Profile | null }) {
+function NavBar({ profile, explicitPath }: { profile: Profile | null; explicitPath?: string | null }) {
   const pathname = usePathname();
   const isHome = pathname === "/";
   const isInTopicOrPlacementTest =
@@ -36,10 +36,10 @@ function NavBar({ profile }: { profile: Profile | null }) {
       ) : profile ? (
         <div className="flex gap-2">
           {isInTopicOrPlacementTest && (
-            <Link href="/dashboard">
+            <Link href={explicitPath || "/dashboard"}>
               <Button variant="ghost">
                 <ArrowLeftFromLine className="w-4 h-4" />
-                {pathname.includes("/chapter") ? "Content" : "Dashboard"}
+                {pathname.includes("/chapter") ? "Chapters" : "Dashboard"}
               </Button>
             </Link>
           )}

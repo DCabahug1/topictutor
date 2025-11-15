@@ -44,7 +44,7 @@ export const createTopic = async ({
 export const getTopics = async () => {
   const supabase = await createClient();
 
-  const { data, error } = await supabase.from("topics").select("*");
+  const { data, error } = await supabase.from("topics").select("*").order("updated_at", { ascending: false });
 
   if (error) {
     console.log("Error getting topics:", error);

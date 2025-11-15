@@ -52,7 +52,7 @@ function TopicList() {
       return topics?.filter((topic) => topic.chapters_completed === 0);
     }
     if (filter === "in-progress") {
-      return topics?.filter((topic) => topic.chapters_completed > 0);
+      return topics?.filter((topic) => topic.chapters_completed > 0 && topic.chapters_completed < topic.chapters_count);
     }
     if (filter === "completed") {
       return topics?.filter(
