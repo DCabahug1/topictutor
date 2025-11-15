@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Book, ArrowRight } from "lucide-react";
 
-function RecentSubject() {
+function RecentTopic() {
   return (
     <Card className="gap-2">
       <CardHeader>
@@ -27,4 +27,4 @@ function RecentSubject() {
   );
 }
 
-export default RecentSubject;
+export default RecentTopic;

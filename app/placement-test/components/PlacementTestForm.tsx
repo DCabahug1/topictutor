@@ -13,7 +13,7 @@ import ResultsCard from "./ResultsCard";
 
 function PlacementTestForm() {
   const searchParams = useSearchParams();
-  const subject = searchParams.get("subject");
+  const topic = searchParams.get("topic");
 
   const [placementTest, setPlacementTest] = useState<PlacementTest | null>(
     null
@@ -21,19 +21,19 @@ function PlacementTestForm() {
   const [placementTestCompleted, setPlacementTestCompleted] = useState(false);
   const [placementTestResults, setPlacementTestResults] =
     useState<PlacementTestResults>({
-      subject: subject || "",
+      topic: topic || "",
       questions: [],
     });
   const [showResults, setShowResults] = useState(false);
   const [loading, setLoading] = useState(true);
   const hasRequestedTest = useRef(false);
 
-  // Redirect if no subject
-  if (!subject) {
+  // Redirect if no Topic
+  if (!topic) {
     redirect("/dashboard");
   }
 
-  // Initialize placement test results when subject changes
+  // Initialize placement test results when Topic changes
   useEffect(() => {
     // Prevent duplicate API calls in Strict Mode
     if (hasRequestedTest.current) {
@@ -43,7 +43,7 @@ function PlacementTestForm() {
     hasRequestedTest.current = true;
     
     const getPlacementTest = async () => {
-      const { data, error } = await generatePlacementTest(subject);
+      const { data, error } = await generatePlacementTest(topic);
       if (error) {
         console.log(error);
       }
@@ -61,7 +61,7 @@ function PlacementTestForm() {
         );
 
         setPlacementTestResults({
-          subject: subject || "",
+          topic: topic || "",
           questions: initialQuestions,
         });
       }
@@ -70,12 +70,12 @@ function PlacementTestForm() {
 
     // Initialize with empty array first
     setPlacementTestResults({
-      subject: subject || "",
+      topic: topic || "",
       questions: [],
     });
 
     getPlacementTest();
-  }, [subject]);
+  }, [topic]);
 
   // Check if all questions are answered
   useEffect(() => {
@@ -121,7 +121,7 @@ function PlacementTestForm() {
       <div className="flex flex-col items-center justify-center">
         <h1 className="text-2xl font-bold">Quick Level Check</h1>
         <p className="text-l text-center text-muted-foreground">
-          Take a quick assessment to see where you stand in your subject.
+          Take a quick assessment to see where you stand in your Topic.
         </p>
       </div>
       <div className="flex flex-col gap-2 w-full max-w-3xl">

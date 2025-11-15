@@ -1,12 +1,12 @@
 import { createClient } from "@/utils/supabase/client";
 
-const createChapters = async (subject: { name: string; category: string; description: string }) => {
+const createChapters = async (topic: { name: string; category: string; description: string }) => {
   const supabase = createClient();
 
-  const { data, error } = await supabase.from("chapters").insert([subject]);
+  const { data, error } = await supabase.from("chapters").insert([topic]);
 
   if (error) {
-    console.log("Error creating subject:", error);
+    console.log("Error creating topic:", error);
     return { success: false, error };
   }
 

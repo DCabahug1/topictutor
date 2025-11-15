@@ -35,16 +35,24 @@ function page() {
     <div className="flex flex-col">
       <NavBar profile={profile} />
       <div className="hero h-[500px] flex flex-col items-center justify-center px-4 gap-6">
-        <motion.h1
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
-          className="text-center text-4xl sm:text-5xl md:text-7xl font-bold max-w-[500px] md:max-w-[900px]"
         >
-          {profile?.name
-            ? `Welcome, ${profile.name.split(" ").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")}`
-            : "Master any subject, one topic at a time."}
-        </motion.h1>
+          {profile?.name ? (
+            <h1 className="text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold max-w-[700px] md:max-w-[900px]">
+              Welcome, {profile.name
+              .split(" ")
+              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(" ")}
+            </h1>
+          ) : (
+            <h1 className="text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold max-w-[700px] md:max-w-[900px]">
+              Build Your Knowledge One <span className="text-primary">Topic</span> at a Time.
+            </h1>
+          )}
+        </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

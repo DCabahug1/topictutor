@@ -8,7 +8,7 @@ export interface Profile {
   image_url?: string;
 }
 
-export interface Subject {
+export interface Topic {
   id: string;
   user_id: string;
   title: string;
@@ -39,6 +39,6 @@ export interface QuestionResult {
 }
 
 export interface PlacementTestResults {
-  subject: string;
+  topic: string;
   questions: QuestionResult[];
 }

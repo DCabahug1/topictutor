@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import { subjectService } from "@/lib/subjects";
+import { topicService } from "@/lib/topics";
 import {
   Dialog,
   DialogHeader,
@@ -16,8 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 import { redirect } from "next/navigation";
 
-function NewSubjectButton({ fetchSubjects }: { fetchSubjects: () => void }) {
-  const [newSubject, setNewSubject] = useState<string>("");
+function NewTopicButton({ fetchTopics }: { fetchTopics: () => void }) {
+  const [newTopic, setNewTopic] = useState<string>("");
 
   const [message, setMessage] = useState<{
     type: "success" | "error" | "warning" | "info";
@@ -34,7 +34,7 @@ function NewSubjectButton({ fetchSubjects }: { fetchSubjects: () => void }) {
     setLoading(true);
 
     redirect(
-      "/placement-test?subject=" + encodeURIComponent(newSubject)
+      "/placement-test?topic=" + encodeURIComponent(newTopic)
     );
   };
 
@@ -42,14 +42,14 @@ function NewSubjectButton({ fetchSubjects }: { fetchSubjects: () => void }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className="w-full" asChild>
         <Button variant="outline" className="w-full">
-          <p>New Subject</p>
+          <p>New Topic</p>
           <Plus />
         </Button>
       </DialogTrigger>
 
       <DialogContent className="gap-3">
         <DialogHeader>
-          <DialogTitle>New Subject</DialogTitle>
+          <DialogTitle>New Topic</DialogTitle>
           <DialogDescription>
             Describe what you want to learn, and we’ll create a course for you.
           </DialogDescription>
@@ -60,8 +60,8 @@ function NewSubjectButton({ fetchSubjects }: { fetchSubjects: () => void }) {
             <Input
               required
               placeholder="e.g. Basics of Web Development"
-              value={newSubject}
-              onChange={(e) => setNewSubject(e.target.value)}
+              value={newTopic}
+              onChange={(e) => setNewTopic(e.target.value)}
             />
           </div>
           {message.text && (
@@ -89,7 +89,7 @@ function NewSubjectButton({ fetchSubjects }: { fetchSubjects: () => void }) {
           onClick={() => {
             setOpen(false);
             setMessage({ type: "info", text: "" });
-            setNewSubject("");
+            setNewTopic("");
           }}
         >
           Cancel
@@ -99,4 +99,4 @@ function NewSubjectButton({ fetchSubjects }: { fetchSubjects: () => void }) {
   );
 }
 
-export default NewSubjectButton;
+export default NewTopicButton;

@@ -8,8 +8,8 @@ import { authService } from "@/lib/auth";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import SubjectList from "./components/SubjectList";
-import RecentSubject from "./components/RecentSubject";
+import TopicList from "./components/TopicList";
+import RecentTopic from "./components/RecentTopic";
 
 function page() {
   const [profile, setProfile] = React.useState<Profile | null>(null);
@@ -37,8 +37,8 @@ function page() {
       <NavBar profile={profile} />
       <div className="flex-1 min-h-0 flex flex-col items-center">
         <div className="flex-1 min-h-0 flex flex-col p-2 gap-2 max-w-6xl w-full">
-          <RecentSubject />
-          <SubjectList />
+          <RecentTopic />
+          <TopicList />
         </div>
       </div>
     </div>

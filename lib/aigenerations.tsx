@@ -4,8 +4,8 @@ import { OpenAI } from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
 
 // 1. Generate Placement Test
-// 2. Generate subject:
-//    a) Generate subject info (title, description, category)
+// 2. Generate Topic:
+//    a) Generate Topic info (title, description, category)
 //    b) Generate 10 chapters
 //    c) Generate chapter content
 
@@ -32,7 +32,7 @@ const placementTestSchema = z.object({
   ),
 });
 
-export const generatePlacementTest = async (subject: string) => {
+export const generatePlacementTest = async (Topic: string) => {
   console.log("Generating placement test...");
   const openaiClient = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -47,7 +47,7 @@ export const generatePlacementTest = async (subject: string) => {
         },
         {
           role: "user",
-          content: subject,
+          content: Topic,
         },
       ],
       text: {
@@ -71,7 +71,7 @@ export const generatePlacementTest = async (subject: string) => {
   }
 };
 
-const subjectSchema = z.object({
+const TopicSchema = z.object({
   title: z.string(),
   description: z.string(),
   category: z.string(),

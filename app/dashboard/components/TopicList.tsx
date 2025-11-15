@@ -3,65 +3,65 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Search, Plus, Loader2 } from "lucide-react";
 import React, { useEffect } from "react";
-import SubjectItem from "./SubjectItem";
-import { Subject } from "@/lib/models";
-import NewSubjectButton from "./NewSubjectButton";
+import TopicItem from "./TopicItem";
+import { Topic } from "@/lib/models";
+import NewTopicButton from "./NewTopicButton";
 import { useState } from "react";
-import { subjectService } from "@/lib/subjects";
+import {topicService} from "@/lib/topics"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-function SubjectList() {
-  const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [loadingSubjects, setLoadingSubjects] = useState(false);
+function TopicList() {
+  const [topics, setTopics] = useState<Topic[]>([]);
+  const [loadingTopics, setLoadingTopics] = useState(true);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {
-    fetchSubjects();
+    fetchTopics();
   }, []);
 
-  const fetchSubjects = async () => {
-    setLoadingSubjects(true);
-    const { data, error } = await subjectService.getSubjects();
+  const fetchTopics = async () => {
+    setLoadingTopics(true);
+    const { data, error } = await topicService.getTopics();
     console.log("data", data);
     if (!error && data) {
-      setSubjects(data);
+      setTopics(data);
     }
-    setLoadingSubjects(false);
+    setLoadingTopics(false);
   };
 
-  const fetchSubjectsByQuery = async () => {
-    setLoadingSubjects(true);
-    const { data, error } = await subjectService.getSubjectsByQuery({
+  const fetchTopicsByQuery = async () => {
+    setLoadingTopics(true);
+    const { data, error } = await topicService.getTopicsByQuery({
       query: searchQuery,
     });
     if (!error && data) {
-      setSubjects(data);
+      setTopics(data);
     }
-    setLoadingSubjects(false);
+    setLoadingTopics(false);
   };
 
-  const getFilteredSubjects = (
+  const getFilteredTopics = (
     filter: "all" | "not-started" | "in-progress" | "completed"
   ) => {
     if (filter === "all") {
-      return subjects;
+      return topics;
     }
     if (filter === "not-started") {
-      return subjects?.filter((subject) => subject.status === "Not Started");
+      return topics?.filter((topic) => topic.status === "Not Started");
     }
     if (filter === "in-progress") {
-      return subjects?.filter((subject) => subject.status === "In Progress");
+      return topics?.filter((topic) => topic.status === "In Progress");
     }
     if (filter === "completed") {
-      return subjects?.filter((subject) => subject.status === "Completed");
+      return topics?.filter((topic) => topic.status === "Completed");
     }
-    return subjects;
+    return topics;
   };
 
   return (
     <Card className="flex flex-col flex-1 min-h-0 gap-2">
       <CardHeader>
-        <CardTitle>Your Subjects</CardTitle>
+        <CardTitle>Your Topics</CardTitle>
       </CardHeader>
 
       <CardContent className="flex flex-col flex-1 min-h-0 gap-2">
@@ -69,7 +69,7 @@ function SubjectList() {
           className="flex items-center gap-2"
           onSubmit={(e) => {
             e.preventDefault();
-            fetchSubjectsByQuery();
+            fetchTopicsByQuery();
           }}
         >
           <Input
@@ -79,13 +79,13 @@ function SubjectList() {
             }}
             value={searchQuery}
           />
-          <Button disabled={loadingSubjects} type="submit">
+          <Button disabled={loadingTopics} type="submit">
             <Search />
           </Button>
         </form>
 
         <div className="flex flex-col flex-1 min-h-0 gap-2 rounded-md overflow-hidden">
-          <NewSubjectButton fetchSubjects={fetchSubjects} />
+          <NewTopicButton fetchTopics={fetchTopics} />
           <Tabs defaultValue="all" className="flex-1 min-h-0">
             <TabsList>
               <TabsTrigger value="all">All</TabsTrigger>
@@ -97,18 +97,18 @@ function SubjectList() {
               value="all"
               className=" min-h-0 flex-1! flex flex-col overflow-y-auto rounded-md gap-2"
             >
-              {loadingSubjects ? (
+              {loadingTopics ? (
                 <div className="flex items-center justify-center h-full">
                   <Loader2 className="animate-spin" />
                 </div>
-              ) : getFilteredSubjects("all") &&
-                getFilteredSubjects("all")?.length > 0 ? (
-                getFilteredSubjects("all")?.map((subject) => (
-                  <SubjectItem key={subject.id} subject={subject} />
+              ) : getFilteredTopics("all") &&
+                getFilteredTopics("all")?.length > 0 ? (
+                getFilteredTopics("all")?.map((topic) => (
+                  <TopicItem key={topic.id} topic={topic} />
                 ))
               ) : (
                 <div className="flex items-center justify-center h-full text-muted-foreground">
-                  No subjects found
+                  No topics found
                 </div>
               )}
             </TabsContent>
@@ -116,18 +116,18 @@ function SubjectList() {
               value="not-started"
               className="h-0 flex-1 flex flex-col overflow-y-auto rounded-md gap-2"
             >
-              {loadingSubjects ? (
+              {loadingTopics ? (
                 <div className="flex items-center justify-center h-full">
                   <Loader2 className="animate-spin" />
                 </div>
-              ) : getFilteredSubjects("not-started") &&
-                getFilteredSubjects("not-started")?.length > 0 ? (
-                getFilteredSubjects("not-started")?.map((subject) => (
-                  <SubjectItem key={subject.id} subject={subject} />
+              ) : getFilteredTopics("not-started") &&
+                getFilteredTopics("not-started")?.length > 0 ? (
+                getFilteredTopics("not-started")?.map((topic) => (
+                  <TopicItem key={topic.id} topic={topic} />
                 ))
               ) : (
                 <div className="flex items-center justify-center h-full text-muted-foreground">
-                  No subjects found
+                  No topics found
                 </div>
               )}
             </TabsContent>
@@ -135,18 +135,18 @@ function SubjectList() {
               value="in-progress"
               className="flex-1 flex flex-col overflow-y-auto rounded-md gap-2"
             >
-              {loadingSubjects ? (
+              {loadingTopics ? (
                 <div className="flex items-center justify-center h-full">
                   <Loader2 className="animate-spin" />
                 </div>
-              ) : getFilteredSubjects("in-progress") &&
-                getFilteredSubjects("in-progress")?.length > 0 ? (
-                getFilteredSubjects("in-progress")?.map((subject) => (
-                  <SubjectItem key={subject.id} subject={subject} />
+              ) : getFilteredTopics("in-progress") &&
+                getFilteredTopics("in-progress")?.length > 0 ? (
+                getFilteredTopics("in-progress")?.map((topic) => (
+                  <TopicItem key={topic.id} topic={topic} />
                 ))
               ) : (
                 <div className="flex items-center justify-center h-full text-muted-foreground">
-                  No subjects found
+                  No topics found
                 </div>
               )}
             </TabsContent>
@@ -154,18 +154,18 @@ function SubjectList() {
               value="completed"
               className="flex-1 flex flex-col overflow-y-auto rounded-md gap-2"
             >
-              {loadingSubjects ? (
+              {loadingTopics ? (
                 <div className="flex items-center justify-center h-full">
                   <Loader2 className="animate-spin" />
                 </div>
-              ) : getFilteredSubjects("completed") &&
-                getFilteredSubjects("completed")?.length > 0 ? (
-                getFilteredSubjects("completed")?.map((subject) => (
-                  <SubjectItem key={subject.id} subject={subject} />
+              ) : getFilteredTopics("completed") &&
+                getFilteredTopics("completed")?.length > 0 ? (
+                getFilteredTopics("completed")?.map((topic) => (
+                  <TopicItem key={topic.id} topic={topic} />
                 ))
               ) : (
                 <div className="flex items-center justify-center h-full text-muted-foreground">
-                  No subjects found
+                  No topics found
                 </div>
               )}
             </TabsContent>
@@ -176,4 +176,4 @@ function SubjectList() {
   );
 }
 
-export default SubjectList;
+export default TopicList;
