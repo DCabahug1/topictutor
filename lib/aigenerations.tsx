@@ -9,11 +9,23 @@ import { zodTextFormat } from "openai/helpers/zod";
 //    b) Generate 10 chapters
 //    c) Generate chapter content
 
+// export interface Question {
+//   prompt: string;
+//   answerOptions: {
+//     answer: string;
+//     isCorrect: boolean;
+//   }[];
+// }
+
+// export interface PlacementTest {
+//   questions: Question[];
+// }
+
 const placementTestSchema = z.object({
   questions: z.array(
     z.object({
-      question: z.string(),
-      answers: z.array(
+      prompt: z.string(),
+      answerOptions: z.array(
         z.object({ answer: z.string(), isCorrect: z.boolean() })
       ),
     })

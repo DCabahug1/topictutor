@@ -1,33 +1,32 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { redirect, useSearchParams } from "next/navigation";
 import { generatePlacementTest } from "@/lib/aigenerations";
 import { PlacementTest, PlacementTestResults } from "@/lib/models";
 import { Loader2 } from "lucide-react";
-import Question from "./Question";
+import QuestionCard from "./QuestionCard";
 import { Button } from "@/components/ui/button";
 import { motion } from "motion/react";
+import { QuestionResult } from "@/lib/models";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import ResultsCard from "./ResultsCard";
 
 function PlacementTestForm() {
   const searchParams = useSearchParams();
   const subject = searchParams.get("subject");
-  
-  const [placementTest, setPlacementTest] = useState<PlacementTest | null>(null);
+
+  const [placementTest, setPlacementTest] = useState<PlacementTest | null>(
+    null
+  );
   const [placementTestCompleted, setPlacementTestCompleted] = useState(false);
-  const [placementTestResults, setPlacementTestResults] = useState<PlacementTestResults>({
-    subject: subject || "",
-    q1: { question: "", answer: "", isCorrect: false },
-    q2: { question: "", answer: "", isCorrect: false },
-    q3: { question: "", answer: "", isCorrect: false },
-    q4: { question: "", answer: "", isCorrect: false },
-    q5: { question: "", answer: "", isCorrect: false },
-    q6: { question: "", answer: "", isCorrect: false },
-    q7: { question: "", answer: "", isCorrect: false },
-    q8: { question: "", answer: "", isCorrect: false },
-    q9: { question: "", answer: "", isCorrect: false },
-    q10: { question: "", answer: "", isCorrect: false },
-  });
+  const [placementTestResults, setPlacementTestResults] =
+    useState<PlacementTestResults>({
+      subject: subject || "",
+      questions: [],
+    });
+  const [showResults, setShowResults] = useState(false);
   const [loading, setLoading] = useState(true);
+  const hasRequestedTest = useRef(false);
 
   // Redirect if no subject
   if (!subject) {
@@ -36,20 +35,13 @@ function PlacementTestForm() {
 
   // Initialize placement test results when subject changes
   useEffect(() => {
-    setPlacementTestResults({
-      subject: subject || "",
-      q1: { question: "", answer: "", isCorrect: false },
-      q2: { question: "", answer: "", isCorrect: false },
-      q3: { question: "", answer: "", isCorrect: false },
-      q4: { question: "", answer: "", isCorrect: false },
-      q5: { question: "", answer: "", isCorrect: false },
-      q6: { question: "", answer: "", isCorrect: false },
-      q7: { question: "", answer: "", isCorrect: false },
-      q8: { question: "", answer: "", isCorrect: false },
-      q9: { question: "", answer: "", isCorrect: false },
-      q10: { question: "", answer: "", isCorrect: false },
-    });
-
+    // Prevent duplicate API calls in Strict Mode
+    if (hasRequestedTest.current) {
+      return;
+    }
+    
+    hasRequestedTest.current = true;
+    
     const getPlacementTest = async () => {
       const { data, error } = await generatePlacementTest(subject);
       if (error) {
@@ -57,28 +49,45 @@ function PlacementTestForm() {
       }
       if (data) {
         setPlacementTest(data);
+        // Initialize questions array with empty QuestionResult objects
+        const initialQuestions: QuestionResult[] = data.questions.map(
+          (question) => ({
+            prompt: question.prompt,
+            answer: "",
+            correctAnswer:
+              question.answerOptions.find((option) => option.isCorrect)
+                ?.answer || "",
+          })
+        );
+
+        setPlacementTestResults({
+          subject: subject || "",
+          questions: initialQuestions,
+        });
       }
       setLoading(false);
     };
+
+    // Initialize with empty array first
+    setPlacementTestResults({
+      subject: subject || "",
+      questions: [],
+    });
+
     getPlacementTest();
   }, [subject]);
 
   // Check if all questions are answered
   useEffect(() => {
-    const isAllQuestionsAnswered = Object.values(placementTestResults).every(
-      (question) => {
-        if (typeof question === "string") return true; // subject field
-        return question.answer !== "";
-      }
+    const isAllQuestionsAnswered = placementTestResults.questions.every(
+      (question) => question.answer !== ""
     );
+
+    console.log("placementTestResults", placementTestResults);
 
     setPlacementTestCompleted(isAllQuestionsAnswered);
   }, [placementTestResults]);
 
-  const handleSubmit = () => {
-    console.log("placementTestResults", placementTestResults);
-    // TODO: Handle submission logic
-  };
 
   if (loading) {
     return (
@@ -108,7 +117,7 @@ function PlacementTestForm() {
   }
 
   return (
-    <>
+    <div className="flex flex-col items-center gap-2">
       <div className="flex flex-col items-center justify-center">
         <h1 className="text-2xl font-bold">Quick Level Check</h1>
         <p className="text-l text-center text-muted-foreground">
@@ -117,23 +126,43 @@ function PlacementTestForm() {
       </div>
       <div className="flex flex-col gap-2 w-full max-w-3xl">
         {placementTest.questions.map((question, index) => (
-          <Question
+          <QuestionCard
             key={index}
             question={question}
             index={index}
+            showResults={showResults}
             placementTestResults={placementTestResults}
             setPlacementTestResults={setPlacementTestResults}
           />
         ))}
       </div>
-      <Button
-        className="w-full max-w-3xl"
-        disabled={!placementTestCompleted}
-        onClick={handleSubmit}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+        viewport={{once: true, amount: "all" }}
+        className="w-full"
       >
-        Submit
-      </Button>
-    </>
+        <Button
+          className="w-full max-w-3xl"
+          disabled={!placementTestCompleted}
+          onClick={() => {
+            setShowResults(true);
+            // Wait for the results card to render before scrolling
+            setTimeout(() => {
+              const resultsCard = document.getElementById("resultsCard");
+              if (resultsCard) {
+                resultsCard.scrollIntoView({ behavior: "smooth" });
+              }
+            }, 100); // Small delay to ensure the component has rendered
+          }}
+        >
+          Submit
+        </Button>
+      </motion.div>
+      
+      <ResultsCard placementTestResults={placementTestResults} showResults={showResults} />
+    </div>
   );
 }
 

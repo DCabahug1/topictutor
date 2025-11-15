@@ -19,66 +19,26 @@ export interface Subject {
   updated_at: string;
 }
 
-export interface PlacementTest {
-  questions: {
-    question: string;
-    answers: {
-      answer: string;
-      isCorrect: boolean;
-    }[];
+export interface Question {
+  prompt: string;
+  answerOptions: {
+    answer: string;
+    isCorrect: boolean;
   }[];
+}
+
+export interface PlacementTest {
+  questions: Question[];
+}
+
+
+export interface QuestionResult {
+  prompt: string;
+  answer: string;
+  correctAnswer: string;
 }
 
 export interface PlacementTestResults {
   subject: string;
-  q1: {
-    question: string;
-    answer: string;
-    isCorrect: boolean;
-  };
-  q2: {
-    question: string;
-    answer: string;
-    isCorrect: boolean;
-  };
-  q3: {
-    question: string;
-    answer: string;
-    isCorrect: boolean;
-  };
-  q4: {
-    question: string;
-    answer: string;
-    isCorrect: boolean;
-  };
-  q5: {
-    question: string;
-    answer: string;
-    isCorrect: boolean;
-  };
-  q6: {
-    question: string;
-    answer: string;
-    isCorrect: boolean;
-  };
-  q7: {
-    question: string;
-    answer: string;
-    isCorrect: boolean;
-  };
-  q8: {
-    question: string;
-    answer: string;
-    isCorrect: boolean;
-  };
-  q9: {
-    question: string;
-    answer: string;
-    isCorrect: boolean;
-  };
-  q10: {
-    question: string;
-    answer: string;
-    isCorrect: boolean;
-  };
+  questions: QuestionResult[];
 }
