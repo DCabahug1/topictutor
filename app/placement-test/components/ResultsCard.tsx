@@ -137,7 +137,7 @@ function ResultsCard({
               <DialogHeader className="flex flex-col items-center justify-center">
                 <DialogTitle className="text-center">Generating Course...</DialogTitle>
                 <DialogDescription className="text-center">
-                  This may take a few seconds. Please do not leave this page.
+                  This may take a while. Please do not leave this page.
                 </DialogDescription>
               </DialogHeader>
               <div className="flex flex-col items-center justify-center gap-4 py-6">

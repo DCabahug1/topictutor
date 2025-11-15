@@ -1,4 +1,4 @@
-"use server"
+"use server";
 import OpenAI from "openai";
 import z from "zod";
 import { zodTextFormat } from "openai/helpers/zod";
@@ -17,6 +17,7 @@ const chapterSchema = z.object({
   title: z.string(),
   description: z.string(),
   content_paragraphs: z.array(z.string()),
+  chapter_number: z.number(),
 });
 
 const topicAndChaptersSchema = z.object({

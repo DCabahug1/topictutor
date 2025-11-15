@@ -28,6 +28,7 @@ export interface Chapter {
   description: string;
   content_paragraphs: string[];
   completed: boolean;
+  chapter_number: number;
   created_at: string;
   updated_at: string;
 }
