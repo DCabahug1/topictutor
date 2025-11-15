@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import React from "react";
-import { PlacementTestResults } from "@/lib/models";
+import { TestResults } from "@/lib/models";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { motion } from "motion/react";
@@ -16,9 +16,9 @@ function QuestionCard({
 }: {
   question: Question;
   index: number;
-  placementTestResults: PlacementTestResults;
+  placementTestResults: TestResults;
   setPlacementTestResults: React.Dispatch<
-    React.SetStateAction<PlacementTestResults>
+    React.SetStateAction<TestResults>
   >;
   showResults: boolean;
 }) {
@@ -67,8 +67,8 @@ function QuestionCard({
             {question.answerOptions.map((answerOption, answerIndex) => (
               <div className="flex items-center space-x-2" key={answerIndex}>
                 <RadioGroupItem
-                  value={answerOption.answer}
-                  id={answerOption.answer}
+                  value={answerOption.answer + index}
+                  id={answerOption.answer + index}
                   onClick={() => {
                     handleQuestionAnswer(answerOption.answer);
                   }}
@@ -87,7 +87,7 @@ function QuestionCard({
                       : ""
                   }`}
                 />
-                <Label htmlFor={answerOption.answer} className="cursor-pointer">
+                <Label htmlFor={answerOption.answer + index} className="cursor-pointer">
                   {answerOption.answer}
                 </Label>
               </div>

@@ -2,7 +2,6 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import { topicService } from "@/lib/topics";
 import {
   Dialog,
   DialogHeader,
@@ -14,9 +13,10 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 function NewTopicButton({ fetchTopics }: { fetchTopics: () => void }) {
+  const router = useRouter();
   const [newTopic, setNewTopic] = useState<string>("");
 
   const [message, setMessage] = useState<{
@@ -33,9 +33,16 @@ function NewTopicButton({ fetchTopics }: { fetchTopics: () => void }) {
     e.preventDefault();
     setLoading(true);
 
-    redirect(
-      "/placement-test?topic=" + encodeURIComponent(newTopic)
-    );
+    console.log("Setting topic in sessionStorage:", newTopic);
+    // Store topic in sessionStorage to pass data without URL params
+    sessionStorage.setItem('placementTestTopic', newTopic);
+    
+    // Verify it was set
+    const verification = sessionStorage.getItem('placementTestTopic');
+    console.log("Verification - topic in sessionStorage:", verification);
+    
+    // Navigate to placement test page
+    router.push("/placement-test");
   };
 
   return (

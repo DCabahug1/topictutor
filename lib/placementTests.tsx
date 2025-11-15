@@ -1,4 +1,4 @@
-"use server"
+"use server";
 import { z } from "zod";
 import { OpenAI } from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
@@ -70,12 +70,3 @@ export const generatePlacementTest = async (Topic: string) => {
     };
   }
 };
-
-const TopicSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-  category: z.string(),
-});
-
-const generateSubjectFromPlacementTestResults = async () => {};
-
