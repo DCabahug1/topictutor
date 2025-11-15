@@ -30,9 +30,14 @@ export default function RootLayout({
         <script src="https://tweakcn.com/live-preview.min.js"></script>
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} relative antialiased flex flex-col h-screen overflow-y-scroll bg-background`}
+        className={`${geistSans.variable} ${geistMono.variable} relative antialiased flex flex-col h-screen overflow-y-scroll bg-background overflow-hidden`}
       >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
           <div className="fixed bottom-4 right-4">
             <ThemeToggleButton />
           </div>

@@ -24,7 +24,7 @@ function page() {
   }, []);
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen overflow-hidden">
       <NavBar profile={profile} />
       <div className="flex-1 min-h-0 flex flex-col items-center p-6 gap-2 overflow-y-auto">
         <Suspense

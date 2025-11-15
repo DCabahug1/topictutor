@@ -47,7 +47,7 @@ function QuestionCard({
     >
       <Card className="gap-2">
         <CardHeader>
-          <div className="flex items-center gap-1">
+          <div className="flex gap-1">
             {showResults ? (
               isCorrect ? (
                 <Check strokeWidth={3} stroke="green" size={20} />
