@@ -30,7 +30,7 @@ export default function RootLayout({
         <script src="https://tweakcn.com/live-preview.min.js"></script>
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} relative antialiased flex flex-col h-screen overflow-y-scroll bg-background overflow-hidden`}
+        className={`${geistSans.variable} ${geistMono.variable} relative antialiased flex flex-col h-screen overflow-y-scroll bg-background`}
       >
         <ThemeProvider
           attribute="class"
