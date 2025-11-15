@@ -173,7 +173,8 @@ function page() {
                   }
                 >
                   <ArrowLeft className=" h-4 w-4" />
-                  Previous Chapter
+                  <span className="block sm:hidden">Previous</span>
+                  <span className="hidden sm:block">Previous Chapter</span>
                 </Button>
               )}
               {nextChapter && (
@@ -182,7 +183,8 @@ function page() {
                     redirect(`/topic/${topic_id}/chapter/${nextChapter?.id}`)
                   }
                 >
-                  Next Chapter
+                  <span className="block sm:hidden">Next</span>
+                  <span className="hidden sm:block">Next Chapter</span>
                   <ArrowRight className=" h-4 w-4" />
                 </Button>
               )}

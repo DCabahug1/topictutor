@@ -19,6 +19,7 @@ export const createChapters = async ({
   const chaptersWithTopicId = chapters.map((chapter) => ({
     ...chapter,
     topic_id,
+    updated_at: new Date().toISOString(),
   }));
 
   const { data, error } = await supabase
@@ -75,19 +76,17 @@ export const getNeighboringChapters = async (chapter: Chapter) => {
     .eq("topic_id", chapter.topic_id)
     .order("chapter_number", { ascending: true });
 
-
   if (error) {
     console.log("Error getting chapter:", error);
     return { data: null, error };
   }
-  
+
   const thisChapter = data.find((tempChapter) => tempChapter.id === chapter.id);
   // Get chapter where chapter_number is 1 less than chapter.chapter_number
   const prevChapter = data.find((tempChapter) => tempChapter.chapter_number === chapter.chapter_number - 1);
-  
+
   // Get chapter where chapter_number is 1 more than chapter.chapter_number
   const nextChapter = data.find((tempChapter) => tempChapter.chapter_number === chapter.chapter_number + 1);
-
 
   return { data: { prevChapter, nextChapter }, error: null };
 };
@@ -99,7 +98,7 @@ export const updateTopicProgress = async (topic_id: string, chapter: Chapter) =>
 
   const { data, error } = await supabase
     .from("chapters")
-    .update({ completed: true })
+    .update({ completed: true, updated_at: new Date().toISOString() })
     .eq("id", chapter.id);
 
   if (error) {
@@ -110,7 +109,10 @@ export const updateTopicProgress = async (topic_id: string, chapter: Chapter) =>
   // Increment topic.chapters_completed by 1
   const { data: topicData, error: topicError } = await supabase
     .from("topics")
-    .update({ chapters_completed: topic.data?.[0].chapters_completed + 1 })
+    .update({
+      chapters_completed: topic.data?.[0].chapters_completed + 1,
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", topic_id);
 
   if (topicError) {

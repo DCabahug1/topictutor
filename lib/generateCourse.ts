@@ -37,12 +37,12 @@ export const generateCourse = async ({
 
   try {
     const response = await openaiClient.responses.parse({
-      model: "gpt-4o-mini",
+      model: "gpt-4.1-mini",
       input: [
         {
           role: "system",
           content:
-            "You generate a personalized course using two inputs, the topic and the placement test result.Rename the topic to a more specific title if the test suggests a clearer focus. Assign the topic to the most suitable category, choosing from: Math, Science, History, English, Computer Science, Business, Art, Music, Physical Education, Other. Create a 10-chapter course. For each chapter, the title should be clear and concise (Title text only, no need for Chapter #). The description should also be clear and consise (Such as but not limited to: This chapter covers the topic of... ). This course is for a single user. Each chapter must contain 5 paragraphs (3 sentences per paragraph) of clear instructional content. content_paragraphs should be an array of 5 paragraphs. Prioritize the areas where the student shows the greatest weakness based on the placement test.",
+            "You generate a personalized course using two inputs, the topic and the placement test result. Rename the topic to a more specific title if the test suggests a clearer focus. Assign the topic to the most suitable category, choosing from: Math, Science, Technology, History, Literature, Business, Finance, Arts, Health and Wellness, Other. Create a 10-chapter course. For each chapter, the title should be clear and concise (Title text only, no need for Chapter #). The description should also be clear and consise (Such as but not limited to: This chapter covers the topic of... ). This course is for a single user. Each chapter must contain 5 paragraphs (3 sentences per paragraph) of clear instructional content. content_paragraphs should be an array of 5 paragraphs. Prioritize the areas where the student shows the greatest weakness based on the placement test.",
         },
         {
           role: "user",

@@ -23,6 +23,7 @@ export const createTopic = async ({
         category,
         description,
         chapters_count,
+        updated_at: new Date().toISOString(),
       },
     ])
     .select("*");
@@ -44,7 +45,10 @@ export const createTopic = async ({
 export const getTopics = async () => {
   const supabase = await createClient();
 
-  const { data, error } = await supabase.from("topics").select("*").order("updated_at", { ascending: false });
+  const { data, error } = await supabase
+    .from("topics")
+    .select("*")
+    .order("updated_at", { ascending: false });
 
   if (error) {
     console.log("Error getting topics:", error);
@@ -54,10 +58,13 @@ export const getTopics = async () => {
   return { data, error: null };
 };
 
-export const getTopicById = async ({id}: {id:string}) => {
+export const getTopicById = async ({ id }: { id: string }) => {
   const supabase = await createClient();
 
-  const { data, error } = await supabase.from("topics").select("*").eq("id", id);
+  const { data, error } = await supabase
+    .from("topics")
+    .select("*")
+    .eq("id", id);
 
   if (error) {
     console.log("Error getting topic:", error);
@@ -65,7 +72,7 @@ export const getTopicById = async ({id}: {id:string}) => {
   }
 
   return { data, error: null };
-}
+};
 
 // Checks title, category, description
 export const getTopicsByQuery = async ({ query }: { query: string }) => {

@@ -83,7 +83,7 @@ function TopicList() {
             }}
             value={searchQuery}
           />
-          <Button disabled={loadingTopics} type="submit">
+          <Button disabled={loadingTopics} type="submit" variant="default">
             <Search />
           </Button>
         </form>

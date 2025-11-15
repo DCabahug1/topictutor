@@ -117,24 +117,9 @@ function page() {
         </div>
       ) : (
         <div className="flex-1 min-h-0 flex items-center justify-center p-4 ">
-          <Card className="h-full w-full max-w-6xl">
+          <Card className="h-full w-full max-w-6xl overflow-y-auto gap-2">
             {topic && (
               <CardHeader className="flex flex-col items-center">
-                <div className="flex flex-col items-center">
-                  <div className="flex flex-col">
-                    <CircularProgress
-                      value={
-                        (topic.chapters_completed / topic.chapters_count) * 100
-                      }
-                      showLabel={true}
-                      size={120}
-                      strokeWidth={10}
-                    />
-                  </div>
-                  <h1 className="text-2xl font-bold text-center">
-                    {topic.title}
-                  </h1>
-                </div>
                 <Badge
                   variant="default"
                   className={`text-xs ${
@@ -151,12 +136,28 @@ function page() {
                     ? "In Progress"
                     : "Not Started"}
                 </Badge>
+                <h1 className="text-2xl font-bold text-center">
+                  {topic.title}
+                </h1>
+
                 <p className="text-muted-foreground text-center ">
                   {topic.description}
                 </p>
+                <Card className="flex flex-row justify-center items-center px-6 py-2">
+                  <h1 className="text-xl font-bold">Progress:</h1>
+                  <CircularProgress
+                    value={
+                      (topic.chapters_completed / topic.chapters_count) * 100
+                    }
+                    labelClassName="text-xl"
+                    showLabel={true}
+                    size={120}
+                    strokeWidth={10}
+                  />
+                </Card>
               </CardHeader>
             )}
-            <CardContent className="flex flex-col gap-2 overflow-y-auto">
+            <CardContent className="flex flex-col gap-2">
               {chapters.map((chapter, index) => (
                 <motion.div
                   animate={{ opacity: 1, y: 0 }}

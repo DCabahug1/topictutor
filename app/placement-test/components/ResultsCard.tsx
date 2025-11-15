@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { DialogClose } from "@/components/ui/dialog";
 import { Loader2 } from "lucide-react";
-import { generateCourse } from "@/lib/course";
+import { generateCourse } from "@/lib/generateCourse";
 import { redirect } from "next/navigation";
 
 function ResultsCard({
@@ -31,11 +31,12 @@ function ResultsCard({
   ).length;
   const percentage = (score / placementTestResults.questions.length) * 100;
   const [progressMessage, setProgressMessage] = useState("");
+  const [timeElapsed, setTimeElapsed] = useState(0);
   const [loading, setLoading] = useState(false);
 
   const handleGenerateCourse = async () => {
     setLoading(true);
-    
+
     // Progress messages to keep user engaged
     const progressMessages = [
       "Analyzing your test results...",
@@ -45,10 +46,10 @@ function ResultsCard({
       "Optimizing learning path...",
       "Finalizing your course...",
     ];
-    
+
     let messageIndex = 0;
     setProgressMessage(progressMessages[0]);
-    
+
     // Iterate through progress messages once, every 5 seconds
     const progressInterval = setInterval(() => {
       messageIndex++;
@@ -59,6 +60,11 @@ function ResultsCard({
       }
     }, 5000);
 
+    // Update time elapsed every second
+    const timeInterval = setInterval(() => {
+      setTimeElapsed((prev) => prev + 1);
+    }, 1000);
+
     try {
       const { data, error } = await generateCourse({
         topic,
@@ -66,7 +72,8 @@ function ResultsCard({
       });
 
       clearInterval(progressInterval);
-      
+      clearInterval(timeInterval);
+
       if (error) {
         console.log(error);
         setProgressMessage("Error generating course. Please try again.");
@@ -83,7 +90,7 @@ function ResultsCard({
       setProgressMessage("Something went wrong. Please try again.");
       console.error(error);
     }
-    
+
     setLoading(false);
   };
 
@@ -124,18 +131,24 @@ function ResultsCard({
           </div>
           <Dialog>
             <DialogTrigger asChild>
-              <Button className="w-full max-w-3xl" onClick={handleGenerateCourse} disabled={loading}>
+              <Button
+                className="w-full max-w-3xl"
+                onClick={handleGenerateCourse}
+                disabled={loading}
+              >
                 Generate Course
               </Button>
             </DialogTrigger>
-            <DialogContent 
+            <DialogContent
               onEscapeKeyDown={(e) => e.preventDefault()}
               onPointerDownOutside={(e) => e.preventDefault()}
               onInteractOutside={(e) => e.preventDefault()}
               showCloseButton={false}
             >
               <DialogHeader className="flex flex-col items-center justify-center">
-                <DialogTitle className="text-center">Generating Course...</DialogTitle>
+                <DialogTitle className="text-center">
+                  Generating Course...
+                </DialogTitle>
                 <DialogDescription className="text-center">
                   This may take a while. Please do not leave this page.
                 </DialogDescription>
@@ -147,6 +160,9 @@ function ResultsCard({
                     {progressMessage}
                   </p>
                 )}
+                <p className="text-center text-muted-foreground text-sm animate-pulse">
+                  ({timeElapsed}s elapsed)
+                </p>
               </div>
             </DialogContent>
           </Dialog>

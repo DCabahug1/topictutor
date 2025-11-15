@@ -48,8 +48,8 @@ function NewTopicButton({ fetchTopics }: { fetchTopics: () => void }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className="w-full" asChild>
-        <Button variant="outline" className="w-full">
-          <p>New Topic</p>
+        <Button variant="default" className="w-full">
+          <p>New Topic</p> 
           <Plus />
         </Button>
       </DialogTrigger>
