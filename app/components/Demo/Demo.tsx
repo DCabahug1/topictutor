@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Play, Monitor, Smartphone, CheckCircle, Loader2, X } from "lucide-react";
+import {
+  Play,
+  Monitor,
+  Smartphone,
+  CheckCircle,
+  Loader2,
+  X,
+} from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion } from "motion/react";
@@ -43,7 +50,7 @@ export function Demo() {
   const [isInView, setIsInView] = useState(false);
   const [activeDemo, setActiveDemo] = useState(0);
   const [navInView, setNavInView] = useState(false);
-  const [imageLoading, setImageLoading] = useState(true);
+  const [imageLoading, setImageLoading] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [origin, setOrigin] = useState("");
 
@@ -119,40 +126,34 @@ export function Demo() {
 
                 <div className="bg-muted/50 min-h-[120px] flex items-center justify-center">
                   <div className="text-center w-full">
-                    <div className="relative w-full h-full">
-                      {!imageError && (
-                        <Image
-                          src={demoFeatures[activeDemo].image}
-                          alt={`Demo screenshot of ${demoFeatures[activeDemo].title}`}
-                          width={1333}
-                          height={2547}
-                          className={` object-cover rounded transition-opacity duration-300 ${
-                            imageLoading ? "opacity-0" : "opacity-100"
-                          }`}
-                          onLoad={() => setImageLoading(false)}
-                          onError={() => {
-                            setImageError(true);
-                            setImageLoading(false);
-                          }}
-                        />
-                      )}
-                      {!imageError && imageLoading ? (
-                        
-                          <div className="flex items-center justify-center">
-                            <div className="text-center">
-                              <Loader2 className="w-12 h-12 text-primary mx-auto mb-2 animate-spin" />
-                            </div>
-                          </div>
-                      ): imageError ? (
-                        
-                          <div className="flex items-center justify-center">
-                            <div className="text-center flex flex-col items-center justify-center">
-                              <X className="w-12 h-12 text-primary mx-auto mb-2" />
-                              <p className="text-sm text-muted-foreground">
-                                Image not found
-                              </p>
-                            </div>
-                          </div>
+                    <div className="relative w-full h-full flex items-center justify-center">
+                      <Image
+                        src={demoFeatures[activeDemo].image}
+                        alt={`Demo screenshot of ${demoFeatures[activeDemo].title}`}
+                        width={1333}
+                        height={2547}
+                        className={` object-cover rounded transition-opacity duration-300 ${
+                          imageLoading ? "hidden" : ""
+                        }`}
+                        onLoad={() => {
+                          setImageLoading(false);
+                        }}
+                        onError={() => {
+                          setImageError(true);
+                          setImageLoading(false);
+                        }}
+                      />
+                      {imageLoading ? (
+                        <div className="text-center">
+                          <Loader2 className="w-12 h-12 text-primary mx-auto mb-2 animate-spin" />
+                        </div>
+                      ) : imageError ? (
+                        <div className="text-center flex flex-col items-center justify-center">
+                          <X className="w-12 h-12 text-primary mx-auto mb-2" />
+                          <p className="text-sm text-muted-foreground">
+                            Image not found
+                          </p>
+                        </div>
                       ) : null}
                     </div>
                   </div>
