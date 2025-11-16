@@ -61,7 +61,7 @@ export function Features() {
         </motion.div>
 
         <motion.div
-          className="grid gap-6 md:grid-cols-2 xl:order-1 xl:max-w-3xl"
+          className="grid gap-4 md:grid-cols-2 xl:order-1 xl:max-w-3xl"
           onViewportEnter={() => setItemsInView(true)}
           viewport={{ amount: 0.3, once: true }}
         >
