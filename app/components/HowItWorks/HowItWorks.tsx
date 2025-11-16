@@ -7,22 +7,22 @@ import { motion } from "motion/react";
 const items = [
   {
     title: "Pick a Topic",
-    icon: <Search size={80} />,
+    icon: <Search size={45} />,
     description: "Choose what you want to learn.",
   },
   {
     title: "Take the Test",
-    icon: <Clipboard size={80} />,
+    icon: <Clipboard size={45} />,
     description: "Answer a quick quiz to gauge your level.",
   },
   {
     title: "Get Your Course",
-    icon: <Book size={80} />,
+    icon: <Book size={45} />,
     description: "Get a personalized course based on your level.",
   },
   {
     title: "Start Learning",
-    icon: <Target size={80} />,
+    icon: <Target size={45} />,
     description: "Follow clear lessons and track your progress.",
   },
 ];

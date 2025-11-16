@@ -15,7 +15,10 @@ function Item({ title, icon, description, index, autoHoverIndex }: ItemProps) {
       <h2 className="text-center text-lg font-semibold">
         {index + 1}. {title}
       </h2>
+      <div className="h-20 w-20 flex items-center justify-center rounded-full bg-primary text-white border-6 border-background/40" >
+
       {icon}
+      </div>
       <p className="text-center text-sm font-medium">{description}</p>
     </Card>
   );

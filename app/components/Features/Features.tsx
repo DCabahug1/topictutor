@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Brain, Sparkles, LayoutPanelTop, BarChart3 } from "lucide-react";
 import { motion } from "motion/react";
+import { Card } from "@/components/ui/card";
 
 const features = [
   {
@@ -84,8 +85,8 @@ export function Features() {
                   y: { duration: 0.75, delay: index * 0.2 },
                 }}
                 viewport={{ amount: 0.3, once: true }}
-                className="group flex h-full gap-4 rounded-2xl border border-primary/20 hover:border-primary bg-card p-6 shadow-xl transition-all duration-150 hover:-translate-y-1  cursor-default"
               >
+                <Card className="group flex flex-row h-full gap-4 rounded-2xl border border-primary/20 hover:border-primary bg-card p-6 shadow-xl transition-all duration-150 cursor-default">
                 <div className="flex h-12 w-12 flex-none items-center justify-center rounded-xl bg-primary/10 text-primary">
                   <Icon className="h-6 w-6" />
                 </div>
@@ -97,6 +98,7 @@ export function Features() {
                     {feature.description}
                   </p>
                 </div>
+                </Card>
               </motion.div>
             );
           })}
