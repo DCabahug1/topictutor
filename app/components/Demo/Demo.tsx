@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Play, Monitor, Smartphone, CheckCircle, Loader2 } from "lucide-react";
+import { Play, Monitor, Smartphone, CheckCircle, Loader2, X } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion } from "motion/react";
@@ -121,14 +121,7 @@ export function Demo() {
                   <div className="text-center w-full">
                     <div className="relative w-full">
                       {(imageLoading || imageError) && (
-                        <>
-                          <Skeleton className="absolute inset-0 w-full h-full rounded" />
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="text-center">
-                              <Loader2 className="w-12 h-12 text-primary mx-auto mb-2 animate-spin" />
-                            </div>
-                          </div>
-                        </>
+                        <Skeleton className="absolute inset-0 w-full h-full rounded" />
                       )}
                       {!imageError && (
                         <Image
@@ -146,6 +139,24 @@ export function Demo() {
                           }}
                         />
                       )}
+                      {!imageError && imageLoading ? (
+                        
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="text-center">
+                              <Loader2 className="w-12 h-12 text-primary mx-auto mb-2 animate-spin" />
+                            </div>
+                          </div>
+                      ): imageError ? (
+                        
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="text-center flex flex-col items-center justify-center">
+                              <X className="w-12 h-12 text-primary mx-auto mb-2" />
+                              <p className="text-sm text-muted-foreground">
+                                Image not found
+                              </p>
+                            </div>
+                          </div>
+                      ) : null}
                     </div>
                   </div>
                 </div>
