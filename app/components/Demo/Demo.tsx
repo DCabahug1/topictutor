@@ -108,7 +108,7 @@ export function Demo() {
               </div>
 
               <div className="bg-card rounded-lg border border-border overflow-hidden">
-                <div className="flex items-center gap-2 p-4">
+                <div className="flex items-center gap-2 p-4 border-b">
                   <div className="w-3 h-3 rounded-full bg-red-500"></div>
                   <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                   <div className="w-3 h-3 rounded-full bg-green-500"></div>
