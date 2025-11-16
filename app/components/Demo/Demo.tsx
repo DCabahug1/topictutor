@@ -1,34 +1,41 @@
 import React, { useState } from "react";
-import { Play, Monitor, Smartphone, CheckCircle } from "lucide-react";
+import { Play, Monitor, Smartphone, CheckCircle, Loader2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion } from "motion/react";
 import Link from "next/link";
+import Image from "next/image";
+import { Skeleton } from "@/components/ui/skeleton";
+import { usePathname } from "next/navigation";
 
 const demoFeatures = [
-  {
-    title: "Placement Test",
-    description: "Quick assessment to determine your starting level",
-    preview: "Answer questions to get your personalized course",
-    url: "/placement-test",
-  },
   {
     title: "Dashboard",
     description: "Your personalized learning hub",
     preview: "View your courses and track progress",
     url: "/dashboard",
+    image: "/demo/dashboard.png",
+  },
+  {
+    title: "Placement Test",
+    description: "Quick assessment to determine your starting level",
+    preview: "Answer questions to get your personalized course",
+    url: "/placement-test",
+    image: "/demo/placement-test.png",
   },
   {
     title: "Course View",
     description: "Browse course topics and chapters",
     preview: "Explore structured learning content",
-    url: "/topic",
+    url: "/topic/[topic_id]",
+    image: "/demo/topic.png",
   },
   {
-    title: "Authentication",
-    description: "Secure login and registration system",
-    preview: "Create account or sign in to save progress",
-    url: "/auth/login",
+    title: "Chapter View",
+    description: "Browse course chapters",
+    preview: "Explore structured learning content",
+    url: "/topic/[topic_id]/chapter/[chapter_id]",
+    image: "/demo/chapter.png",
   },
 ];
 
@@ -36,6 +43,14 @@ export function Demo() {
   const [isInView, setIsInView] = useState(false);
   const [activeDemo, setActiveDemo] = useState(0);
   const [navInView, setNavInView] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
+
+  // Reset loading states when demo changes
+  React.useEffect(() => {
+    setImageLoading(true);
+    setImageError(false);
+  }, [activeDemo]);
 
   return (
     <motion.div
@@ -92,16 +107,40 @@ export function Demo() {
                   <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                   <div className="w-3 h-3 rounded-full bg-green-500"></div>
                   <div className="flex-1 bg-muted rounded px-3 py-1 text-xs text-muted-foreground">
-                    topictutor.com{demoFeatures[activeDemo].url}
+                    {window.location.origin + demoFeatures[activeDemo].url}
                   </div>
                 </div>
 
                 <div className="bg-muted/50 rounded p-4 min-h-[120px] flex items-center justify-center">
-                  <div className="text-center">
-                    <Play className="w-12 h-12 text-primary mx-auto mb-2" />
-                    <p className="text-sm text-muted-foreground">
-                      {demoFeatures[activeDemo].preview}
-                    </p>
+                  <div className="text-center w-full">
+                    <div className="relative w-full">
+                      {(imageLoading || imageError) && (
+                        <>
+                        <Skeleton className="absolute inset-0 w-full h-full rounded" />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="text-center">
+                            <Loader2 className="w-12 h-12 text-primary mx-auto mb-2 animate-spin" />
+                          </div>
+                        </div>
+                        </>
+                      )}
+                      {!imageError && (
+                        <Image
+                          src={demoFeatures[activeDemo].image}
+                          alt={`Demo screenshot of ${demoFeatures[activeDemo].title}`}
+                          width={1333}
+                          height={2547}
+                          className={` object-cover rounded transition-opacity duration-300 ${
+                            imageLoading ? "opacity-0" : "opacity-100"
+                          }`}
+                          onLoad={() => setImageLoading(false)}
+                          onError={() => {
+                            setImageError(true);
+                            setImageLoading(false);
+                          }}
+                        />
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -109,7 +148,11 @@ export function Demo() {
           </motion.div>
 
           {/* Demo Navigation */}
-          <motion.div className="grid grid-cols-1 sm:grid-cols-2 gap-4" onViewportEnter={() => setNavInView(true)} viewport={{ amount: 0.3, once: true }}>
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+            onViewportEnter={() => setNavInView(true)}
+            viewport={{ amount: 0.3, once: true }}
+          >
             {demoFeatures.map((feature, index) => (
               <motion.div
                 key={feature.title}
@@ -124,7 +167,7 @@ export function Demo() {
                 }}
               >
                 <Card
-                  className={`h-full p-4 cursor-pointer transition-all duration-300 hover:translate-y-[-2px] border-2 shadow-xl ${
+                  className={`h-full p-4 cursor-pointer transition-all duration-300 hover:translate-y-[-2px] border shadow-xl ${
                     activeDemo === index
                       ? "border-primary bg-primary/5"
                       : "border-primary/30 hover:border-primary"
