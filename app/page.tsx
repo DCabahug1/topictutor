@@ -10,6 +10,11 @@ import { createClient } from "@/utils/supabase/client";
 import { authService } from "@/lib/auth";
 import { Profile } from "@/lib/models";
 import HowItWorks from "./components/HowItWorks/HowItWorks";
+import { Features } from "./components/Features/Features";
+import { CTA } from "./components/CTA/CTA";
+import { Footer } from "./components/Footer/Footer";
+import { Demo } from "./components/Demo/Demo";
+import { Roadmap } from "./components/Roadmap/Roadmap";
 function page() {
   const [profile, setProfile] = React.useState<Profile | null>(null);
 
@@ -32,9 +37,9 @@ function page() {
   };
 
   return (
-    <div className="flex flex-col h-screen overflow-y-auto bg-linear-to-t from-primary/40 to-secondary">
+    <div className="flex flex-col h-screen overflow-y-auto bg-linear-to-t from-primary/30 to-secondary">
       <div className="relative flex flex-col">
-        <div className="h-[calc(100vh-64px)] flex flex-col">
+        <div className="h-[calc(100vh-45px)] max-h-[700px] flex flex-col">
           <NavBar profile={profile} />
           <div className="hero flex-1 min-h-0 flex flex-col items-center justify-center px-8 gap-6">
             <AnimatePresence mode="wait">
@@ -42,7 +47,7 @@ function page() {
                 <motion.h1
                   key="welcome"
                   initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  animate={{ opacity: 1.5, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.5 }}
                   className="text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold max-w-[700px] md:max-w-[900px]"
@@ -61,7 +66,7 @@ function page() {
                 <motion.h1
                   key="default"
                   initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  animate={{ opacity: 1.5, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.5 }}
                   className="text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold max-w-[700px] md:max-w-[900px]"
@@ -109,8 +114,9 @@ function page() {
           </div>
         </div>
         <div className="flex flex-col px-4 py-8 items-center w-full rounded-t-xl border-2 border-border shadow-[0_0_2px_0_rgba(0,0,0,0.1)] bg-card text-card-foreground">
-          <div className="flex flex-col w-full max-w-7xl">
+        <div className="flex flex-col px-4 xl:px-14 py-14 items-center w-full rounded-t-xl border-2 border-border border-b-0 shadow-[0_0_2px_0_rgba(0,0,0,0.1)] bg-card/60 text-card-foreground">
             <HowItWorks />
+            <Roadmap />
           </div>
         </div>
       </div>

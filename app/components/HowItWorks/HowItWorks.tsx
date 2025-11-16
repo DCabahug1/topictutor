@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Book, Clipboard, Search, Target } from "lucide-react";
 import Item from "./Item";
 import { Description } from "@radix-ui/react-dialog";
@@ -29,6 +29,9 @@ const items = [
 
 function HowItWorks() {
   const [isInView, setIsInView] = useState(false);
+      return () => clearTimeout(timer);
+    }
+  }, [isInView]);
 
   return (
     <motion.div 
@@ -38,9 +41,8 @@ function HowItWorks() {
     >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
-        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-        transition={{ duration: 1 }}
-        className="flex flex-col gap-2 text-center lg:text-left"
+        transition={{ duration: 0.75 }}
+        whileInView={{ opacity: 1, y: 0 }}
       >
         <h1 className="text-4xl lg:text-7xl font-bold text-nowrap">How It Works:</h1>
         <h2 className="text-lg  ">
@@ -51,8 +53,9 @@ function HowItWorks() {
         {items.map((item, index) => (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 1, delay: (index * 0.2) + 1 }}
+            animate={{
+              opacity: isInView ? 1 : 0,
             key={item.title}
           >
             <Item
@@ -60,6 +63,7 @@ function HowItWorks() {
               icon={item.icon}
               description={item.description}
               index={index}
+              autoHoverIndex={autoHoverIndex}
             />
           </motion.div>
         ))}
