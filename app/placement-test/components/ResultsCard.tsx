@@ -161,7 +161,7 @@ function ResultsCard({
                   </p>
                 )}
                 <p className="text-center text-muted-foreground text-sm animate-pulse">
-                  ({timeElapsed}s elapsed)
+                  (Time elapsed: {timeElapsed}s)
                 </p>
               </div>
             </DialogContent>
