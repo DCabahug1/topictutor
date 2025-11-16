@@ -85,9 +85,10 @@ function page() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.5 }}
+                    whileHover={{ scale: 1.05 }}
                   >
                     <Link href="/dashboard">
-                      <Button className="" size="lg">
+                      <Button className="shadow-xl" size="lg">
                         Dashboard
                         <ArrowRight />
                       </Button>
@@ -100,9 +101,10 @@ function page() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.5 }}
+                    whileHover={{ scale: 1.05 }}
                   >
                     <Link href="/auth/login">
-                      <Button className="" size="lg">
+                      <Button className="shadow-xl" size="lg">
                         Get Started
                         <ArrowRight />
                       </Button>
