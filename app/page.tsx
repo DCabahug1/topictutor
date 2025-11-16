@@ -50,7 +50,7 @@ function page() {
                   animate={{ opacity: 1.5, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.5 }}
-                  className="text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold max-w-[700px] md:max-w-[900px]"
+                  className="text-center text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold max-w-[700px] md:max-w-[900px]"
                 >
                   Welcome,{" "}
                   <span className="text-primary">

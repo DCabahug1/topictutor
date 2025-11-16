@@ -53,8 +53,8 @@ function HowItWorks() {
   }, [isInView]);
 
   return (
-    <motion.div 
-      className="flex flex-col lg:flex-row w-full items-center lg:justify-center gap-4 lg:gap-8"
+    <motion.div
+      className="flex flex-col xl:flex-row w-full items-center xl:justify-between gap-4 "
       onViewportEnter={() => setIsInView(true)}
       viewport={{ amount: 0.2, once: true }}
     >
@@ -77,7 +77,7 @@ function HowItWorks() {
           a custom course for you in four steps.
         </h2>
       </motion.div>
-      <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="w-full xl:max-w-3xl grid grid-cols-1 sm:grid-cols-2 gap-4">
         {items.map((item, index) => (
           <motion.div
             initial={{ opacity: 0, y: 20 }}

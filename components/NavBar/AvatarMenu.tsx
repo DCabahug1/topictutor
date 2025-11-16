@@ -23,7 +23,7 @@ import { authService } from "@/lib/auth";
 function AvatarMenu({ profile }: { profile: Profile }) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="rounded-full cursor-pointer">
+      <DropdownMenuTrigger className="rounded-full border-2 border-primary/70 hover:border-primary transition-all duration-100 cursor-pointer">
         <Avatar>
           <AvatarImage src={profile.image_url || ""} />
           <AvatarFallback className="text-primary-foreground bg-primary">
