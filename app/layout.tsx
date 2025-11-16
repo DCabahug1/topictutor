@@ -27,7 +27,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script src="https://tweakcn.com/live-preview.min.js"></script>
+        <script
+          async
+          crossOrigin="anonymous"
+          src="https://tweakcn.com/live-preview.min.js"
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} relative antialiased flex flex-col h-screen overflow-y-scroll bg-background`}
@@ -38,7 +42,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="fixed bottom-4 right-4">
+          <div className="fixed bottom-4 right-4 z-50">
             <ThemeToggleButton />
           </div>
           {children}
