@@ -113,12 +113,16 @@ function page() {
             </div>
           </div>
         </div>
-        <div className="flex flex-col px-4 py-8 items-center w-full rounded-t-xl border-2 border-border shadow-[0_0_2px_0_rgba(0,0,0,0.1)] bg-card text-card-foreground">
         <div className="flex flex-col px-4 xl:px-14 py-14 items-center w-full rounded-t-xl border-2 border-border border-b-0 shadow-[0_0_2px_0_rgba(0,0,0,0.1)] bg-card/60 text-card-foreground">
+          <div className="flex flex-col w-full max-w-[1400px] gap-20">
             <HowItWorks />
+            <Features />
+            <Demo />
             <Roadmap />
+            <CTA profile={profile}/>
           </div>
         </div>
+        <Footer />
       </div>
     </div>
   );
