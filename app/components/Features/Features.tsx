@@ -31,6 +31,7 @@ const features = [
 
 export function Features() {
   const [isInView, setIsInView] = useState(false);
+  const [itemsInView, setItemsInView] = useState(false);
 
   return (
     <motion.div
@@ -41,8 +42,9 @@ export function Features() {
       <div className="w-full flex flex-col xl:flex-row items-center xl:justify-between gap-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.75 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ amount: 0.2, once: true }}
           className="flex flex-col gap-2 text-center xl:text-left xl:order-2"
         >
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">
@@ -57,7 +59,11 @@ export function Features() {
           </p>
         </motion.div>
 
-        <div className="grid gap-6 md:grid-cols-2 xl:order-1 xl:max-w-3xl">
+        <motion.div
+          className="grid gap-6 md:grid-cols-2 xl:order-1 xl:max-w-3xl"
+          onViewportEnter={() => setItemsInView(true)}
+          viewport={{ amount: 0.3, once: true }}
+        >
           {features.map((feature, index) => {
             const Icon = feature.icon;
 
@@ -65,14 +71,19 @@ export function Features() {
               <motion.div
                 key={feature.title}
                 initial={{ opacity: 0, y: 20 }}
-                animate={{
-                  opacity: isInView ? 1 : 0,
-                  y: isInView ? 0 : 20,
-                }}
+                animate={
+                  itemsInView
+                    ? {
+                        opacity: 1,
+                        y: 0,
+                      }
+                    : { opacity: 0, y: 20 }
+                }
                 transition={{
-                  opacity: { duration: 1, delay: index * 0.5 },
+                  opacity: { duration: 0.75, delay: index * 0.2 },
                   y: { duration: 0.75, delay: index * 0.2 },
                 }}
+                viewport={{ amount: 0.3, once: true }}
                 className="group flex h-full gap-4 rounded-2xl border border-primary/20 hover:border-primary bg-card p-6 shadow-xl transition-all duration-150 hover:-translate-y-1  cursor-default"
               >
                 <div className="flex h-12 w-12 flex-none items-center justify-center rounded-xl bg-primary/10 text-primary">
@@ -89,7 +100,7 @@ export function Features() {
               </motion.div>
             );
           })}
-        </div>
+        </motion.div>
       </div>
     </motion.div>
   );

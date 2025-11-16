@@ -29,6 +29,7 @@ const items = [
 
 function HowItWorks() {
   const [isInView, setIsInView] = useState(false);
+  const [itemsInView, setItemsInView] = useState(false);
   const [autoHoverIndex, setAutoHoverIndex] = useState(-1);
 
   useEffect(() => {
@@ -63,7 +64,6 @@ function HowItWorks() {
         transition={{ duration: 0.75 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ amount: 0.2, once: true }}
-
         className="flex flex-col gap-2 text-center xl:text-left"
       >
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">
@@ -77,20 +77,29 @@ function HowItWorks() {
           a custom course for you in four steps.
         </h2>
       </motion.div>
-      <div className="w-full xl:max-w-3xl grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <motion.div
+        className="w-full xl:max-w-3xl grid grid-cols-1 sm:grid-cols-2 gap-4"
+        onViewportEnter={() => setItemsInView(true)}
+        viewport={{ amount: 0.3, once: true }}
+      >
         {items.map((item, index) => (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            animate={{
-              opacity: isInView ? 1 : 0,
-              y: isInView ? 0 : 20,
-              translateY: autoHoverIndex === index ? -10 : 0,
-            }}
+            animate={
+              itemsInView
+                ? {
+                    opacity: 1,
+                    y: 0,
+                    translateY: autoHoverIndex === index ? -10 : 0,
+                  }
+                : { opacity: 0, y: 20, translateY: 0 }
+            }
             transition={{
-              opacity: { duration: 1, delay: index * 0.5 },
+              opacity: { duration: 0.75, delay: index * 0.2 },
               y: { duration: 0.75, delay: index * 0.2 },
               translateY: { duration: 0.3 },
             }}
+            viewport={{ amount: 0.3, once: true }}
             key={item.title}
           >
             <Item
@@ -102,7 +111,7 @@ function HowItWorks() {
             />
           </motion.div>
         ))}
-      </div>
+      </motion.div>
     </motion.div>
   );
 }

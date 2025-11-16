@@ -109,14 +109,12 @@ export function Roadmap() {
                     <div className="flex flex-wrap gap-2">
                       {item.features.map((feature, index) => (
                         <div key={index} className="flex gap-2">
-                          <p
-                            className="text-sm text-muted-foreground"
+                          <Badge
+                          variant="outline"
+                          className="text-sm text-muted-foreground"
                           >
                             {feature}
-                          </p>
-                          {index < item.features.length - 1 && (
-                            <span className="text-muted-foreground">|</span>
-                          )}
+                          </Badge>
                         </div>
                       ))}
                     </div>
