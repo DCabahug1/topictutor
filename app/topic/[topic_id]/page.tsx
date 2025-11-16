@@ -143,7 +143,7 @@ function page() {
                 <p className="text-muted-foreground text-center ">
                   {topic.description}
                 </p>
-                <Card className="flex flex-row justify-center items-center px-6 py-2">
+                <Card className="flex flex-row justify-center items-center px-6 py-0">
                   <h1 className="text-xl font-bold">Progress:</h1>
                   <CircularProgress
                     value={
