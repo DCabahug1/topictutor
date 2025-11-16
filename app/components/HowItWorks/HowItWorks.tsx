@@ -34,8 +34,8 @@ function HowItWorks() {
   useEffect(() => {
     if (isInView) {
       // Start auto hover animations after initial animations complete
-      // Initial animations take 0.75s + (3 * 0.2s) = 1.35s for all items
-      const initialDelay = 1350;
+      // Initial animations take 0.75s + (3 * 1s) = 3.75s for all items
+      const initialDelay = 2000;
       
       const startAutoHover = () => {
         items.forEach((_, index) => {
@@ -82,7 +82,7 @@ function HowItWorks() {
               translateY: autoHoverIndex === index ? -10 : 0
             }}
             transition={{ 
-              opacity: { duration: 0.75, delay: index * 0.2 },
+              opacity: { duration: 1, delay: index * 0.5 },
               y: { duration: 0.75, delay: index * 0.2 },
               translateY: { duration: 0.3 }
             }}
