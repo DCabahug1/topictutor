@@ -132,7 +132,7 @@ export function Demo() {
                         alt={`Demo screenshot of ${demoFeatures[activeDemo].title}`}
                         width={1333}
                         height={2547}
-                        className={` object-cover rounded transition-opacity duration-300 ${
+                        className={` object-cover transition-opacity duration-300 ${
                           imageLoading ? "hidden" : ""
                         }`}
                         onLoad={() => {
