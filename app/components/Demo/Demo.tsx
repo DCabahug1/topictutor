@@ -45,6 +45,12 @@ export function Demo() {
   const [navInView, setNavInView] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
+  const [origin, setOrigin] = useState("");
+
+  // Set origin on client side only
+  React.useEffect(() => {
+    setOrigin(window.location.origin);
+  }, []);
 
   // Reset loading states when demo changes
   React.useEffect(() => {
@@ -101,27 +107,27 @@ export function Demo() {
                 </div>
               </div>
 
-              <div className="bg-card rounded-lg p-4 border border-border">
-                <div className="flex items-center gap-2 mb-3">
+              <div className="bg-card rounded-lg border border-border overflow-hidden">
+                <div className="flex items-center gap-2 p-4">
                   <div className="w-3 h-3 rounded-full bg-red-500"></div>
                   <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                   <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                  <div className="flex-1 bg-muted rounded px-3 py-1 text-xs text-muted-foreground">
-                    {window.location.origin + demoFeatures[activeDemo].url}
+                  <div className="flex-1 bg-black/10 rounded px-3 py-1 text-xs text-muted-foreground overflow-hidden text-ellipsis">
+                    {origin + demoFeatures[activeDemo].url}
                   </div>
                 </div>
 
-                <div className="bg-muted/50 rounded p-4 min-h-[120px] flex items-center justify-center">
+                <div className="bg-muted/50 min-h-[120px] flex items-center justify-center">
                   <div className="text-center w-full">
                     <div className="relative w-full">
                       {(imageLoading || imageError) && (
                         <>
-                        <Skeleton className="absolute inset-0 w-full h-full rounded" />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="text-center">
-                            <Loader2 className="w-12 h-12 text-primary mx-auto mb-2 animate-spin" />
+                          <Skeleton className="absolute inset-0 w-full h-full rounded" />
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="text-center">
+                              <Loader2 className="w-12 h-12 text-primary mx-auto mb-2 animate-spin" />
+                            </div>
                           </div>
-                        </div>
                         </>
                       )}
                       {!imageError && (
