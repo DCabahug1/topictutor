@@ -82,7 +82,7 @@ export function Demo() {
             See It In Action
           </p>
           <h2 className="mt-3 text-3xl font-bold text-foreground sm:text-4xl">
-            Experience TopicTutor
+            Experience <span className="text-primary">TopicTutor</span>
           </h2>
           <p className="mt-3 text-sm text-muted-foreground sm:text-base">
             Get a preview of how{" "}

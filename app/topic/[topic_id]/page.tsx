@@ -68,6 +68,7 @@ function page() {
       if (data) {
         setChapters(data);
       }
+      console.log("Chapters fetched:", data);
       setLoading(false);
     };
 

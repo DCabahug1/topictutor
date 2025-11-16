@@ -24,7 +24,7 @@ function ChapterItem({ chapter }: { chapter: Chapter }) {
           <p className="text-muted-foreground">{chapter.description}</p>
         </CardContent>
       </div>
-      <div className="h-full w-10 bg-black/10 flex items-center justify-center">
+      <div className="h-full w-10 bg-black/5 flex items-center justify-center">
       <ChevronRight />
       </div>
     </Card>

@@ -27,21 +27,7 @@ function page() {
     <div className="flex flex-col h-screen">
       <NavBar profile={profile} />
       <div className="flex-1 min-h-0 flex flex-col items-center p-6 gap-2 overflow-y-auto">
-        <Suspense
-          fallback={
-            <div className="flex-1 min-h-0 flex items-center justify-center flex-col gap-2">
-              <Loader2 className="w-8 h-8 animate-spin" />
-              <div className="flex flex-col items-center justify-center">
-                <p className="text-center font-bold">Loading...</p>
-                <p className="text-center text-muted-foreground text-xs">
-                  Please wait
-                </p>
-              </div>
-            </div>
-          }
-        >
-          <PlacementTestForm />
-        </Suspense>
+        <PlacementTestForm />
       </div>
     </div>
   );

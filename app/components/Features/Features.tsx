@@ -52,7 +52,8 @@ export function Features() {
             Features
           </p>
           <h2 className="mt-3 text-3xl font-bold text-foreground sm:text-4xl">
-            What Makes TopicTutor Effective
+            What Makes <span className="text-primary">TopicTutor</span>{" "}
+            Effective
           </h2>
           <p className="mt-3 text-sm text-muted-foreground sm:text-base">
             Learn with a course that adapts to you, stays organized, and keeps
@@ -87,17 +88,17 @@ export function Features() {
                 viewport={{ amount: 0.3, once: true }}
               >
                 <Card className="group flex flex-row h-full gap-4 rounded-2xl border border-primary/20 hover:border-primary bg-card p-6 shadow-xl transition-all duration-150 cursor-default">
-                <div className="flex h-12 w-12 flex-none items-center justify-center rounded-xl bg-primary/10 text-primary">
-                  <Icon className="h-6 w-6" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground">
-                    {feature.title}
-                  </h3>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {feature.description}
-                  </p>
-                </div>
+                  <div className="flex h-12 w-12 flex-none items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Icon className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-foreground">
+                      {feature.title}
+                    </h3>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      {feature.description}
+                    </p>
+                  </div>
                 </Card>
               </motion.div>
             );

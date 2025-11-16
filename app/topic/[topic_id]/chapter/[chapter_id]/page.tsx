@@ -136,9 +136,9 @@ function page() {
   return (
     <div className="flex flex-col h-screen">
       <NavBar profile={profile} explicitPath={"/topic/" + topic_id} />
-      <div className="flex-1 min-h-0 flex justify-center p-4">
-        <div className="flex-1 min-h-0 flex justify-center max-w-6xl">
-          <Card className="w-full max-w-4xl overflow-y-auto">
+      <div className="flex-1 min-h-0 flex justify-center">
+        <div className="flex-1 min-h-0 flex justify-center max-w-6xl p-4">
+          <Card className="flex-1 min-h-0 w-full h-min max-h-full max-w-4xl overflow-y-auto">
             <CardHeader className="text-center">
               <div className="flex items-center justify-center gap-2">
                 <h1 className="text-2xl font-bold">

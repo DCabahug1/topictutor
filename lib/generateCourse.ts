@@ -32,7 +32,9 @@ export const generateCourse = async ({
   topic: string;
   placementTestResults: TestResults;
 }) => {
-  console.log("Generating topic and chapters...");
+  console.log("Generating topic and chapters using GPT-4.1-mini...");
+  console.log("Topic:", topic);
+  console.log("Placement test results:", placementTestResults);
   const openaiClient = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
   try {

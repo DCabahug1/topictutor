@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Sparkles } from "lucide-react";
 import { useState } from "react";
 import {
   Dialog,
@@ -35,12 +35,12 @@ function NewTopicButton({ fetchTopics }: { fetchTopics: () => void }) {
 
     console.log("Setting topic in sessionStorage:", newTopic);
     // Store topic in sessionStorage to pass data without URL params
-    sessionStorage.setItem('placementTestTopic', newTopic);
-    
+    sessionStorage.setItem("placementTestTopic", newTopic);
+
     // Verify it was set
-    const verification = sessionStorage.getItem('placementTestTopic');
+    const verification = sessionStorage.getItem("placementTestTopic");
     console.log("Verification - topic in sessionStorage:", verification);
-    
+
     // Navigate to placement test page
     router.push("/placement-test");
   };
@@ -49,7 +49,7 @@ function NewTopicButton({ fetchTopics }: { fetchTopics: () => void }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className="w-full" asChild>
         <Button variant="default" className="w-full">
-          <p>New Topic</p> 
+          <p>New Topic</p>
           <Plus />
         </Button>
       </DialogTrigger>
@@ -83,10 +83,12 @@ function NewTopicButton({ fetchTopics }: { fetchTopics: () => void }) {
           <Button type="submit" disabled={loading}>
             {loading ? (
               <>
-                <Loader2 className="animate-spin" /> Generating Course...
+                <Loader2 className="animate-spin" /> Redirecting...
               </>
             ) : (
-              "Create Course"
+              <>
+                Create Course <Sparkles />
+              </>
             )}
           </Button>
         </form>

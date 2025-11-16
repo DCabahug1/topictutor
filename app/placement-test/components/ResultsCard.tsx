@@ -33,9 +33,12 @@ function ResultsCard({
   const [progressMessage, setProgressMessage] = useState("");
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   const handleGenerateCourse = async () => {
     setLoading(true);
+    setError(false);
+    setTimeElapsed(0);
 
     // Progress messages to keep user engaged
     const progressMessages = [
@@ -77,6 +80,7 @@ function ResultsCard({
       if (error) {
         console.log(error);
         setProgressMessage("Error generating course. Please try again.");
+        setError(true);
       }
       if (data) {
         setProgressMessage("Course created successfully! Redirecting...");
@@ -87,7 +91,9 @@ function ResultsCard({
       }
     } catch (error) {
       clearInterval(progressInterval);
+      clearInterval(timeInterval);
       setProgressMessage("Something went wrong. Please try again.");
+      setError(true);
       console.error(error);
     }
 
@@ -156,13 +162,32 @@ function ResultsCard({
               <div className="flex flex-col items-center justify-center gap-4 py-6">
                 <Loader2 className="w-8 h-8 animate-spin" />
                 {progressMessage && (
-                  <p className="text-center text-muted-foreground animate-pulse">
+                  <p
+                    className={`text-center text-muted-foreground ${
+                      !error ? "animate-pulse" : ""
+                    }`}
+                  >
                     {progressMessage}
                   </p>
                 )}
-                <p className="text-center text-muted-foreground text-sm animate-pulse">
+                <p
+                  className={`text-center text-muted-foreground text-sm ${
+                    !error ? "animate-pulse" : ""
+                  }`}
+                >
                   (Time elapsed: {timeElapsed}s)
                 </p>
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.1 }}
+                  >
+                    <Button onClick={handleGenerateCourse} variant="outline">
+                      Try Again
+                    </Button>
+                  </motion.div>
+                )}
               </div>
             </DialogContent>
           </Dialog>

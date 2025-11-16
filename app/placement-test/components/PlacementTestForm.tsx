@@ -53,11 +53,14 @@ function PlacementTestForm() {
     hasRequestedTest.current = true;
 
     const getPlacementTest = async () => {
+      setLoading(true);
+
       const { data, error } = await generatePlacementTest(topic);
       if (error) {
         console.log(error);
       }
       if (data) {
+        console.log("Placement test applied successfully.");
         setPlacementTest(data);
         // Initialize questions array with empty QuestionResult objects
         const initialQuestions: QuestionResult[] = data.questions.map(
@@ -98,7 +101,6 @@ function PlacementTestForm() {
     setPlacementTestCompleted(isAllQuestionsAnswered);
   }, [placementTestResults]);
 
-
   if (loading) {
     return (
       <motion.div
@@ -108,9 +110,9 @@ function PlacementTestForm() {
         className="flex-1 min-h-0 flex items-center justify-center flex-col gap-2"
       >
         <Loader2 className="w-8 h-8 animate-spin" />
-        <div className="flex flex-col items-center justify-center">
-          <p className="text-center font-bold">Generating placement test...</p>
-          <p className="text-center text-muted-foreground text-xs">
+        <div className="flex flex-col items-center justify-center animate-pulse">
+          <p className="text-center font-bold ">Generating placement test...</p>
+          <p className="text-center text-muted-foreground text-xs ">
             This may take a few seconds
           </p>
         </div>
@@ -147,29 +149,29 @@ function PlacementTestForm() {
         ))}
       </div>
       <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 1 }}
-            viewport={{ once: true, amount: "all" }}
-            className="w-full"
-          >
-            <Button
-              className="w-full max-w-3xl"
-              disabled={!placementTestCompleted || showResults}
-              onClick={() => {
-                setShowResults(true);
-                // Wait for the results card to render before scrolling
-                setTimeout(() => {
-                  const resultsCard = document.getElementById("resultsCard");
-                  if (resultsCard) {
-                    resultsCard.scrollIntoView({ behavior: "smooth" });
-                  }
-                }, 100); // Small delay to ensure the component has rendered
-              }}
-            >
-              Submit
-            </Button>
-          </motion.div>
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 1 }}
+        viewport={{ once: true, amount: "all" }}
+        className="w-full"
+      >
+        <Button
+          className="w-full max-w-3xl"
+          disabled={!placementTestCompleted || showResults}
+          onClick={() => {
+            setShowResults(true);
+            // Wait for the results card to render before scrolling
+            setTimeout(() => {
+              const resultsCard = document.getElementById("resultsCard");
+              if (resultsCard) {
+                resultsCard.scrollIntoView({ behavior: "smooth" });
+              }
+            }, 100); // Small delay to ensure the component has rendered
+          }}
+        >
+          Submit
+        </Button>
+      </motion.div>
 
       <ResultsCard
         topic={topic}

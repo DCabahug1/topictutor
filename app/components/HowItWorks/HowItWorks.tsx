@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Book, Clipboard, Search, Target } from "lucide-react";
+import { Book, SquarePen, Search, Shapes } from "lucide-react";
 import Item from "./Item";
 import { Description } from "@radix-ui/react-dialog";
 import { motion } from "motion/react";
@@ -12,7 +12,7 @@ const items = [
   },
   {
     title: "Take the Test",
-    icon: <Clipboard size={45} />,
+    icon: <SquarePen size={45} />,
     description: "Answer a quick quiz to gauge your level.",
   },
   {
@@ -22,7 +22,7 @@ const items = [
   },
   {
     title: "Start Learning",
-    icon: <Target size={45} />,
+    icon: <Shapes size={45} />,
     description: "Follow clear lessons and track your progress.",
   },
 ];

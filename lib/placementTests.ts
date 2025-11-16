@@ -33,17 +33,17 @@ const placementTestSchema = z.object({
 });
 
 export const generatePlacementTest = async (Topic: string) => {
-  console.log("Generating placement test...");
+  console.log("Generating placement test using GPT-4.1-mini...");
   const openaiClient = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
   try {
     const response = await openaiClient.responses.parse({
-      model: "gpt-4o-mini",
+      model: "gpt-4.1-mini",
       input: [
         {
           role: "system",
           content:
-            "You are a helpful assistant that generates a placement test for a course. You are to generate a placement test for the course. The placement test should have 10 multiple choice questions with 4 options each, one correct answer. The questions should be related to the course, with a mix of easy, medium, and hard questions.",
+            "You are a helpful assistant that generates a placement test for a course. You are to generate a placement test for the course. The placement test should have 5 multiple choice questions with 4 options each, one correct answer. The questions should be related to the course, with a mix of easy, medium, and hard questions.",
         },
         {
           role: "user",
@@ -56,9 +56,11 @@ export const generatePlacementTest = async (Topic: string) => {
     });
 
     const placementTestData = response.output_parsed;
+    console.log("Placement test generated:", placementTestData);
 
     return { data: placementTestData, error: null };
   } catch (error) {
+    console.log("Error generating placement test:", error);
     return {
       data: null,
       error: {

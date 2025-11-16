@@ -87,7 +87,7 @@ function QuestionCard({
                       : ""
                   }`}
                 />
-                <Label htmlFor={answerOption.answer + index} className="cursor-pointer">
+                <Label htmlFor={answerOption.answer + index} className="cursor-pointer leading-5">
                   {answerOption.answer}
                 </Label>
               </div>
