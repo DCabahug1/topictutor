@@ -63,7 +63,7 @@ function HowItWorks() {
         initial={{ opacity: 0, y: 20 }}
         transition={{ duration: 0.75 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ amount: 0.2, once: true }}
+        viewport={{ once: true }}
         className="flex flex-col gap-2 text-center xl:text-left"
       >
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">
