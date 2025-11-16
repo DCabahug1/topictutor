@@ -6,24 +6,16 @@ interface ItemProps {
   icon: React.ReactNode;
   description: string;
   index: number;
-  isAutoHovering?: boolean;
+  autoHoverIndex: number;
 }
 
-function Item({ title, icon, description, index, isAutoHovering }: ItemProps) {
+function Item({ title, icon, description, index, autoHoverIndex }: ItemProps) {
   return (
-    <Card
-      className={`min-w-0 h-full p-4 flex-1 flex flex-col items-center shadow-xl hover:translate-y-[-10px] border-2 transition-all duration-300 cursor-default ${
-        isAutoHovering
-          ? "border-primary"
-          : "border-primary/30 hover:border-primary"
-      }`}
-    >
+    <Card className={`min-w-0 h-full p-4 flex-1 flex flex-col items-center shadow-xl border-primary/40 hover:border-primary transition-all duration-150 ${autoHoverIndex === index ? "border-primary" : ""}`}>
       <h2 className="text-center text-lg font-semibold">
         {index + 1}. {title}
       </h2>
-      <div className="flex justify-center items-center bg-primary text-white border-10 border-background/20 p-4 rounded-full">
-        {icon}
-      </div>
+      {icon}
       <p className="text-center text-sm font-medium">{description}</p>
     </Card>
   );

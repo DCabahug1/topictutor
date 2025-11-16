@@ -34,7 +34,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} relative antialiased flex flex-col h-screen overflow-y-scroll bg-background`}
+        className={`${geistSans.variable} ${geistMono.variable} relative antialiased flex flex-col h-screen overflow-y-auto bg-background`}
       >
         <ThemeProvider
           attribute="class"
