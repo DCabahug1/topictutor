@@ -45,7 +45,7 @@ function page() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.5 }}
-                  className="text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold max-w-[700px] md:max-w-[900px]"
+                  className="text-center text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold max-w-[700px] md:max-w-[900px]"
                 >
                   Welcome,{" "}
                   <span className="text-primary">
@@ -108,8 +108,8 @@ function page() {
             </div>
           </div>
         </div>
-        <div className="flex flex-col px-4 py-8 items-center w-full rounded-t-xl border-2 border-border shadow-[0_0_2px_0_rgba(0,0,0,0.1)] bg-card text-card-foreground">
-          <div className="flex flex-col w-full max-w-7xl">
+        <div className="flex flex-col px-4 xl:px-14 py-8 items-center w-full rounded-t-xl border-2 border-border shadow-[0_0_2px_0_rgba(0,0,0,0.1)] bg-card/60 text-card-foreground">
+          <div className="flex flex-col w-full max-w-[1400px]">
             <HowItWorks />
           </div>
         </div>

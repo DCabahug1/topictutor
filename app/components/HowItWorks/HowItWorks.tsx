@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Book, Clipboard, Search, Target } from "lucide-react";
 import Item from "./Item";
 import { Description } from "@radix-ui/react-dialog";
@@ -29,30 +29,63 @@ const items = [
 
 function HowItWorks() {
   const [isInView, setIsInView] = useState(false);
+  const [autoHoverIndex, setAutoHoverIndex] = useState(-1);
+
+  useEffect(() => {
+    if (isInView) {
+      // Start auto hover animations after initial animations complete
+      // Initial animations take 0.75s + (3 * 0.2s) = 1.35s for all items
+      const initialDelay = 1350;
+      
+      const startAutoHover = () => {
+        items.forEach((_, index) => {
+          setTimeout(() => {
+            setAutoHoverIndex(index);
+            // Reset after animation duration
+            setTimeout(() => setAutoHoverIndex(-1), 300);
+          }, index * 500);
+        });
+      };
+      
+      const timer = setTimeout(startAutoHover, initialDelay);
+      return () => clearTimeout(timer);
+    }
+  }, [isInView]);
 
   return (
-    <motion.div 
-      className="flex flex-col lg:flex-row w-full items-center lg:justify-center gap-4 lg:gap-8"
+    <motion.div
+      className="flex flex-col xl:flex-row w-full items-center xl:justify-between gap-4 "
       onViewportEnter={() => setIsInView(true)}
       viewport={{ amount: 0.2, once: true }}
     >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-        transition={{ duration: 1 }}
-        className="flex flex-col gap-2 text-center lg:text-left"
+        transition={{ duration: 0.75 }}
+        className="flex flex-col gap-2 text-center xl:text-left"
       >
-        <h1 className="text-4xl lg:text-7xl font-bold text-nowrap">How It Works:</h1>
+        <h1 className="text-4xl xl:text-7xl font-bold text-nowrap">
+          How It Works:
+        </h1>
         <h2 className="text-lg  ">
-          <span className="text-primary">TopicTutor</span> creates a custom course for you in four steps.
+          <span className="text-primary font-semibold">TopicTutor</span> creates
+          a custom course for you in four steps.
         </h2>
       </motion.div>
-      <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="w-full xl:max-w-3xl grid grid-cols-1 sm:grid-cols-2 gap-4">
         {items.map((item, index) => (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ duration: 1, delay: (index * 0.2) + 1 }}
+            animate={{
+              opacity: isInView ? 1 : 0,
+              y: isInView ? 0 : 20,
+              translateY: autoHoverIndex === index ? -10 : 0
+            }}
+            transition={{ 
+              opacity: { duration: 0.75, delay: index * 0.2 },
+              y: { duration: 0.75, delay: index * 0.2 },
+              translateY: { duration: 0.3 }
+            }}
             key={item.title}
           >
             <Item
@@ -60,6 +93,7 @@ function HowItWorks() {
               icon={item.icon}
               description={item.description}
               index={index}
+              isAutoHovering={autoHoverIndex === index}
             />
           </motion.div>
         ))}
