@@ -61,7 +61,7 @@ export function Demo() {
 
   // Reset loading states when demo changes
   React.useEffect(() => {
-    setImageLoading(true);
+    setImageLoading(false);
     setImageError(false);
   }, [activeDemo]);
 
@@ -136,9 +136,11 @@ export function Demo() {
                           imageLoading ? "hidden" : ""
                         }`}
                         onLoad={() => {
+                          console.log("Image loaded");
                           setImageLoading(false);
                         }}
                         onError={() => {
+                          console.log("Image error");
                           setImageError(true);
                           setImageLoading(false);
                         }}
