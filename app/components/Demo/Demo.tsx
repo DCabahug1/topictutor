@@ -14,28 +14,28 @@ const demoFeatures = [
     description: "Your personalized learning hub",
     preview: "View your courses and track progress",
     url: "/dashboard",
-    image: "/demo/dashboard.png",
+    image: "/Demo/dashboard.png",
   },
   {
     title: "Placement Test",
     description: "Quick assessment to determine your starting level",
     preview: "Answer questions to get your personalized course",
     url: "/placement-test",
-    image: "/demo/placement-test.png",
+    image: "/Demo/placement-test.png",
   },
   {
     title: "Course View",
     description: "Browse course topics and chapters",
     preview: "Explore structured learning content",
     url: "/topic/[topic_id]",
-    image: "/demo/topic.png",
+    image: "/Demo/topic.png",
   },
   {
     title: "Chapter View",
     description: "Browse course chapters",
     preview: "Explore structured learning content",
     url: "/topic/[topic_id]/chapter/[chapter_id]",
-    image: "/demo/chapter.png",
+    image: "/Demo/chapter.png",
   },
 ];
 
