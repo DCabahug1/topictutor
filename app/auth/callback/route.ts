@@ -6,6 +6,7 @@ import { ensureProfileExists } from '@/lib/profiles'
 export async function GET(request: Request) {
   console.log("callback", request.url )
   const { searchParams, origin } = new URL(request.url)
+  const name = searchParams.get('name')
   const code = searchParams.get('code')
   // if "next" is in param, use it as the redirect URL
   let next = searchParams.get('next') ?? '/'
@@ -24,7 +25,7 @@ export async function GET(request: Request) {
       if (!userError && userData?.user) {
         // Create profile before redirect
         try {
-          const profileResult = await ensureProfileExists(userData.user, supabase)
+          const profileResult = await ensureProfileExists(userData.user, supabase, name)
           if (!profileResult.success) {
             console.error("Failed to create profile during OAuth callback:", profileResult.error)
             // Continue with redirect even if profile creation fails

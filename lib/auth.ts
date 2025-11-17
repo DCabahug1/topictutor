@@ -40,31 +40,36 @@ const signUpWithEmailAndPassword = async (email: string, password: string) => {
 };
 
 // Server-side signup function that creates profile
-const signUpWithEmailAndPasswordServer = async (email: string, password: string) => {
+const signUpWithEmailAndPasswordServer = async (email: string, password: string, name?: string, origin?: string) => {
   const supabase = await createServerClient();
 
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email,
     password,
+    options:{
+      emailRedirectTo: `${origin}/auth/callback${name ? `?name=${name}` : ''}`
+    }
   });
 
   if (authError || !authData.user) {
     return { success: false, error: authError };
   }
 
-  // Create profile immediately after successful signup
-  try {
-    const profileResult = await ensureProfileExists(authData.user, supabase);
-    if (!profileResult.success) {
-      console.error("Failed to create profile during signup:", profileResult.error);
-      // Don't fail the signup, just log the error
-    }
-  } catch (error) {
-    console.error("Error creating profile during signup:", error);
-    // Don't fail the signup, just log the error
-  }
+  console.log("Added auth data", authData)
 
-  console.log("Successfully signed up and created profile:", authData);
+  // // Create profile immediately after successful signup
+  // try {
+  //   const profileResult = await ensureProfileExists(authData.user, supabase, name);
+  //   if (!profileResult.success) {
+  //     console.error("Failed to create profile during signup:", profileResult.error);
+  //     // Don't fail the signup, just log the error
+  //   }
+  // } catch (error) {
+  //   console.error("Error creating profile during signup:", error);
+  //   // Don't fail the signup, just log the error
+  // }
+
+  console.log("Successfully signed up:", authData);
 
   return { success: true, data: { authData } };
 };
