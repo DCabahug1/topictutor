@@ -145,3 +145,61 @@ export const getTopicsUpdatedAtDateAndCompleted = async ({
 
   return { data: completedTopics, error: null };
 };
+
+export const getStreak = async () => {
+  const supabase = await createClient();
+  
+  // Get all topics ordered by updated_at descending
+  const { data: topics, error } = await supabase
+    .from("topics")
+    .select("updated_at, chapters_completed, chapters_count")
+    .order("updated_at", { ascending: false });
+
+  if (error) {
+    console.log("Error getting topics for streak:", error);
+    return { data: 0, error };
+  }
+
+  if (!topics || topics.length === 0) {
+    return { data: 0, error: null };
+  }
+
+  let streak = 0;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Check each day starting from today going backwards
+  for (let i = 0; i < 365; i++) { // Max 365 days to prevent infinite loop
+    const checkDate = new Date(today);
+    checkDate.setDate(today.getDate() - i);
+    
+    const startOfDay = new Date(checkDate);
+    startOfDay.setHours(0, 0, 0, 0);
+    
+    const endOfDay = new Date(checkDate);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // Check if any topics were completed on this day
+    const completedOnDay = topics.filter(topic => {
+      const updatedAt = new Date(topic.updated_at);
+      return (
+        updatedAt >= startOfDay &&
+        updatedAt <= endOfDay &&
+        topic.chapters_completed === topic.chapters_count
+      );
+    });
+
+    if (completedOnDay.length > 0) {
+      streak++;
+    } else {
+      // If no activity on this day, break the streak
+      // Exception: if it's today and we haven't found any activity yet, continue checking yesterday
+      if (i === 0) {
+        continue;
+      }
+      break;
+    }
+  }
+
+  return { data: streak, error: null };
+};

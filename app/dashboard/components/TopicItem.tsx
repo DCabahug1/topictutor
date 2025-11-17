@@ -7,7 +7,17 @@ import { CircularProgress } from "@/components/customized/progress/progress-09";
 import Link from "next/link";
 import { motion } from "motion/react";
 
-function TopicItem({ topic, index, noAnimation }: { topic: Topic; index: number; noAnimation?: boolean }) {
+function TopicItem({
+  topic,
+  index,
+  noAnimation,
+  type,
+}: {
+  topic: Topic;
+  index: number;
+  noAnimation?: boolean;
+  type?: "recent" | null;
+}) {
   return (
     <Link href={`/topic/${topic.id}`}>
       <motion.div
@@ -17,41 +27,47 @@ function TopicItem({ topic, index, noAnimation }: { topic: Topic; index: number;
         viewport={{ once: true }}
         className="w-full"
       >
-      <Card className="flex flex-row justify-between items-center gap-2 border-b px-4 py-3 cursor-pointer hover:bg-black/10 transition-colors duration-100">
-        {/* Text */}
-        <div className="flex flex-col">
-          <div className="flex gap-2 items-center">
-            <p className="text-sm text-muted-foreground">{topic.category}</p>
-            <Badge
-              variant="default"
-              className={`text-xs ${
-                topic.chapters_completed === topic.chapters_count
-                  ? "bg-green-500"
+        <Card className="flex flex-row justify-between items-center gap-2 border-b px-4 py-3 cursor-pointer hover:bg-black/10 transition-colors duration-100">
+          {/* Text */}
+          <div className="flex flex-col">
+            <div className="flex gap-2 items-center">
+              <p className="text-sm text-muted-foreground">{topic.category}</p>
+              <Badge
+                variant="default"
+                className={`text-xs ${
+                  topic.chapters_completed === topic.chapters_count
+                    ? "bg-green-500"
+                    : topic.chapters_completed > 0
+                    ? "bg-yellow-500"
+                    : "bg-red-500"
+                }`}
+              >
+                {topic.chapters_completed === topic.chapters_count
+                  ? "Completed"
                   : topic.chapters_completed > 0
-                  ? "bg-yellow-500"
-                  : "bg-red-500"
+                  ? "In Progress"
+                  : "Not Started"}
+              </Badge>
+            </div>
+            <h2 className="text-lg font-semibold">{topic.title}</h2>
+            <p
+              className={`text-sm text-muted-foreground ${
+                type === "recent" && "hidden sm:block"
               }`}
             >
-              {topic.chapters_completed === topic.chapters_count
-                ? "Completed"
-                : topic.chapters_completed > 0
-                ? "In Progress"
-                : "Not Started"}
-            </Badge>
+              {topic.description}
+            </p>
           </div>
-          <h2 className="text-lg font-semibold">{topic.title}</h2>
-          <p className="text-sm text-muted-foreground">{topic.description}</p>
-        </div>
-        {/* Icon */}
-        <div className="flex items-center">
-          <CircularProgress
-            value={(topic.chapters_completed / topic.chapters_count) * 100}
-            showLabel={true}
-            size={70}
-            strokeWidth={5}
-          />
-        </div>
-      </Card>
+          {/* Icon */}
+          <div className="flex items-center">
+            <CircularProgress
+              value={(topic.chapters_completed / topic.chapters_count) * 100}
+              showLabel={true}
+              size={80}
+              strokeWidth={5}
+            />
+          </div>
+        </Card>
       </motion.div>
     </Link>
   );

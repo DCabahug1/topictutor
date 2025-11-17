@@ -34,7 +34,7 @@ function RecentTopic() {
           <CardTitle>Jump Back In</CardTitle>
         </CardHeader>
         <CardContent>
-          <TopicItem topic={topic} index={0} noAnimation={true} />
+          <TopicItem topic={topic} index={0} noAnimation={true} type="recent" />
         </CardContent>
       </Card>
   );

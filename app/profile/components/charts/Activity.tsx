@@ -68,7 +68,7 @@ export function Activity() {
   }, []);
 
   return (
-    <Card className="md:order-1">
+    <Card className="sm:order-1">
       <CardHeader>
         <CardTitle>Recent Activity</CardTitle>
         <CardDescription>Topics completed in the last 7 days</CardDescription>
