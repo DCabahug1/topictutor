@@ -17,9 +17,7 @@ function QuestionCard({
   question: Question;
   index: number;
   placementTestResults: TestResults;
-  setPlacementTestResults: React.Dispatch<
-    React.SetStateAction<TestResults>
-  >;
+  setPlacementTestResults: React.Dispatch<React.SetStateAction<TestResults>>;
   showResults: boolean;
 }) {
   const [isCorrect, setIsCorrect] = React.useState(false);
@@ -87,11 +85,31 @@ function QuestionCard({
                       : ""
                   }`}
                 />
-                <Label htmlFor={answerOption.answer + index} className="cursor-pointer leading-5">
+                <Label
+                  htmlFor={answerOption.answer + index}
+                  className="cursor-pointer leading-5"
+                >
                   {answerOption.answer}
                 </Label>
               </div>
             ))}
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem
+                value={"Not sure"}
+                id={"Not sure" + index}
+                onClick={() => {
+                  handleQuestionAnswer("Not sure");
+                }}
+                disabled={showResults}
+                className={`${showResults ? "border-yellow-500" : ""}`}
+              />
+              <Label
+                htmlFor={"Not sure" + index}
+                className="cursor-pointer leading-5"
+              >
+                {"Not sure"}
+              </Label>
+            </div>
           </RadioGroup>
         </CardContent>
       </Card>

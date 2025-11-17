@@ -13,7 +13,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { DialogClose } from "@/components/ui/dialog";
-import { Loader2 } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 import { generateCourse } from "@/lib/generateCourse";
 import { redirect } from "next/navigation";
 
@@ -142,7 +142,7 @@ function ResultsCard({
                 onClick={handleGenerateCourse}
                 disabled={loading}
               >
-                Generate Course
+                Generate Course <Sparkles />
               </Button>
             </DialogTrigger>
             <DialogContent
@@ -156,7 +156,7 @@ function ResultsCard({
                   Generating Course...
                 </DialogTitle>
                 <DialogDescription className="text-center">
-                  This may take a while. Please do not leave this page.
+                  This may take a while (~30 seconds). Please do not leave this page.
                 </DialogDescription>
               </DialogHeader>
               <div className="flex flex-col items-center justify-center gap-4 py-6">
