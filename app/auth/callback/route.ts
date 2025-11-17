@@ -25,10 +25,13 @@ export async function GET(request: Request) {
       if (!userError && userData?.user) {
         // Create profile before redirect
         try {
+          console.log("Attempting to ensure profile exists for user:", userData.user.email)
           const profileResult = await ensureProfileExists(userData.user, supabase, name)
           if (!profileResult.success) {
             console.error("Failed to create profile during OAuth callback:", profileResult.error)
             // Continue with redirect even if profile creation fails
+          } else {
+            console.log("Profile handling successful:", profileResult.profileExists ? "existed" : "created")
           }
         } catch (error) {
           console.error("Error creating profile during OAuth callback:", error)
