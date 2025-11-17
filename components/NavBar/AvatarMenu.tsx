@@ -19,13 +19,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Profile } from "@/lib/models";
 import { authService } from "@/lib/auth";
+import Link from "next/link";
 
 function AvatarMenu({ profile }: { profile: Profile }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="rounded-full border-2 border-primary/70 hover:border-primary transition-all duration-100 cursor-pointer">
         <Avatar>
-          <AvatarImage src={profile.image_url || ""} />
+          <AvatarImage src={profile.image_url} />
           <AvatarFallback className="text-primary-foreground bg-primary">
             {profile.name?.[0]?.toUpperCase() ||
               profile.email?.[0].toUpperCase()}
@@ -35,8 +36,9 @@ function AvatarMenu({ profile }: { profile: Profile }) {
       <DropdownMenuContent>
         <DropdownMenuLabel>{profile?.name || profile?.email}</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Profile</DropdownMenuItem>
-        <DropdownMenuItem>Settings</DropdownMenuItem>
+        <Link href="/profile">
+          <DropdownMenuItem>Profile</DropdownMenuItem>
+        </Link>
         <DropdownMenuItem
           className="hover:bg-red-500/20!"
           onClick={async () => {

@@ -8,11 +8,17 @@ import { Profile } from "@/lib/models";
 import AvatarMenu from "./AvatarMenu";
 import { ArrowLeftFromLine, GraduationCap } from "lucide-react";
 
-function NavBar({ profile, explicitPath }: { profile: Profile | null; explicitPath?: string | null }) {
+function NavBar({
+  profile,
+  explicitPath,
+}: {
+  profile: Profile | null;
+  explicitPath?: string | null;
+}) {
   const pathname = usePathname();
   const isHome = pathname === "/";
-  const isInTopicOrPlacementTest =
-    pathname.startsWith("/topic/") || pathname.startsWith("/placement-test");
+  const showBackButton =
+    pathname.startsWith("/topic/") || pathname.startsWith("/placement-test") || pathname.startsWith("/profile");
 
   return (
     <div className="sticky top-0 z-50 flex justify-between items-center w-full px-4 py-2 bg-card text-card-foreground shadow-md">
@@ -35,7 +41,7 @@ function NavBar({ profile, explicitPath }: { profile: Profile | null; explicitPa
         </>
       ) : profile ? (
         <div className="flex gap-2">
-          {isInTopicOrPlacementTest && (
+          {showBackButton && (
             <Link href={explicitPath || "/dashboard"}>
               <Button variant="ghost">
                 <ArrowLeftFromLine className="w-4 h-4" />

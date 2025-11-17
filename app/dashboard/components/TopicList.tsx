@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -52,7 +52,11 @@ function TopicList() {
       return topics?.filter((topic) => topic.chapters_completed === 0);
     }
     if (filter === "in-progress") {
-      return topics?.filter((topic) => topic.chapters_completed > 0 && topic.chapters_completed < topic.chapters_count);
+      return topics?.filter(
+        (topic) =>
+          topic.chapters_completed > 0 &&
+          topic.chapters_completed < topic.chapters_count
+      );
     }
     if (filter === "completed") {
       return topics?.filter(
@@ -88,7 +92,7 @@ function TopicList() {
           </Button>
         </form>
 
-        <div className="flex flex-col flex-1 min-h-0 gap-2 rounded-md overflow-hidden">
+        <div className="flex flex-col flex-1 min-h-0 gap-2 rounded-md overflow-x-hidden">
           <NewTopicButton fetchTopics={fetchTopics} />
           <Tabs defaultValue="all" className="flex-1 min-h-0">
             <TabsList>
