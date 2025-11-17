@@ -83,7 +83,8 @@ export const getTopicsByQuery = async ({ query }: { query: string }) => {
     .select("*")
     .or(
       `title.ilike.%${query}%,category.ilike.%${query}%,description.ilike.%${query}%`
-    );
+    )
+    .order("updated_at", { ascending: false });
 
   if (error) {
     console.log("Error getting topics:", error);
@@ -111,13 +112,17 @@ export const getLatestTopic = async () => {
 };
 
 // Data
-export const getTopicsUpdatedAtDateAndCompleted = async ({ date }: { date: Date }) => {
+export const getTopicsUpdatedAtDateAndCompleted = async ({
+  date,
+}: {
+  date: Date;
+}) => {
   const supabase = await createClient();
 
   // Create start and end of the day for the given date
   const startOfDay = new Date(date);
   startOfDay.setHours(0, 0, 0, 0);
-  
+
   const endOfDay = new Date(date);
   endOfDay.setHours(23, 59, 59, 999);
 
@@ -133,9 +138,10 @@ export const getTopicsUpdatedAtDateAndCompleted = async ({ date }: { date: Date 
   }
 
   // Filter client-side for completed topics
-  const completedTopics = data?.filter(topic => 
-    topic.chapters_completed === topic.chapters_count
-  ) || [];
+  const completedTopics =
+    data?.filter(
+      (topic) => topic.chapters_completed === topic.chapters_count
+    ) || [];
 
   return { data: completedTopics, error: null };
 };
