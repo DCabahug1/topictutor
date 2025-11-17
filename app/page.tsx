@@ -121,7 +121,7 @@ function page() {
             <Features />
             <Demo />
             <Roadmap />
-            <CTA profile={profile}/>
+            <CTA profile={profile} />
           </div>
         </div>
         <Footer />
