@@ -17,7 +17,7 @@ export default function Streak() {
   React.useEffect(() => {
     const loadStreak = async () => {
       const { data, error } = await getStreak();
-      
+
       if (error) {
         console.log("Error loading streak:", error);
       } else {
@@ -49,19 +49,19 @@ export default function Streak() {
         >
           {streak}
         </motion.h1>
-        <motion.div
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-        >
-          <Flame
-            fill={"#e05d38"}
-            className={`dark:text-white text-[#e04c38] h-20 w-20 sm:h-35 sm:w-35 transition-all duration-200 ${
-              streak === 0 && "opacity-50"
-            }`}
-            strokeWidth={2}
-          />
-        </motion.div>
+        {streak > 0 && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+          >
+            <Flame
+              fill={"#e05d38"}
+              className={`dark:text-white text-[#e04c38] h-20 w-20 sm:h-35 sm:w-35 transition-all duration-200 `}
+              strokeWidth={2}
+            />
+          </motion.div>
+        )}
       </div>
     </Card>
   );
