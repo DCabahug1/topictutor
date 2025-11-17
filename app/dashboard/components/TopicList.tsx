@@ -111,6 +111,10 @@ function TopicList() {
                 getFilteredTopics("all")?.map((topic, index) => (
                   <TopicItem key={topic.id} topic={topic} index={index} />
                 ))
+              ) : topics?.length === 0 && searchQuery === "" ? (
+                <div className="flex items-center justify-center h-full text-muted-foreground">
+                  Create a topic to get started <Plus className="ml-2 size-4" />
+                </div>
               ) : (
                 <div className="flex items-center justify-center h-full text-muted-foreground">
                   No topics found

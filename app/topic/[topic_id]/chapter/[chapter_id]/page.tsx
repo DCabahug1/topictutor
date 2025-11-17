@@ -16,14 +16,17 @@ import {
 import { getNeighboringChapters } from "@/lib/chapters";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Edit } from "lucide-react";
 import { updateTopicProgress } from "@/lib/chapters";
 import { Check } from "lucide-react";
+import { getTopicById } from "@/lib/topics";
+import { Topic } from "@/lib/models";
 
 function page() {
   const { topic_id, chapter_id } = useParams();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [chapter, setChapter] = useState<Chapter | null>(null);
+  const [topic, setTopic] = useState<Topic | null>(null);
   const [prevChapter, setPrevChapter] = useState<Chapter | null>(null);
   const [nextChapter, setNextChapter] = useState<Chapter | null>(null);
   const updatedTopicForChapterIdRef = useRef<string | null>(null);
@@ -71,6 +74,15 @@ function page() {
         setChapter(data?.[0]);
       }
     };
+    const fetchTopic = async () => {
+      const { data, error } = await getTopicById({ id: topic_id as string });
+      if (error) {
+        console.log("Error getting topic:", error);
+      } else {
+        setTopic(data?.[0]);
+      }
+    };
+    fetchTopic();
     fetchChapter();
   }, [chapter_id]);
 
@@ -159,7 +171,7 @@ function page() {
             </CardContent>
             <CardFooter
               className={`flex ${
-                nextChapter && prevChapter
+                (nextChapter || topic && (topic?.chapters_completed >= topic?.chapters_count - 1)) && prevChapter 
                   ? "justify-between"
                   : nextChapter
                   ? "justify-end"
@@ -177,7 +189,7 @@ function page() {
                   <span className="hidden sm:block">Previous Chapter</span>
                 </Button>
               )}
-              {nextChapter && (
+              {nextChapter ? (
                 <Button
                   onClick={() =>
                     redirect(`/topic/${topic_id}/chapter/${nextChapter?.id}`)
@@ -187,6 +199,15 @@ function page() {
                   <span className="hidden sm:block">Next Chapter</span>
                   <ArrowRight className=" h-4 w-4" />
                 </Button>
+              ) : topic && (topic?.chapters_completed >= topic?.chapters_count - 1) ? (
+                <Button
+                  onClick={() => redirect(`/topic/${topic_id}/test`)}
+                >
+                  <span className="">Take Test</span>
+                  <Edit className=" h-4 w-4" />
+                </Button>
+              ) : (
+                null
               )}
             </CardFooter>
           </Card>

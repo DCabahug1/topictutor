@@ -92,7 +92,7 @@ function TopicTestForm() {
         if (placementResult) {
           placementResults = placementResult.result;
           setPlacementTestResults(placementResults);
-          console.log("Placement test results loaded for final test generation");
+          console.log("Placement test results loaded for mastery check generation");
         }
       }
 
@@ -155,7 +155,7 @@ function TopicTestForm() {
       >
         <Loader2 className="w-8 h-8 animate-spin" />
         <div className="flex flex-col items-center justify-center animate-pulse">
-          <p className="text-center font-bold">Generating final test...</p>
+          <p className="text-center font-bold">Generating mastery check...</p>
           <p className="text-center text-muted-foreground text-xs">
             This may take a few seconds
           </p>
@@ -167,7 +167,7 @@ function TopicTestForm() {
   if ((!topicTest || !topic) && !loading) {
     return (
       <div className="flex-1 min-h-0 flex items-center justify-center">
-        <p>Failed to load final test. Please try again.</p>
+        <p>Failed to load mastery check. Please try again.</p>
       </div>
     );
   }
@@ -175,9 +175,9 @@ function TopicTestForm() {
   return (
     <div className="flex flex-col items-center gap-2">
       <div className="flex flex-col items-center justify-center">
-        <h1 className="text-2xl font-bold">Final Test</h1>
+        <h1 className="text-2xl font-bold">Mastery Check</h1>
         <p className="text-l text-center text-muted-foreground">
-          Test your knowledge of {topic?.title} with this comprehensive final exam.
+          Test your knowledge of <span className="font-bold">{topic?.title}</span> with this comprehensive assessment.
         </p>
       </div>
       <div className="flex flex-col gap-2 w-full max-w-3xl">
@@ -197,7 +197,7 @@ function TopicTestForm() {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 1 }}
         viewport={{ once: true, amount: "all" }}
-        className="w-full"
+        className="w-full flex items-center justify-center"
       >
         <Button
           className="w-full max-w-3xl"
@@ -213,7 +213,7 @@ function TopicTestForm() {
             }, 100); // Small delay to ensure the component has rendered
           }}
         >
-          Submit Final Test
+          Submit
         </Button>
       </motion.div>
 

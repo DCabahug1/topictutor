@@ -57,12 +57,6 @@ function TopicTestResultsCard({
     }
   }, [showResults, passed, topic.completed, topic.id, topicTestResults]);
 
-  const getScoreColor = () => {
-    if (percentage >= 90) return "text-green-600";
-    if (percentage >= 70) return "text-blue-600";
-    if (percentage >= 50) return "text-yellow-600";
-    return "text-red-600";
-  };
 
   const getScoreMessage = () => {
     if (percentage >= 90) return "Outstanding! You've mastered this topic!";
@@ -84,7 +78,7 @@ function TopicTestResultsCard({
       whileInView={{ opacity: 1 }}
       transition={{ duration: 0.5, delay: 0.1 }}
       viewport={{ once: true }}
-      className={`${showResults ? "" : "hidden"} w-full`}
+      className={`${showResults ? "" : "hidden"} w-full flex items-center justify-center`}
     >
       <Card id="topicTestResultsCard" className="w-full max-w-3xl">
         <CardHeader>
@@ -94,19 +88,16 @@ function TopicTestResultsCard({
             ) : (
               <XCircle className="w-6 h-6 text-red-500" />
             )}
-            <h1 className="text-2xl font-bold">Final Test Results</h1>
+            <h1 className="text-2xl font-bold">Mastery Results</h1>
           </div>
         </CardHeader>
         <CardContent className="flex flex-col items-center gap-4">
           <div className={`flex flex-col items-center justify-center h-40 w-40 gap-2 ${
-            passed ? 'bg-green-100 border-green-300' : 'bg-red-100 border-red-300'
+            passed ? 'bg-green-500 border-border/40' : 'bg-red-500 border-border/40'
           } border-8 rounded-full`}>
-            <h2 className="text-xl font-bold text-gray-700">Score</h2>
-            <p className={`text-3xl font-bold ${getScoreColor()}`}>
+            <h2 className="text-xl font-bold text-white">Score</h2>
+            <p className={`text-3xl font-bold text-white`}>
               {score} / {topicTestResults.questions.length}
-            </p>
-            <p className={`text-lg font-semibold ${getScoreColor()}`}>
-              {Math.round(percentage)}%
             </p>
           </div>
 
@@ -157,7 +148,7 @@ function TopicTestResultsCard({
           </div>
 
           {/* Question breakdown */}
-          <div className="w-full max-w-md mt-4">
+          {/* <div className="w-full max-w-md mt-4">
             <h3 className="text-lg font-semibold mb-2">Question Breakdown</h3>
             <div className="space-y-2">
               {topicTestResults.questions.map((question, index) => {
@@ -186,7 +177,7 @@ function TopicTestResultsCard({
                 );
               })}
             </div>
-          </div>
+          </div> */}
         </CardContent>
       </Card>
     </motion.div>
