@@ -1,6 +1,6 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, Loader2 } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
 import {
@@ -33,6 +33,7 @@ const chartConfig = {
 
 export function Activity() {
   const [chartData, setChartData] = useState<{ date: Date; topicsCompleted: number }[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadActivityData = async () => {
@@ -62,6 +63,7 @@ export function Activity() {
       
       // Update chart data once with all results
       setChartData(activityData);
+      setLoading(false);
     };
 
     loadActivityData();
@@ -74,26 +76,35 @@ export function Activity() {
         <CardDescription>Topics completed in the last 7 days</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}>
-          <BarChart accessibilityLayer data={chartData}>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="date"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) => {
-                const date = new Date(value);
-                return date.toLocaleDateString('en-US', { weekday: 'short' });
-              }}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Bar dataKey="topicsCompleted" fill="var(--color-topicsCompleted)" radius={8} />
-          </BarChart>
-        </ChartContainer>
+        {loading ? (
+          <div className="flex items-center justify-center h-[200px]">
+            <div className="flex flex-col items-center gap-2">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">Loading activity data...</p>
+            </div>
+          </div>
+        ) : (
+          <ChartContainer config={chartConfig}>
+            <BarChart accessibilityLayer data={chartData}>
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="date"
+                tickLine={false}
+                tickMargin={10}
+                axisLine={false}
+                tickFormatter={(value) => {
+                  const date = new Date(value);
+                  return date.toLocaleDateString('en-US', { weekday: 'short' });
+                }}
+              />
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent hideLabel />}
+              />
+              <Bar dataKey="topicsCompleted" fill="var(--color-topicsCompleted)" radius={8} />
+            </BarChart>
+          </ChartContainer>
+        )}
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 leading-none font-medium">
