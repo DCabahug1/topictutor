@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { generatePlacementTest } from "@/lib/placementTests";
+import { generatePlacementTest } from "@/lib/placementTest";
 import { Test, TestResults } from "@/lib/models";
 import { Loader2 } from "lucide-react";
 import QuestionCard from "./QuestionCard";

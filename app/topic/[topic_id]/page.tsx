@@ -11,10 +11,11 @@ import { authService } from "@/lib/auth";
 import { useEffect } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { motion } from "motion/react";
-import { Loader2 } from "lucide-react";
+import { ArrowRight, Edit, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { CircularProgress } from "@/components/customized/progress/progress-09";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 function page() {
   const params = useParams();
@@ -171,6 +172,20 @@ function page() {
                   </Link>
                 </motion.div>
               ))}
+              {
+                topic.chapters_completed === topic.chapters_count && (
+                  <motion.div
+                  animate={{ opacity: 1 }}
+                  initial={{ opacity: 0 }}
+                  transition={{ duration: 0.5, delay: chapters.length * 0.1 }}
+                  key="take-test"
+                >
+                  <Link href={`/topic/${topic.id}/test`}>
+                    <Button className="w-full">Take Test <Edit /></Button>
+                  </Link>
+                </motion.div>
+                )
+              }
             </CardContent>
           </Card>
         </div>
