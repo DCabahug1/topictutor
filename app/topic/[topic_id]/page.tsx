@@ -125,14 +125,14 @@ function page() {
                 <Badge
                   variant="default"
                   className={`text-xs ${
-                    topic.chapters_completed === topic.chapters_count
+                    topic.completed
                       ? "bg-green-500"
                       : topic.chapters_completed > 0
                       ? "bg-yellow-500"
                       : "bg-red-500"
                   }`}
                 >
-                  {topic.chapters_completed === topic.chapters_count
+                  {topic.completed
                     ? "Completed"
                     : topic.chapters_completed > 0
                     ? "In Progress"
@@ -149,7 +149,7 @@ function page() {
                   <h1 className="text-xl font-bold">Progress:</h1>
                   <CircularProgress
                     value={
-                      (topic.chapters_completed / topic.chapters_count) * 100
+                      Math.round(((topic.chapters_completed + (topic.completed ? 1 : 0)) / (topic.chapters_count + 1)) * 100)
                     }
                     labelClassName="text-xl"
                     showLabel={true}
@@ -173,7 +173,7 @@ function page() {
                 </motion.div>
               ))}
               {
-                topic.chapters_completed === topic.chapters_count && (
+                topic.chapters_completed === topic.chapters_count && !topic.completed && (
                   <motion.div
                   animate={{ opacity: 1 }}
                   initial={{ opacity: 0 }}
@@ -181,8 +181,22 @@ function page() {
                   key="take-test"
                 >
                   <Link href={`/topic/${topic.id}/test`}>
-                    <Button className="w-full">Take Test <Edit /></Button>
+                    <Button className="w-full">Take Final Test <Edit /></Button>
                   </Link>
+                </motion.div>
+                )
+              }
+              {
+                topic.completed && (
+                  <motion.div
+                  animate={{ opacity: 1 }}
+                  initial={{ opacity: 0 }}
+                  transition={{ duration: 0.5, delay: chapters.length * 0.1 }}
+                  key="completed"
+                >
+                  <Button className="w-full" variant="outline" disabled>
+                    Course Completed ✓
+                  </Button>
                 </motion.div>
                 )
               }

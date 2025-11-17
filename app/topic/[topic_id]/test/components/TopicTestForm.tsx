@@ -11,12 +11,14 @@ import { Button } from "@/components/ui/button";
 import { motion } from "motion/react";
 import { QuestionResult } from "@/lib/models";
 import TopicTestResultsCard from "./TopicTestResultsCard";
+import { getTestResultsByTopicId } from "@/lib/testResults";
 
 function TopicTestForm() {
   const router = useRouter();
   const { topic_id } = useParams();
   const [topic, setTopic] = useState<Topic | null>(null);
   const [chapters, setChapters] = useState<Chapter[]>([]);
+  const [placementTestResults, setPlacementTestResults] = useState<TestResults | null>(null);
   const [topicTest, setTopicTest] = useState<Test | null>(null);
   const [topicTestCompleted, setTopicTestCompleted] = useState(false);
   const [topicTestResults, setTopicTestResults] = useState<TestResults>({
@@ -27,14 +29,21 @@ function TopicTestForm() {
   const [loading, setLoading] = useState(true);
   const hasRequestedTest = useRef(false);
 
-  // Get topic and chapters data
+  // Get topic, chapters data, and generate test
   useEffect(() => {
     if (!topic_id) {
       router.push("/dashboard");
       return;
     }
 
-    const loadTopicData = async () => {
+    // Prevent duplicate API calls in Strict Mode
+    if (hasRequestedTest.current) {
+      return;
+    }
+
+    hasRequestedTest.current = true;
+
+    const loadTopicDataAndGenerateTest = async () => {
       setLoading(true);
 
       // Get topic information
@@ -46,10 +55,14 @@ function TopicTestForm() {
         router.push("/dashboard");
         return;
       }
-      if (topicData && topicData.length > 0) {
-        setTopic(topicData[0]);
-        setTopicTestResults((prev) => ({ ...prev, topic: topicData[0].title }));
+      if (!topicData || topicData.length === 0) {
+        console.log("No topic data found");
+        router.push("/dashboard");
+        return;
       }
+
+      const currentTopic = topicData[0];
+      setTopic(currentTopic);
 
       // Get chapters
       const { data: chaptersData, error: chaptersError } = await getChaptersByTopicId(
@@ -57,37 +70,44 @@ function TopicTestForm() {
       );
       if (chaptersError) {
         console.log("Error loading chapters:", chaptersError);
+        setLoading(false);
         return;
       }
-      if (chaptersData) {
-        setChapters(chaptersData);
+      if (!chaptersData || chaptersData.length === 0) {
+        console.log("No chapters found for this topic");
+        setLoading(false);
+        return;
       }
 
-      setLoading(false);
-    };
+      setChapters(chaptersData);
 
-    loadTopicData();
-  }, [topic_id, router]);
+      // Get placement test results for this topic
+      const { success: testResultsSuccess, data: testResultsData } = await getTestResultsByTopicId(
+        topic_id as string
+      );
+      let placementResults = null;
+      if (testResultsSuccess && testResultsData && testResultsData.length > 0) {
+        // Find the most recent placement test result
+        const placementResult = testResultsData.find((result: any) => result.type === 'placement');
+        if (placementResult) {
+          placementResults = placementResult.result;
+          setPlacementTestResults(placementResults);
+          console.log("Placement test results loaded for final test generation");
+        }
+      }
 
-  // Generate test when topic and chapters are loaded
-  useEffect(() => {
-    if (!topic || chapters.length === 0) {
-      return;
-    }
+      if (!placementResults) {
+        console.log("No placement test results found");
+        setLoading(false);
+        return;
+      }
 
-    // Prevent duplicate API calls in Strict Mode
-    if (hasRequestedTest.current) {
-      return;
-    }
-
-    hasRequestedTest.current = true;
-
-    const getTopicTest = async () => {
-      setLoading(true);
-
-      const { data, error } = await generateTopicTest(topic.title, chapters);
+      // Generate topic test now that we have all required data
+      const { data, error } = await generateTopicTest(currentTopic.title, chaptersData, placementResults);
       if (error) {
         console.log("Error generating topic test:", error);
+        setLoading(false);
+        return;
       }
       if (data) {
         console.log("Topic test generated successfully.");
@@ -104,21 +124,16 @@ function TopicTestForm() {
         );
 
         setTopicTestResults({
-          topic: topic.title || "",
+          topic: currentTopic.title || "",
           questions: initialQuestions,
         });
       }
+
       setLoading(false);
     };
 
-    // Initialize with empty array first
-    setTopicTestResults({
-      topic: topic.title || "",
-      questions: [],
-    });
-
-    getTopicTest();
-  }, [topic, chapters]);
+    loadTopicDataAndGenerateTest();
+  }, [topic_id, router]);
 
   // Check if all questions are answered
   useEffect(() => {
@@ -149,7 +164,7 @@ function TopicTestForm() {
     );
   }
 
-  if (!topicTest || !topic) {
+  if ((!topicTest || !topic) && !loading) {
     return (
       <div className="flex-1 min-h-0 flex items-center justify-center">
         <p>Failed to load final test. Please try again.</p>
@@ -162,11 +177,11 @@ function TopicTestForm() {
       <div className="flex flex-col items-center justify-center">
         <h1 className="text-2xl font-bold">Final Test</h1>
         <p className="text-l text-center text-muted-foreground">
-          Test your knowledge of {topic.title} with this comprehensive final exam.
+          Test your knowledge of {topic?.title} with this comprehensive final exam.
         </p>
       </div>
       <div className="flex flex-col gap-2 w-full max-w-3xl">
-        {topicTest.questions.map((question, index) => (
+        {topicTest?.questions.map((question, index) => (
           <QuestionCard
             key={index}
             question={question}
@@ -202,11 +217,13 @@ function TopicTestForm() {
         </Button>
       </motion.div>
 
-      <TopicTestResultsCard
-        topic={topic}
-        topicTestResults={topicTestResults}
-        showResults={showResults}
-      />
+      {topic && (
+        <TopicTestResultsCard
+          topic={topic}
+          topicTestResults={topicTestResults}
+          showResults={showResults}
+        />
+      )}
     </div>
   );
 }

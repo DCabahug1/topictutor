@@ -16,6 +16,7 @@ export interface Topic {
   description: string;
   chapters_count: number;
   chapters_completed: number;
+  completed: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -54,4 +55,13 @@ export interface QuestionResult {
   prompt: string;
   answer: string;
   correctAnswer: string;
+}
+
+export interface TestResult {
+  id?: number;
+  user_id?: string;
+  created_at?: string;
+  result: TestResults;
+  type: 'placement' | 'final';
+  topic_id?: number;
 }

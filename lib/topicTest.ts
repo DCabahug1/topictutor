@@ -2,7 +2,7 @@
 import { z } from "zod";
 import { OpenAI } from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
-import { Chapter } from "./models";
+import { Chapter, TestResults } from "./models";
 
 // 1. Generate Placement Test
 // 2. Generate Topic:
@@ -33,8 +33,8 @@ const topicTestSchema = z.object({
   ),
 });
 
-export const generateTopicTest = async (Topic: string, chapters: Chapter[]) => {
-  console.log("Generating placement test using GPT-4.1-mini...");
+export const generateTopicTest = async (Topic: string, chapters: Chapter[], placementTestResults: TestResults) => {
+  console.log("Generating final test using GPT-4.1-mini...");
   const openaiClient = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
   try {
@@ -44,11 +44,15 @@ export const generateTopicTest = async (Topic: string, chapters: Chapter[]) => {
         {
           role: "system",
           content:
-            "You are a helpful assistant that generates a final test for a course. You are to generate a final test for the course. The final test should have 10 multiple choice questions with 4 UNIQUE options each, one correct answer. The questions should be limited to the contents of the chapters provided.",
+            "You are a helpful assistant that generates a final test for a course. You are to generate a final test for the course. The final test should have 10 multiple choice questions with 4 UNIQUE options each, one correct answer. The questions should be limited to the contents of the chapters provided. Analyze the question format, phrasing style, answer option structure, and difficulty progression from the provided placement test results, then apply the same patterns to create a consistent testing experience for the final test.",
         },
         {
           role: "user",
-          content: JSON.stringify({ Topic, chapters }),
+          content: JSON.stringify({ 
+            Topic, 
+            chapters, 
+            placementTestResults 
+          }),
         },
       ],
       text: {

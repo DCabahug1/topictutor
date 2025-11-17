@@ -15,6 +15,7 @@ import {
 import { DialogClose } from "@/components/ui/dialog";
 import { Loader2, Sparkles } from "lucide-react";
 import { generateCourse } from "@/lib/generateCourse";
+import { saveTestResult } from "@/lib/testResults";
 import { redirect } from "next/navigation";
 
 function ResultsCard({
@@ -83,8 +84,23 @@ function ResultsCard({
         setError(true);
       }
       if (data) {
-        setProgressMessage("Course created successfully! Redirecting...");
+        setProgressMessage("Course created successfully! Saving results...");
         console.log(data);
+        
+        // Save placement test results
+        try {
+          await saveTestResult({
+            result: placementTestResults,
+            type: 'placement',
+            topic_id: data.id,
+          });
+          
+          console.log("Placement test results saved successfully");
+        } catch (saveError) {
+          console.error("Error saving placement test results:", saveError);
+        }
+        
+        setProgressMessage("Redirecting...");
         setTimeout(() => {
           redirect(`/topic/${data.id}`);
         }, 1000);

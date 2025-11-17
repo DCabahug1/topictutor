@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { TestResults, Topic } from "@/lib/models";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Trophy, CheckCircle, XCircle } from "lucide-react";
+import { updateTopicCompletion } from "@/lib/topics";
+import { saveTestResult } from "@/lib/testResults";
 
 function TopicTestResultsCard({
   topic,
@@ -16,11 +18,44 @@ function TopicTestResultsCard({
   showResults: boolean;
 }) {
   const router = useRouter();
+  const [isUpdatingCompletion, setIsUpdatingCompletion] = useState(false);
   const score = topicTestResults.questions.filter(
     (question) => question.answer === question.correctAnswer
   ).length;
   const percentage = (score / topicTestResults.questions.length) * 100;
   const passed = percentage >= 70;
+
+  // Save test results and update topic completion status when test is completed
+  useEffect(() => {
+    if (showResults && topicTestResults.questions.length > 0) {
+      const handleTestCompletion = async () => {
+        setIsUpdatingCompletion(true);
+        try {
+          // Always save test results regardless of pass/fail
+          await saveTestResult({
+            result: topicTestResults,
+            type: 'topic',
+            topic_id: topic.id,
+          });
+          console.log("Topic test results saved successfully");
+
+          // Only mark topic as completed if test was passed and not already completed
+          if (passed && !topic.completed) {
+            const { success } = await updateTopicCompletion(topic.id, true);
+            if (success) {
+              console.log("Topic marked as completed!");
+            }
+          }
+        } catch (error) {
+          console.error("Error handling test completion:", error);
+        } finally {
+          setIsUpdatingCompletion(false);
+        }
+      };
+      
+      handleTestCompletion();
+    }
+  }, [showResults, passed, topic.completed, topic.id, topicTestResults]);
 
   const getScoreColor = () => {
     if (percentage >= 90) return "text-green-600";
@@ -86,7 +121,9 @@ function TopicTestResultsCard({
             {passed && (
               <div className="flex items-center gap-2 text-green-600 mb-4">
                 <CheckCircle className="w-5 h-5" />
-                <span className="font-semibold">Course Completed!</span>
+                <span className="font-semibold">
+                  {isUpdatingCompletion ? "Saving Results & Marking Complete..." : "Course Completed!"}
+                </span>
               </div>
             )}
           </div>
@@ -129,7 +166,7 @@ function TopicTestResultsCard({
                   <div
                     key={index}
                     className={`flex items-center gap-2 p-2 rounded ${
-                      isCorrect ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
+                      isCorrect ? 'bg-green-500/40 border border-green-500' : 'bg-red-500/40 border border-red-500'
                     }`}
                   >
                     {isCorrect ? (
@@ -137,7 +174,7 @@ function TopicTestResultsCard({
                     ) : (
                       <XCircle className="w-4 h-4 text-red-600 shrink-0" />
                     )}
-                    <span className="text-sm text-gray-700 truncate">
+                    <span className={`text-sm ${isCorrect ? 'text-green-600' : 'text-red-600'} truncate`}>
                       Question {index + 1}
                     </span>
                     {!isCorrect && (
