@@ -29,7 +29,7 @@ function RecentTopic() {
   }
 
   return (
-      <Card className="gap-2">
+      <Card className="hidden sm:flex gap-2">
         <CardHeader>
           <CardTitle>Jump Back In</CardTitle>
         </CardHeader>
