@@ -142,7 +142,7 @@ export const createProfileServer = async (
   return { success: true };
 };
 
-export const ensureProfileExists = async (user: any, supabase: any) => {
+export const ensureProfileExists = async (user: any, supabase: any, name?: string | null) => {
   if (!user?.email) {
     return { success: false, error: { message: "No user email found" } };
   }
@@ -160,19 +160,22 @@ export const ensureProfileExists = async (user: any, supabase: any) => {
 
   // If profile exists, return success
   if (existingProfile && existingProfile.length > 0) {
+    console.log("Profile exists", existingProfile);
     return { success: true, profileExists: true };
   }
 
   // Create profile if it doesn't exist
   const profileData = {
     user_id: user.id,
-    name: user.user_metadata?.name || user.user_metadata?.full_name || "",
+    name: user.user_metadata?.name || user.user_metadata?.full_name || name || "",
     email: user.email,
     image_url: user.user_metadata?.avatar_url || user.user_metadata?.picture,
   };
 
   const { success: createSuccess, error: createError } =
     await createProfileServer(profileData, supabase);
+
+  console.log("Profile created", createSuccess);
 
   if (!createSuccess) {
     return { success: false, error: createError };

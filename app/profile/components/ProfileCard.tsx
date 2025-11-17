@@ -158,13 +158,11 @@ function ProfileCard({
                 <div className="flex flex-col">
                   <label htmlFor="name">Name</label>
                   <Input
-                    required
                     type="text"
                     name="name"
                     id="name"
                     value={newProfileInfo.name}
                     placeholder="Enter your name"
-                    minLength={3}
                     maxLength={25}
                     onChange={(e) =>
                       setNewProfileInfo({
@@ -201,13 +199,7 @@ function ProfileCard({
               </p>
             )}
             <Button
-              disabled={
-                loading ||
-                (newProfileInfo.name === profile.name &&
-                  !newProfileInfo.image) ||
-                newProfileInfo.name.length < 3 ||
-                newProfileInfo.name.length > 25
-              }
+              disabled={loading}
               type="submit"
             >
               {loading ? (

@@ -68,7 +68,9 @@ function page() {
 
     const { success, error } = await signUpWithEmailAndPasswordAction(
       credentials.email,
-      credentials.password
+      credentials.password,
+      credentials.name,
+      window.location.origin
     );
 
     if (!success) {
