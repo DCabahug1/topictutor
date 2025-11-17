@@ -3,8 +3,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -90,11 +88,11 @@
   --border: oklch(0.9022 0.0052 247.8822);
   --input: oklch(0.9700 0.0029 264.5420);
   --ring: oklch(0.6397 0.1720 36.4421);
-  --chart-1: oklch(0.7156 0.0605 248.6845);
-  --chart-2: oklch(0.7875 0.0917 35.9616);
-  --chart-3: oklch(0.5778 0.0759 254.1573);
-  --chart-4: oklch(0.5016 0.0849 259.4902);
-  --chart-5: oklch(0.4241 0.0952 264.0306);
+  --chart-1: oklch(0.6397 0.1720 36.4421);
+  --chart-2: oklch(0.6690 0.1549 36.5229);
+  --chart-3: oklch(0.7007 0.1368 36.3483);
+  --chart-4: oklch(0.7359 0.1174 36.7409);
+  --chart-5: oklch(0.8082 0.0821 35.8375);
   --sidebar: oklch(0.9030 0.0046 258.3257);
   --sidebar-foreground: oklch(0.3211 0 0);
   --sidebar-primary: oklch(0.6397 0.1720 36.4421);
@@ -107,7 +105,7 @@
   --font-sans: Inter, sans-serif;
   --font-serif: Source Serif 4, serif;
   --font-mono: JetBrains Mono, monospace;
-  --shadow-color: hsl(0 0% 0%);
+  --shadow-color: #000000;
   --shadow-opacity: 0.1;
   --shadow-blur: 3px;
   --shadow-spread: 0px;
@@ -145,11 +143,11 @@
   --border: oklch(0.3843 0.0301 269.7337);
   --input: oklch(0.3843 0.0301 269.7337);
   --ring: oklch(0.6397 0.1720 36.4421);
-  --chart-1: oklch(0.7156 0.0605 248.6845);
-  --chart-2: oklch(0.7693 0.0876 34.1875);
-  --chart-3: oklch(0.5778 0.0759 254.1573);
-  --chart-4: oklch(0.5016 0.0849 259.4902);
-  --chart-5: oklch(0.4241 0.0952 264.0306);
+  --chart-1: oklch(0.6397 0.1720 36.4421);
+  --chart-2: oklch(0.6690 0.1549 36.5229);
+  --chart-3: oklch(0.7007 0.1368 36.3483);
+  --chart-4: oklch(0.7359 0.1174 36.7409);
+  --chart-5: oklch(0.8082 0.0821 35.8375);
   --sidebar: oklch(0.3100 0.0283 267.7408);
   --sidebar-foreground: oklch(0.9219 0 0);
   --sidebar-primary: oklch(0.6397 0.1720 36.4421);
@@ -163,7 +161,7 @@
   --font-sans: Inter, sans-serif;
   --font-serif: Source Serif 4, serif;
   --font-mono: JetBrains Mono, monospace;
-  --shadow-color: hsl(0 0% 0%);
+  --shadow-color: #000000;
   --shadow-opacity: 0.1;
   --shadow-blur: 3px;
   --shadow-spread: 0px;

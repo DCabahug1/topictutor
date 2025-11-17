@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Profile } from "@/lib/models";
 import { authService } from "@/lib/auth";
+import Link from "next/link";
 
 function AvatarMenu({ profile }: { profile: Profile }) {
   return (
@@ -35,7 +36,9 @@ function AvatarMenu({ profile }: { profile: Profile }) {
       <DropdownMenuContent>
         <DropdownMenuLabel>{profile?.name || profile?.email}</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Profile</DropdownMenuItem>
+        <Link href="/profile">
+          <DropdownMenuItem>Profile</DropdownMenuItem>
+        </Link>
         <DropdownMenuItem>Settings</DropdownMenuItem>
         <DropdownMenuItem
           className="hover:bg-red-500/20!"

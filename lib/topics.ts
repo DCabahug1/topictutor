@@ -109,3 +109,33 @@ export const getLatestTopic = async () => {
 
   return { data, error: null };
 };
+
+// Data
+export const getTopicsUpdatedAtDateAndCompleted = async ({ date }: { date: Date }) => {
+  const supabase = await createClient();
+
+  // Create start and end of the day for the given date
+  const startOfDay = new Date(date);
+  startOfDay.setHours(0, 0, 0, 0);
+  
+  const endOfDay = new Date(date);
+  endOfDay.setHours(23, 59, 59, 999);
+
+  const { data, error } = await supabase
+    .from("topics")
+    .select("*")
+    .gte("updated_at", startOfDay.toISOString())
+    .lte("updated_at", endOfDay.toISOString());
+
+  if (error) {
+    console.log("Error getting topics updated at date:", error);
+    return { data: null, error };
+  }
+
+  // Filter client-side for completed topics
+  const completedTopics = data?.filter(topic => 
+    topic.chapters_completed === topic.chapters_count
+  ) || [];
+
+  return { data: completedTopics, error: null };
+};
