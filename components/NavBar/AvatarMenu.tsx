@@ -39,7 +39,6 @@ function AvatarMenu({ profile }: { profile: Profile }) {
         <Link href="/profile">
           <DropdownMenuItem>Profile</DropdownMenuItem>
         </Link>
-        <DropdownMenuItem>Settings</DropdownMenuItem>
         <DropdownMenuItem
           className="hover:bg-red-500/20!"
           onClick={async () => {
