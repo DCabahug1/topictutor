@@ -1,36 +1,171 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TopicTutor 🎓
+
+An AI-powered personalized learning platform that creates custom courses based on placement test results and generates interactive content using OpenAI.
+
+## Features
+
+- **Personalized Learning**: Takes a placement test to assess your knowledge level
+- **AI-Generated Content**: Creates custom courses and chapters using OpenAI GPT-4
+- **Interactive Tests**: Placement tests and final assessments for each topic
+- **Progress Tracking**: Monitor your learning progress and completion streaks
+- **User Authentication**: Secure login with email/password or Google OAuth
+- **Profile Management**: Customizable user profiles with avatar uploads
+- **Responsive Design**: Modern UI built with Next.js and Tailwind CSS
+
+## Tech Stack
+
+- **Frontend**: Next.js 16, React 19, TypeScript
+- **Styling**: Tailwind CSS, Radix UI components
+- **Authentication**: Supabase Auth (Email/Password + Google OAuth)
+- **Database**: Supabase (PostgreSQL)
+- **AI Integration**: OpenAI GPT-4.1-mini
+- **File Storage**: Supabase Storage
+- **Animations**: Motion (Framer Motion)
+- **Icons**: Lucide React
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+ 
+- npm, yarn, or pnpm
+- Supabase account
+- OpenAI API account
+
+### Environment Variables
+
+Create a `.env.local` file in the root directory:
+
+```bash
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# OpenAI Configuration
+OPENAI_API_KEY=your_openai_api_key
+```
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/topictutor.git
+cd topictutor
+```
+
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+```
+
+3. Set up your environment variables (see above)
+
+4. Run the development server:
 ```bash
 npm run dev
 # or
 yarn dev
 # or
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Database Schema
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The application uses the following main tables in Supabase:
 
-## Learn More
+- `profiles` - User profile information
+- `topics` - Generated learning topics/courses
+- `chapters` - Course chapters with content
+- `test_results` - Placement and final test results
 
-To learn more about Next.js, take a look at the following resources:
+## Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+topictutor/
+├── app/                    # Next.js app directory
+│   ├── auth/              # Authentication pages
+│   ├── topic/             # Topic-related pages
+│   └── layout.tsx         # Root layout
+├── components/            # Reusable UI components
+├── lib/                   # Core business logic
+│   ├── auth.ts           # Authentication services
+│   ├── generateCourse.ts # AI course generation
+│   ├── placementTest.ts  # Placement test logic
+│   ├── topics.ts         # Topic management
+│   ├── chapters.ts       # Chapter management
+│   ├── profiles.ts       # User profile management
+│   └── testResults.ts    # Test result handling
+├── utils/                 # Utility functions
+│   └── supabase/         # Supabase client configuration
+└── middleware.ts          # Authentication middleware
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Key Features Explained
 
-## Deploy on Vercel
+### Placement Tests
+- AI-generated questions based on the chosen topic
+- 5 multiple-choice questions with varying difficulty
+- Results used to personalize course content
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Course Generation
+- Creates 10-chapter courses tailored to placement test results
+- Each chapter includes detailed content paragraphs
+- Focuses on areas where the user shows weakness
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Progress Tracking
+- Chapter completion tracking
+- Learning streaks calculation
+- Topic completion status
+
+### Authentication Flow
+- Email/password registration with email confirmation
+- Google OAuth integration
+- Automatic profile creation
+- Session management via Supabase Auth
+
+## Security Features
+
+- ✅ Secure authentication with Supabase Auth
+- ✅ Parameterized database queries (no SQL injection risk)
+- ✅ Environment variable configuration for secrets
+- ✅ Server-side API key protection
+- ✅ Middleware-based route protection
+- ✅ File upload security via Supabase Storage
+
+## API Integration
+
+### OpenAI Integration
+The app uses OpenAI's GPT-4.1-mini model for:
+- Generating placement test questions
+- Creating personalized course content
+- Generating final assessments
+
+All AI interactions use structured output with Zod validation for type safety.
+
+## Deployment
+
+### Environment Setup
+Ensure all environment variables are configured in your deployment platform:
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` 
+- `OPENAI_API_KEY`
+
+### Recommended Platforms
+- **Vercel** (recommended for Next.js)
+- **Netlify**
+- **Railway**
+- **Render**
+
+## Acknowledgments
+
+- Built with [Next.js](https://nextjs.org/)
+- Powered by [Supabase](https://supabase.com/)
+- AI capabilities by [OpenAI](https://openai.com/)
+- UI components from [Radix UI](https://www.radix-ui.com/)
+- Styled with [Tailwind CSS](https://tailwindcss.com/)
