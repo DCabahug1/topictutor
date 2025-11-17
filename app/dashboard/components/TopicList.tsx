@@ -54,14 +54,11 @@ function TopicList() {
     if (filter === "in-progress") {
       return topics?.filter(
         (topic) =>
-          topic.chapters_completed > 0 &&
-          topic.chapters_completed < topic.chapters_count
+          topic.chapters_completed > 0 && !topic.completed
       );
     }
     if (filter === "completed") {
-      return topics?.filter(
-        (topic) => topic.chapters_completed === topic.chapters_count
-      );
+      return topics?.filter((topic) => topic.completed);
     }
     return topics;
   };

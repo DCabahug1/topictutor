@@ -152,7 +152,7 @@ export const getStreak = async () => {
   // Get all topics ordered by updated_at descending
   const { data: topics, error } = await supabase
     .from("topics")
-    .select("updated_at, chapters_completed, chapters_count")
+    .select("updated_at, chapters_completed, chapters_count, completed")
     .order("updated_at", { ascending: false });
 
   if (error) {
@@ -185,7 +185,7 @@ export const getStreak = async () => {
       return (
         updatedAt >= startOfDay &&
         updatedAt <= endOfDay &&
-        topic.chapters_completed === topic.chapters_count
+        topic.completed
       );
     });
 
@@ -202,4 +202,24 @@ export const getStreak = async () => {
   }
 
   return { data: streak, error: null };
+};
+
+export const updateTopicCompletion = async (topicId: string, completed: boolean) => {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("topics")
+    .update({ 
+      completed,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", topicId)
+    .select("*");
+
+  if (error) {
+    console.log("Error updating topic completion:", error);
+    return { success: false, error };
+  }
+
+  return { success: true, data };
 };

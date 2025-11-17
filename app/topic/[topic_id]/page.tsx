@@ -11,10 +11,11 @@ import { authService } from "@/lib/auth";
 import { useEffect } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { motion } from "motion/react";
-import { Loader2 } from "lucide-react";
+import { ArrowRight, Edit, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { CircularProgress } from "@/components/customized/progress/progress-09";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 function page() {
   const params = useParams();
@@ -124,14 +125,14 @@ function page() {
                 <Badge
                   variant="default"
                   className={`text-xs ${
-                    topic.chapters_completed === topic.chapters_count
+                    topic.completed
                       ? "bg-green-500"
                       : topic.chapters_completed > 0
                       ? "bg-yellow-500"
                       : "bg-red-500"
                   }`}
                 >
-                  {topic.chapters_completed === topic.chapters_count
+                  {topic.completed
                     ? "Completed"
                     : topic.chapters_completed > 0
                     ? "In Progress"
@@ -148,7 +149,7 @@ function page() {
                   <h1 className="text-xl font-bold">Progress:</h1>
                   <CircularProgress
                     value={
-                      (topic.chapters_completed / topic.chapters_count) * 100
+                      Math.round(((topic.chapters_completed + (topic.completed ? 1 : 0)) / (topic.chapters_count + 1)) * 100)
                     }
                     labelClassName="text-xl"
                     showLabel={true}
@@ -171,6 +172,34 @@ function page() {
                   </Link>
                 </motion.div>
               ))}
+              {
+                topic.chapters_completed === topic.chapters_count && !topic.completed && (
+                  <motion.div
+                  animate={{ opacity: 1 }}
+                  initial={{ opacity: 0 }}
+                  transition={{ duration: 0.5, delay: chapters.length * 0.1 }}
+                  key="take-test"
+                >
+                  <Link href={`/topic/${topic.id}/test`}>
+                    <Button className="w-full">Take Final Test <Edit /></Button>
+                  </Link>
+                </motion.div>
+                )
+              }
+              {
+                topic.completed && (
+                  <motion.div
+                  animate={{ opacity: 1 }}
+                  initial={{ opacity: 0 }}
+                  transition={{ duration: 0.5, delay: chapters.length * 0.1 }}
+                  key="completed"
+                >
+                  <Button className="w-full" variant="outline" disabled>
+                    Course Completed ✓
+                  </Button>
+                </motion.div>
+                )
+              }
             </CardContent>
           </Card>
         </div>

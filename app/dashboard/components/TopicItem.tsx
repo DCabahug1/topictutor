@@ -35,14 +35,14 @@ function TopicItem({
               <Badge
                 variant="default"
                 className={`text-xs ${
-                  topic.chapters_completed === topic.chapters_count
+                  topic.completed
                     ? "bg-green-500"
                     : topic.chapters_completed > 0
                     ? "bg-yellow-500"
                     : "bg-red-500"
                 }`}
               >
-                {topic.chapters_completed === topic.chapters_count
+                {topic.completed
                   ? "Completed"
                   : topic.chapters_completed > 0
                   ? "In Progress"
@@ -61,7 +61,7 @@ function TopicItem({
           {/* Icon */}
           <div className="flex items-center">
             <CircularProgress
-              value={(topic.chapters_completed / topic.chapters_count) * 100}
+              value={Math.round(((topic.chapters_completed + (topic.completed ? 1 : 0)) / (topic.chapters_count + 1)) * 100)}
               showLabel={true}
               size={80}
               strokeWidth={5}
