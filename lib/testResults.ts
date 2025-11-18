@@ -64,30 +64,6 @@ export const getTestResultsByTopicId = async (topicId: string) => {
   return { success: true, data };
 };
 
-export const getPlacementTestResults = async () => {
-  const supabase = await createClient();
-
-  // Get the current user
-  const { data: userData, error: userError } = await supabase.auth.getUser();
-  if (userError || !userData.user) {
-    return { success: false, error: { message: "User not authenticated" } };
-  }
-
-  const { data, error } = await supabase
-    .from("test_results")
-    .select("*")
-    .eq("type", "placement")
-    .eq("user_id", userData.user.id)
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    console.log("Error getting placement test results:", error);
-    return { success: false, error };
-  }
-
-  return { success: true, data };
-};
-
 export const getTestResultsByType = async (type: 'placement' | 'topic') => {
   const supabase = await createClient();
 
