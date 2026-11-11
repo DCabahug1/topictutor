@@ -2,10 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { almanac } from "@/lib/almanac";
 import { authService } from "@/lib/auth";
 import { cx } from "./cx";
-import { ChevronDownIcon } from "./icons";
 import { useSession, type SessionUser } from "./SessionProvider";
 import { ThemeButton } from "./ThemeButton";
 
@@ -96,7 +94,6 @@ function AccountMenu({ user }: { user: SessionUser }) {
             {display[0]?.toUpperCase()}
           </span>
         )}
-        <ChevronDownIcon size={14} className="hidden md:block" />
       </button>
       {open && (
         <div
@@ -145,38 +142,19 @@ type MastheadProps = {
   dateline?: boolean;
   /** Overrides the session, for the component gallery. Leave unset in pages. */
   user?: SessionUser | null;
-  /** Overrides the guest's streak, for the component gallery. Leave unset in pages. */
-  guestStreak?: number;
 };
 
 /**
  * The top of every page outside a session: the name, account navigation and
  * the theme button, closed by the double rule.
  */
-export function Masthead({ current, dateline = false, user: userProp, guestStreak: guestStreakProp }: MastheadProps) {
+export function Masthead({ current, dateline = false, user: userProp }: MastheadProps) {
   const session = useSession();
   const user = userProp === undefined ? session : userProp;
-  const [storedStreak, setStoredStreak] = useState(0);
-
-  useEffect(() => {
-    if (user || guestStreakProp !== undefined) return;
-    let current = true;
-    almanac
-      .getGuestState()
-      .then((guest) => {
-        if (current && guest.hasProgress) setStoredStreak(Math.max(guest.streak, 1));
-      })
-      .catch(() => {});
-    return () => {
-      current = false;
-    };
-  }, [user, guestStreakProp]);
-
-  const guestStreak = guestStreakProp ?? storedStreak;
 
   return (
     <div>
-      <header className="flex items-center justify-between gap-3 pb-2 pt-[6px] md:pb-[14px] md:pt-[18px]">
+      <header className="flex items-center justify-between gap-3 pb-[10px] pt-2 md:pb-4 md:pt-5">
         <Link
           href={user ? "/today" : "/"}
           className="text-[24px] font-semibold tracking-[-0.015em] text-(--ink) no-underline md:text-[28px]"
@@ -204,20 +182,6 @@ export function Masthead({ current, dateline = false, user: userProp, guestStrea
               <ThemeButton />
               <AccountMenu user={user} />
             </>
-          ) : guestStreak > 0 ? (
-            <>
-              <span className="t-note mr-3 hidden text-(--ink-muted) lg:inline">
-                Your {guestStreak}-day streak lives in this browser.
-              </span>
-              <Link
-                href="/welcome/account"
-                className="border-[1.5px] border-solid border-(--ink) px-[10px] py-2 text-[12px] text-(--ink) no-underline hover:bg-(--paper-sunk) md:px-[14px] md:py-[10px] md:text-[14px]"
-              >
-                <span className="md:hidden">Keep streak</span>
-                <span className="hidden md:inline">Keep it · create account</span>
-              </Link>
-              <ThemeButton />
-            </>
           ) : (
             <>
               <Link href="/login" className="px-2 py-3 text-[13px] text-(--ink) no-underline md:px-3 md:text-[14px]">
@@ -225,7 +189,7 @@ export function Masthead({ current, dateline = false, user: userProp, guestStrea
               </Link>
               <Link
                 href="/register"
-                className="hidden border-[1.5px] border-solid border-(--ink) px-[14px] py-[10px] text-(--ink) no-underline hover:bg-(--paper-sunk) sm:block"
+                className="hidden border border-solid border-(--ink) px-[14px] py-[10px] text-(--ink) no-underline hover:bg-(--paper-sunk) sm:block"
               >
                 Register
               </Link>

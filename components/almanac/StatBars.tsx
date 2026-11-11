@@ -21,8 +21,8 @@ type StatBarsProps = {
   className?: string;
 };
 
-// The tallest column, in a 150px chart that leaves room for the number above it.
-const COLUMN_HEIGHT = 110;
+// The tallest column, in a 180px chart that leaves room for the number above it.
+const COLUMN_HEIGHT = 140;
 
 /**
  * The bar charts on Stats. One image for screen readers, with every value in
@@ -43,7 +43,7 @@ export function StatBars({ title, bars, layout, max, className }: StatBarsProps)
           >
             <span className="text-[17px] leading-[1.2]">{bar.label}</span>
             <span className="h-3 bg-(--paper-sunk)">
-              <span className="block h-full bg-(--ink)" style={{ width: `${Math.round((bar.value / full) * 100)}%` }} />
+              <span className="block h-full bg-(--ink-muted)" style={{ width: `${Math.round((bar.value / full) * 100)}%` }} />
             </span>
             <span className="text-right font-mono text-[13px]">{bar.value}</span>
           </div>
@@ -55,14 +55,14 @@ export function StatBars({ title, bars, layout, max, className }: StatBarsProps)
   const columns = { gridTemplateColumns: `repeat(${bars.length}, minmax(0, 1fr))` };
   return (
     <div role="img" aria-label={label} className={className}>
-      <div className="grid h-[150px] items-end gap-2 border-0 border-b border-solid border-(--ink)" style={columns}>
+      <div className="grid h-[180px] items-end gap-2 border-0 border-b border-solid border-(--ink) md:gap-4" style={columns}>
         {bars.map((bar) => (
           <div key={bar.label} className="flex h-full flex-col items-center justify-end gap-[6px]">
             <span className="font-mono text-[12px] text-(--ink-muted)">{bar.value || (bar.current ? "·" : "0")}</span>
             <span
               className={cx(
                 "box-border w-full",
-                bar.value ? "bg-(--ink)" : "h-[2px]",
+                bar.value ? "bg-(--ink-muted)" : "h-[2px]",
                 !bar.value && (bar.current ? "border border-dashed border-(--ink)" : "bg-(--ink-muted)")
               )}
               style={bar.value ? { height: Math.max(2, Math.round((bar.value / full) * COLUMN_HEIGHT)) } : undefined}
@@ -70,7 +70,7 @@ export function StatBars({ title, bars, layout, max, className }: StatBarsProps)
           </div>
         ))}
       </div>
-      <div className="mt-[6px] grid gap-2 text-center font-mono text-[11px] text-(--ink-muted)" style={columns}>
+      <div className="mt-2 grid gap-2 text-center font-mono text-[11px] text-(--ink-muted) md:gap-4" style={columns}>
         {bars.map((bar) => (
           <span key={bar.label} className={cx(bar.current && "font-medium text-(--ink)")}>
             {bar.label}

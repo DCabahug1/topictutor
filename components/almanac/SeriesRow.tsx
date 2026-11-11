@@ -67,7 +67,10 @@ export function SeriesRow({ series, lead = "series", href, actions, className }:
     <div className={cx("grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4", className)}>
       <Link
         href={target}
-        className="group grid grid-cols-[minmax(0,1fr)] items-center gap-x-8 gap-y-[10px] py-6 text-(--ink) no-underline md:grid-cols-[minmax(0,1fr)_auto_18px]"
+        className={cx(
+          "group grid grid-cols-[minmax(0,1fr)] items-center gap-x-8 gap-y-[10px] py-6 text-(--ink) no-underline",
+          nextLesson ? "md:grid-cols-[minmax(0,1fr)_auto_18px]" : "md:grid-cols-[minmax(0,1fr)_auto]"
+        )}
       >
         <span className="min-w-0">
           <span className="block text-[21px] font-medium leading-[1.2] decoration-1 underline-offset-4 group-hover:underline md:text-[25px]">
@@ -76,7 +79,7 @@ export function SeriesRow({ series, lead = "series", href, actions, className }:
           {sub && <span className="mt-[6px] block text-[16px] italic text-(--ink-muted)">{sub}</span>}
         </span>
         {status}
-        <ArrowIcon className="hidden group-hover:text-(--accent) md:block" />
+        {nextLesson && <ArrowIcon className="hidden group-hover:text-(--accent) md:block" />}
       </Link>
       {actions && <div className="flex items-center">{actions}</div>}
     </div>

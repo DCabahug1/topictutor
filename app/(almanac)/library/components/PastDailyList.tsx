@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/almanac/Button";
-import { cx } from "@/components/almanac/cx";
+import { Section } from "@/components/almanac/Section";
 import { parseLocalDate, type PastDailyLesson } from "@/lib/almanac";
 
 /** How many lessons show before "Show older lessons". */
@@ -27,7 +27,7 @@ type PastDailyListProps = {
   today: string;
 };
 
-/** Daily lessons so far, each one readable again. */
+/** Daily lessons so far, in two columns of ruled rows, each one readable again. */
 export function PastDailyList({ lessons, today }: PastDailyListProps) {
   const [showAll, setShowAll] = useState(false);
   const firstOlder = useRef<HTMLAnchorElement>(null);
@@ -39,26 +39,22 @@ export function PastDailyList({ lessons, today }: PastDailyListProps) {
   }, [showAll]);
 
   return (
-    <section
-      aria-labelledby="daily-heading"
-      className="min-w-0 flex-[1_1_340px] border-0 border-t-[3px] border-solid border-(--ink)"
+    <Section
+      id="daily"
+      title="Past daily lessons"
+      aside={
+        lessons.length > 0 ? (
+          <span className="font-mono text-[12px] uppercase tracking-[0.06em] text-(--ink-muted)">{lessons.length} so far</span>
+        ) : undefined
+      }
     >
-      <div className="flex items-baseline justify-between gap-3 pt-[14px]">
-        <h2 id="daily-heading" className="t-label m-0">
-          Past daily lessons
-        </h2>
-        {lessons.length > 0 && (
-          <span className="font-mono text-[12px] text-(--ink-muted)">{lessons.length} so far</span>
-        )}
-      </div>
-
       {lessons.length === 0 ? (
-        <p className="m-0 mt-[18px] text-[17px] leading-normal text-(--ink-soft)">
-          Each day’s lesson lands here after the day is over, so you can come back to any of them.
+        <p className="m-0 pt-5 text-[18px] leading-normal text-(--ink-soft)">
+          Each day’s lesson lands here, so you can come back to any of them.
         </p>
       ) : (
         <>
-          <ul className="m-0 mt-[10px] list-none p-0">
+          <ul className="m-0 grid list-none grid-cols-1 gap-x-10 p-0 md:grid-cols-2">
             {shown.map((lesson, i) => {
               const href =
                 lesson.date === today
@@ -67,44 +63,42 @@ export function PastDailyList({ lessons, today }: PastDailyListProps) {
                     : "/today/lesson"
                   : `/library/daily/${encodeURIComponent(lesson.id)}`;
               return (
-                <li key={lesson.id} className="border-0 border-t border-solid border-(--rule)">
+                <li key={lesson.id} className="border-0 border-b border-solid border-(--rule)">
                   <Link
                     ref={i === FIRST ? firstOlder : undefined}
                     href={href}
-                    className="group grid grid-cols-[64px_minmax(0,1fr)] gap-3 py-[14px] text-(--ink) no-underline"
+                    className="group grid grid-cols-[84px_minmax(0,1fr)_auto] items-baseline gap-3 py-[18px] text-(--ink) no-underline"
                   >
                     <time
                       dateTime={lesson.date}
                       title={fullDate(lesson.date)}
-                      className="font-mono text-[12px] leading-normal text-(--ink-muted)"
+                      className="font-mono text-[12px] text-(--ink-muted)"
                     >
                       {shortDate(lesson.date)}
                     </time>
-                    <span className="min-w-0">
-                      <span
-                        className={cx(
-                          "block font-mono text-[11px] uppercase tracking-[0.08em]",
-                          lesson.done ? "text-(--ink-muted)" : "text-(--accent)"
-                        )}
-                      >
-                        {lesson.subject} · {lesson.done ? "Done" : "Not read"}
-                      </span>
-                      <span className="mt-[3px] block text-[18px] leading-[1.25] decoration-1 underline-offset-4 group-hover:underline">
-                        {lesson.title}
-                      </span>
+                    <span className="text-[18px] leading-[1.3] decoration-1 underline-offset-4 group-hover:underline">
+                      {lesson.title}
+                      <span className="sr-only"> · {lesson.subject}</span>
                     </span>
+                    {!lesson.done && (
+                      <span className="whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.06em] text-(--accent)">
+                        ○ Not read
+                      </span>
+                    )}
                   </Link>
                 </li>
               );
             })}
           </ul>
           {lessons.length > FIRST && !showAll && (
-            <Button variant="secondary" size="compact" className="mt-[10px] px-[14px]!" onClick={() => setShowAll(true)}>
-              Show older lessons
-            </Button>
+            <div className="mt-3 flex justify-end">
+              <Button variant="quiet" className="text-[16px]!" onClick={() => setShowAll(true)}>
+                Show older lessons
+              </Button>
+            </div>
           )}
         </>
       )}
-    </section>
+    </Section>
   );
 }

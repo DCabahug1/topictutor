@@ -1,14 +1,16 @@
 "use client";
 
+import Link from "next/link";
+import { Button } from "@/components/almanac/Button";
+import { LeadBlock } from "@/components/almanac/LeadBlock";
 import { Notice } from "@/components/almanac/Notice";
 import { PaperPage } from "@/components/almanac/Page";
+import { Section } from "@/components/almanac/Section";
+import { SeriesRow } from "@/components/almanac/SeriesRow";
 import { useSession } from "@/components/almanac/SessionProvider";
-import { almanac, useAlmanac } from "@/lib/almanac";
-import { ContinueSeries } from "./components/ContinueSeries";
-import { LessonCard } from "./components/LessonCard";
-import { StreakPanel } from "./components/StreakPanel";
-
-const HEADING = "m-0 mt-[22px] text-[40px] font-medium leading-none tracking-[-0.025em] md:mt-9 md:text-[64px]";
+import { StreakMark } from "@/components/almanac/StreakMark";
+import { almanac, useAlmanac, type DailySession, type SeriesSummary, type Streak } from "@/lib/almanac";
+import { deeperHref, spellOut } from "./lesson/components/copy";
 
 function timeOfDay(hour: number): string {
   if (hour >= 5 && hour < 12) return "Good morning";
@@ -16,7 +18,26 @@ function timeOfDay(hour: number): string {
   return "Good evening";
 }
 
-// The signed-in home: today's lesson, the streak, and series to continue.
+function streakNote(streak: Streak): string {
+  if (streak.todayDone) return streak.count <= 1 ? "Day one. See you tomorrow." : `${spellOut(streak.count)} days running.`;
+  const longest = streak.longest > streak.count ? ` Longest so far: ${streak.longest}.` : "";
+  return `Today still counts until midnight.${longest}`;
+}
+
+/** The sentence under today's title. */
+function leadLine(session: DailySession, isNew: boolean, started: boolean): string {
+  const { lesson, recall } = session;
+  if (session.finishedAt) {
+    const correct = lesson.check.filter((q, i) => session.checkAnswers[i] === q.correctIndex).length;
+    return `You got ${correct} of ${lesson.check.length} on the check. Tomorrow’s lesson is ${session.tomorrowSubject}, at midnight.`;
+  }
+  if (started) return "You’ve started. Pick up where you left off.";
+  if (isNew) return "Your first lesson. A short read, then a quick check. About three minutes.";
+  if (recall) return `One question from ${recall.fromDay}, a short lesson, then a quick check. About three minutes.`;
+  return "A short read, then a quick check. About three minutes.";
+}
+
+// The signed-in home: today's lesson as the lead, the streak set aside, then series to pick up.
 export default function TodayPage() {
   const user = useSession();
   const { data, error, reload } = useAlmanac(async () => {
@@ -24,13 +45,11 @@ export default function TodayPage() {
     // The hour is read here, in the browser, so the greeting follows the learner's own clock.
     return { session, series, hour: new Date().getHours() };
   }, []);
-  // The two figures under the streak are a bonus: the page stands without them.
-  const { data: stats } = useAlmanac(() => almanac.getStats(), []);
 
   if (error) {
     return (
-      <PaperPage current="today" dateline>
-        <div className="mx-auto mt-8 max-w-[640px] md:mt-[72px]">
+      <PaperPage current="today">
+        <div className="mt-(--lead-top) max-w-[780px]">
           <Notice
             tone="error"
             headingLevel={1}
@@ -39,7 +58,7 @@ export default function TodayPage() {
             body="It’s probably the connection. Nothing was lost."
             kept="Your streak is safe. Today counts until midnight."
             primary={{ label: "Try again", onClick: reload }}
-            secondary={{ label: "Go to Library", href: "/library" }}
+            secondary={{ label: "or go to your Library", href: "/library" }}
           />
         </div>
       </PaperPage>
@@ -48,24 +67,15 @@ export default function TodayPage() {
 
   if (!data) {
     return (
-      <PaperPage current="today" dateline>
-        <div aria-busy="true">
+      <PaperPage current="today">
+        <div aria-busy="true" className="mt-(--lead-top)">
           <p className="sr-only" role="status">
             Loading today
           </p>
-          <div aria-hidden="true">
-            <span className="mt-[22px] block h-10 w-[70%] max-w-[520px] bg-(--paper-sunk) md:mt-9 md:h-16" />
-            <div className="mt-7 flex flex-wrap items-start gap-8 md:mt-12 md:gap-x-20 md:gap-y-10">
-              <div className="flex min-w-0 flex-[999_1_520px] flex-col gap-3">
-                <span className="h-3 w-32 bg-(--paper-sunk)" />
-                <span className="h-[220px] bg-(--paper-sunk) md:h-[260px]" />
-              </div>
-              <div className="flex min-w-0 flex-[1_1_300px] flex-col gap-3">
-                <span className="h-3 w-20 bg-(--paper-sunk)" />
-                <span className="h-[62px] w-24 bg-(--paper-sunk) md:h-[102px] md:w-36" />
-                <span className="h-[14px] w-[70%] bg-(--paper-sunk)" />
-              </div>
-            </div>
+          <div aria-hidden="true" className="flex flex-col gap-4">
+            <span className="h-3 w-64 bg-(--paper-sunk)" />
+            <span className="h-16 w-[70%] max-w-[640px] bg-(--paper-sunk)" />
+            <span className="h-5 w-[50%] max-w-[480px] bg-(--paper-sunk)" />
           </div>
         </div>
       </PaperPage>
@@ -73,26 +83,106 @@ export default function TodayPage() {
   }
 
   const { session, series, hour } = data;
-  const { streak } = session;
+  const { lesson, streak } = session;
   const done = session.finishedAt !== null;
   // No recall means no lesson finished before today.
   const isNew = session.recall === null && !done && streak.count === 0;
+  const started = !done && (session.recallAnswer !== null || session.checkAnswers.some((a) => a !== null));
   const firstName = user?.name.trim().split(/\s+/)[0] ?? "";
-  const opener = done ? "Done for today" : isNew ? "Welcome" : timeOfDay(hour);
+  const greeting = `${isNew ? "Welcome" : timeOfDay(hour)}${firstName ? `, ${firstName}` : ""}`;
+  const eyebrow = done ? `✓ Done · Today in ${lesson.subject}` : `${greeting} · Today in ${lesson.subject}`;
+
+  // In progress first. A series that was started but never opened still belongs here.
+  const open: SeriesSummary[] = [
+    ...series.filter((s) => s.status === "inProgress"),
+    ...series.filter((s) => s.status === "notStarted"),
+  ];
+  const continueTo = session.continueSeries?.nextLesson ? session.continueSeries : open.find((s) => s.nextLesson);
+
+  const primary = !done ? (
+    <Button icon href="/today/lesson">
+      {started ? "Continue today’s lesson" : isNew ? "Start your first lesson" : "Start today’s lesson"}
+    </Button>
+  ) : continueTo?.nextLesson ? (
+    <Button icon href={`/series/${continueTo.id}/${continueTo.nextLesson.number}`}>
+      Continue your series
+    </Button>
+  ) : (
+    <Button icon href={deeperHref(lesson.deeperTopic)}>
+      Go deeper on {lesson.deeperTopic}
+    </Button>
+  );
 
   return (
-    <PaperPage current="today" dateline>
-      <h1 className={HEADING}>
-        {opener}
-        {firstName && `, ${firstName}`}.
-      </h1>
+    <PaperPage current="today">
+      <section
+        aria-labelledby="today-heading"
+        className="mt-(--lead-top) flex flex-wrap items-end justify-between gap-x-20 gap-y-14"
+      >
+        <LeadBlock
+          headingId="today-heading"
+          eyebrow={eyebrow}
+          title={done ? "Done for today." : lesson.title}
+          line={leadLine(session, isNew, started)}
+          className="max-w-[780px] flex-[1_1_620px]"
+          primary={primary}
+          quiet={
+            done ? (
+              <Button variant="quiet" href="/today/lesson?read=1">
+                or read today’s lesson again
+              </Button>
+            ) : undefined
+          }
+        />
+        {!isNew && (
+          <aside
+            aria-label="Streak"
+            className="min-w-0 flex-[0_1_280px] border-0 border-t border-solid border-(--rule) pt-5"
+          >
+            <StreakMark count={streak.count} week={streak.week} todayDone={streak.todayDone} note={streakNote(streak)} />
+          </aside>
+        )}
+      </section>
 
-      <div className="mt-7 flex flex-wrap items-start gap-8 md:mt-12 md:gap-x-20 md:gap-y-10">
-        <LessonCard session={session} isNew={isNew} />
-        <StreakPanel streak={streak} showWeek={!isNew} stats={stats && stats.totalLessons > 0 ? stats : null} />
-      </div>
-
-      <ContinueSeries series={series} />
+      <Section
+        id="series"
+        title={series.length ? "Pick up your series" : "Go deeper on anything"}
+        aside={
+          series.length > 0 ? (
+            <Link href="/library" className="py-2 font-mono text-[13px] text-(--ink) underline-offset-4">
+              All series
+            </Link>
+          ) : undefined
+        }
+      >
+        {open.length > 0 ? (
+          <ul className="m-0 list-none p-0">
+            {open.map((s) => (
+              <li key={s.id} className="border-0 border-b border-solid border-(--rule)">
+                <SeriesRow series={s} lead="nextLesson" />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="pt-5">
+            <p className="m-0 max-w-[540px] text-[18px] leading-normal text-(--ink-soft) md:text-[20px]">
+              {series.length
+                ? "Every series you started is finished. Start another whenever a lesson grabs you."
+                : "Name any topic and get five lessons that start where you are."}
+            </p>
+            <div className="mt-2 flex flex-wrap gap-x-6">
+              <Button variant="quiet" href="/series/new">
+                Start a series
+              </Button>
+              {!series.length && (
+                <Button variant="quiet" href="/series/sample">
+                  or look at a sample series
+                </Button>
+              )}
+            </div>
+          </div>
+        )}
+      </Section>
     </PaperPage>
   );
 }

@@ -3,8 +3,8 @@ import { ArrowIcon } from "@/components/almanac/icons";
 import { Notice } from "@/components/almanac/Notice";
 import type { AlmanacError, DailySession } from "@/lib/almanac";
 
-const CARD = "box-border min-w-0 flex-[1_1_320px] border border-solid border-(--ink) bg-(--paper-raised) p-[26px]";
-const KICKER = "m-0 font-mono text-[12px] uppercase tracking-[0.08em] text-(--accent)";
+const CARD =
+  "mx-auto mt-16 box-border max-w-[760px] border border-solid border-(--ink) bg-(--paper-raised) px-6 py-6 md:mt-28 md:px-[52px] md:py-11";
 
 /** The first sentences of a paragraph, enough to start reading. */
 function opening(paragraph: string, sentences = 2): string {
@@ -31,31 +31,30 @@ export function LessonTeaser({ session, error, onRetry }: LessonTeaserProps) {
   if (error) {
     return (
       <Notice
-        className="box-border min-w-0 flex-[1_1_320px]"
+        className="mx-auto mt-16 max-w-[760px] md:mt-28"
         tone="error"
         kicker="Couldn’t load"
         title="Today’s lesson didn’t load."
         body="It’s probably the connection. Nothing was lost."
         primary={{ label: "Try again", onClick: onRetry }}
-        secondary={{ label: "Open the lesson", href: "/today/lesson" }}
+        secondary={{ label: "or open the lesson", href: "/today/lesson" }}
       />
     );
   }
 
   if (!session) {
     return (
-      <aside aria-label="Today’s lesson" aria-busy="true" className={CARD}>
-        <p className={KICKER}>Today’s lesson</p>
+      <section aria-label="Today’s lesson" aria-busy="true" className={CARD}>
         <p className="sr-only" role="status">
           Loading today’s lesson
         </p>
-        <div aria-hidden="true" className="mt-4 flex flex-col gap-[10px]">
-          <span className="h-8 w-[78%] bg-(--paper-sunk)" />
-          <span className="mt-2 h-[14px] bg-(--paper-sunk)" />
-          <span className="h-[14px] bg-(--paper-sunk)" />
+        <div aria-hidden="true" className="flex flex-col gap-3">
+          <span className="h-3 w-32 bg-(--paper-sunk)" />
+          <span className="mt-2 h-10 w-[70%] bg-(--paper-sunk)" />
+          <span className="mt-3 h-[14px] bg-(--paper-sunk)" />
           <span className="h-[14px] w-[62%] bg-(--paper-sunk)" />
         </div>
-      </aside>
+      </section>
     );
   }
 
@@ -64,15 +63,15 @@ export function LessonTeaser({ session, error, onRetry }: LessonTeaserProps) {
   const text = lesson.paragraphs?.[0] ? opening(lesson.paragraphs[0]) : null;
 
   return (
-    <aside aria-label="Today’s lesson" className={CARD}>
-      <p className={KICKER}>Today in {lesson.subject}</p>
-      <h2 className="m-0 mt-3 text-[36px] font-medium leading-[1.05] tracking-[-0.015em]">{lesson.title}</h2>
+    <section aria-label="Today’s lesson" className={CARD}>
+      <div className="flex justify-between gap-3 font-mono text-[12px] uppercase tracking-[0.08em]">
+        <span className="text-(--accent)">Today in {lesson.subject}</span>
+        <span className="text-(--ink-muted)">{lesson.minutes} min</span>
+      </div>
+      <h2 className="m-0 mt-4 text-[34px] font-medium leading-[1.02] tracking-[-0.02em] md:text-[52px]">{lesson.title}</h2>
       {text ? (
-        <p className="m-0 mt-[14px] text-[18px] leading-[1.55] text-(--ink-soft)">
-          <span
-            aria-hidden="true"
-            className="float-left pr-[7px] pt-[5px] text-[56px] font-medium leading-[0.82] text-(--ink)"
-          >
+        <p className="m-0 mt-5 text-[18px] leading-[1.6] text-(--ink-soft) md:text-[21px]">
+          <span aria-hidden="true" className="float-left pr-[10px] pt-[6px] text-[58px] font-medium leading-[0.82] text-(--ink) md:text-[72px]">
             {text[0]}
           </span>
           <span className="sr-only">{text[0]}</span>
@@ -80,17 +79,22 @@ export function LessonTeaser({ session, error, onRetry }: LessonTeaserProps) {
         </p>
       ) : (
         // Nobody has opened today's lesson yet, so there is no text to quote.
-        <p className="m-0 mt-[14px] text-[18px] leading-[1.55] text-(--ink-soft)">
+        <p className="m-0 mt-5 text-[18px] leading-[1.6] text-(--ink-soft) md:text-[21px]">
           Three short paragraphs and a quick check. About three minutes.
         </p>
       )}
-      <Link
-        href={done ? "/today/lesson?read=1" : "/today/lesson"}
-        className="group mt-4 inline-flex min-h-11 items-center gap-2 font-mono text-[14px] text-(--ink) underline underline-offset-4"
-      >
-        {done ? "Read it again" : text ? "Keep reading" : "Start reading"}
-        <ArrowIcon size={16} className="group-hover:text-(--accent)" />
-      </Link>
-    </aside>
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-0 border-t border-solid border-(--rule) pt-4">
+        <span className="text-[16px] italic text-(--ink-muted)">
+          {done ? "You finished this one today." : "Two more paragraphs, then a quick check."}
+        </span>
+        <Link
+          href={done ? "/today/lesson?read=1" : "/today/lesson"}
+          className="group inline-flex min-h-11 items-center gap-2 font-mono text-[14px] text-(--ink) underline-offset-4"
+        >
+          {done ? "Read it again" : "Keep reading"}
+          <ArrowIcon size={16} className="group-hover:text-(--accent)" />
+        </Link>
+      </div>
+    </section>
   );
 }

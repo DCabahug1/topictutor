@@ -1,9 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { Button } from "@/components/almanac/Button";
-import { cx } from "@/components/almanac/cx";
-import { CheckIcon, CrossIcon } from "@/components/almanac/icons";
+import { LeadBlock } from "@/components/almanac/LeadBlock";
 import { Notice } from "@/components/almanac/Notice";
 import { StatBars } from "@/components/almanac/StatBars";
 import {
@@ -18,28 +16,32 @@ import {
   type Streak,
   type Subject,
 } from "@/lib/almanac";
+import { spellOut } from "../../today/lesson/components/copy";
 
-const SECTION = "min-w-0 border-0 border-t-[3px] border-solid border-(--ink) pt-4";
-const HEADING = "t-label m-0 text-(--ink-muted)";
-const NOTE = "m-0 text-[17px] leading-[1.45] text-(--ink-soft)";
-const ROW = "flex flex-wrap gap-7 md:gap-x-14 md:gap-y-10";
 const MASTERY_QUESTIONS = 5;
+const LABEL = "m-0 font-mono text-[12px] uppercase tracking-[0.08em] text-(--ink-muted)";
+const BIG = "m-0 mt-2 font-serif text-[80px] font-medium leading-[0.9] tracking-[-0.04em] md:text-[112px]";
 
 const lessons = (n: number) => `${n} ${n === 1 ? "lesson" : "lessons"}`;
-const days = (n: number) => `${n} ${n === 1 ? "day" : "days"}`;
 
-/** "Since September 24. Your longest was 52 days. Today still counts until midnight." */
-function streakLine(streak: Streak): string {
+/** "Almost seven weeks without a miss." for 47. */
+function streakHeadline(count: number): string {
+  if (count === 0) return "No streak right now.";
+  if (count === 1) return "Day one.";
+  if (count < 7) return `${spellOut(count)} days in a row.`;
+  const weeks = Math.floor(count / 7);
+  const rest = count % 7;
+  const word = (n: number) => (n === 1 ? "a week" : `${spellOut(n).toLowerCase()} weeks`);
+  if (rest === 0) return `${spellOut(weeks)} ${weeks === 1 ? "week" : "weeks"} without a miss.`;
+  if (rest >= 5) return `Almost ${word(weeks + 1)} without a miss.`;
+  return `Over ${word(weeks)} without a miss.`;
+}
+
+/** "Since September 24", the first day of the streak. */
+function since(streak: Streak): string {
   // A streak that doesn't include today yet ends yesterday.
   const first = shiftDate(localDate(), -(streak.count - (streak.todayDone ? 1 : 0)));
-  const since = parseLocalDate(first).toLocaleDateString("en-US", { month: "long", day: "numeric" });
-  return [
-    `Since ${since}.`,
-    streak.longest > streak.count ? `Your longest was ${days(streak.longest)}.` : "This is your longest so far.",
-    !streak.todayDone && "Today still counts until midnight.",
-  ]
-    .filter(Boolean)
-    .join(" ");
+  return parseLocalDate(first).toLocaleDateString("en-US", { month: "long", day: "numeric" });
 }
 
 export function StatsView() {
@@ -51,227 +53,192 @@ export function StatsView() {
   if (error) {
     return (
       <Notice
-        className="mt-6 max-w-[640px] md:mt-10"
+        className="mt-(--lead-top) max-w-[780px]"
         tone="error"
         kicker="Couldn’t load"
         title="Your stats didn’t load."
         body="It’s probably the connection. Nothing was lost."
         primary={{ label: "Try again", onClick: reload }}
-        secondary={{ label: "Go to Today", href: "/today" }}
+        secondary={{ label: "or go to Today", href: "/today" }}
       />
     );
   }
 
-  if (!stats) return <Loading />;
+  if (!stats) {
+    return (
+      <div aria-busy="true" className="mt-(--lead-top)">
+        <p role="status" className="sr-only">
+          Loading your stats
+        </p>
+        <div aria-hidden="true" className="flex flex-col gap-4">
+          <span className="h-3 w-48 bg-(--paper-sunk)" />
+          <span className="h-28 w-40 bg-(--paper-sunk)" />
+          <span className="h-14 w-[70%] max-w-[640px] bg-(--paper-sunk)" />
+        </div>
+      </div>
+    );
+  }
 
+  const { streak } = stats;
   const started = series?.filter((s) => !s.isSample).length ?? 0;
+  const week = stats.lastSevenDays.reduce((sum, day) => sum + day.count, 0);
+  const recallPercent = stats.recall.total ? Math.round((stats.recall.correct / stats.recall.total) * 100) : 0;
+
+  const line = streak.count
+    ? `${streak.longest > streak.count ? `Your longest was ${streak.longest}.` : "This is your longest so far."}${
+        streak.todayDone ? "" : " Today still counts until midnight."
+      }`
+    : "Finish today’s lesson and this becomes 1. Any lesson counts, daily or series.";
 
   return (
     <>
-      <div className={cx(ROW, "mt-6 items-stretch md:mt-10")}>
-        <StreakSection streak={stats.streak} everFinished={stats.totalLessons > 0} />
-        <WeekSection days={stats.lastSevenDays} />
-        <RecallSection recall={stats.recall} />
-      </div>
-      <div className={cx(ROW, "mt-6 items-start md:mt-10")}>
-        <SeriesSection stats={stats} started={started} />
-        <SubjectSection stats={stats} picked={subjects ?? []} />
-      </div>
-    </>
-  );
-}
-
-function Loading() {
-  return (
-    <div aria-busy="true" className={cx(ROW, "mt-6 md:mt-10")}>
-      <p role="status" className="sr-only">
-        Loading your stats
-      </p>
-      {["380px", "380px", "300px"].map((basis, i) => (
-        <div key={i} aria-hidden="true" className={SECTION} style={{ flex: `1 1 ${basis}` }}>
-          <div className="h-3 w-28 bg-(--paper-sunk)" />
-          <div className="mt-4 h-[120px] bg-(--paper-sunk)" />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function StreakSection({ streak, everFinished }: { streak: Streak; everFinished: boolean }) {
-  return (
-    <section aria-labelledby="st-streak" className={cx(SECTION, "flex-[1_1_380px]")}>
-      <h2 id="st-streak" className={HEADING}>
-        Streak
-      </h2>
-      {streak.count > 0 ? (
-        <>
-          <div className="mt-3 flex flex-wrap items-end gap-x-[14px] gap-y-3">
-            <p className="m-0 text-[120px] font-medium leading-[0.82] tracking-[-0.05em] text-(--accent) md:text-[200px]">
+      <section className="mt-(--lead-top)">
+        <LeadBlock
+          eyebrow={streak.count ? `Streak · since ${since(streak)}` : "Streak"}
+          numeral={
+            <p
+              className={`m-0 font-serif text-[120px] font-medium leading-[0.85] tracking-[-0.05em] md:text-[180px] ${
+                streak.count ? "text-(--ink)" : "text-(--ink-muted)"
+              }`}
+            >
               {streak.count}
+              <span className="sr-only"> {streak.count === 1 ? "day in a row" : "days in a row"}</span>
             </p>
-            <p className="m-0 mb-[10px] font-mono text-[13px] uppercase tracking-[0.06em] text-(--ink-muted)">
-              {streak.count === 1 ? "day in a row" : "days in a row"}
-            </p>
-          </div>
-          <p className="m-0 mt-4 text-[18px] leading-[1.45] text-(--ink-soft)">{streakLine(streak)}</p>
-        </>
-      ) : (
-        // Zero is muted, never a warning.
-        <div className="mt-[14px] border-[1.5px] border-dashed border-(--ink-muted) p-6">
-          <p className="m-0 text-[88px] font-medium leading-[0.85] tracking-[-0.04em] text-(--ink-muted) md:text-[120px]">
-            0
-          </p>
-          <p className="m-0 mt-[14px] text-[22px] font-medium leading-tight">
-            {everFinished ? "No streak right now." : "No streak yet."}
-          </p>
-          <p className={cx(NOTE, "mt-[6px]")}>
-            Finish today’s lesson and this becomes 1. Any lesson counts, daily or series.
-          </p>
-          <Button href="/today/lesson" className="mt-4">
-            Start today’s lesson
-          </Button>
-        </div>
-      )}
-    </section>
-  );
-}
+          }
+          title={streakHeadline(streak.count)}
+          size="sm"
+          line={line}
+          className="max-w-[920px]"
+          primary={
+            streak.todayDone ? undefined : (
+              <Button icon href="/today/lesson">
+                Start today’s lesson
+              </Button>
+            )
+          }
+        />
+      </section>
 
-function WeekSection({ days: week }: { days: Stats["lastSevenDays"] }) {
-  const total = week.reduce((sum, day) => sum + day.count, 0);
-  return (
-    <section aria-labelledby="st-week" className={cx(SECTION, "flex-[1_1_380px]")}>
-      <h2 id="st-week" className={HEADING}>
-        Lessons finished · last 7 days
-      </h2>
-      <p className="m-0 mt-[10px] font-mono text-[30px] font-medium">{lessons(total)}</p>
-      <StatBars
-        className="mt-[10px]"
-        layout="columns"
-        title="Lessons finished"
-        // One lesson a day shouldn't fill the chart.
-        max={3}
-        bars={week.map((day) => ({
-          label: day.isToday ? "Today" : day.short,
-          spoken: day.isToday ? "Today" : day.name,
-          value: day.count,
-          current: day.isToday,
-        }))}
-      />
-    </section>
-  );
-}
+      <section aria-labelledby="st-week" className="mt-(--section-gap)">
+        <h2 id="st-week" className="t-section m-0">
+          {week === 0 ? "No lessons this week yet" : `${lessons(week)} this week`}
+        </h2>
+        <StatBars
+          className="mt-10"
+          layout="columns"
+          title="Lessons finished"
+          // One lesson a day shouldn't fill the chart.
+          max={3}
+          bars={stats.lastSevenDays.map((day) => ({
+            label: day.isToday ? "Today" : day.short,
+            spoken: day.isToday ? "Today" : day.name,
+            value: day.count,
+            current: day.isToday,
+          }))}
+        />
+      </section>
 
-function RecallSection({ recall }: { recall: Stats["recall"] }) {
-  const percent = recall.total ? Math.round((recall.correct / recall.total) * 100) : 0;
-  return (
-    <section aria-labelledby="st-recall" className={cx(SECTION, "flex-[1_1_300px]")}>
-      <h2 id="st-recall" className={HEADING}>
-        Recall accuracy
-      </h2>
-      {recall.total > 0 ? (
-        <>
-          <p className="m-0 mt-[10px] font-mono text-[56px] font-medium leading-none tracking-[-0.03em]">{percent}%</p>
-          <div
-            role="img"
-            aria-label={`${recall.correct} of ${recall.total} recall questions right`}
-            className="mt-[14px] h-[10px] border border-solid border-(--ink)"
-          >
-            <div className="h-full bg-(--ink)" style={{ width: `${percent}%` }} />
-          </div>
-          <p className={cx(NOTE, "mt-3")}>
-            {recall.total === 1
-              ? `Your first recall question was ${recall.correct ? "right" : "wrong"}.`
-              : `${recall.correct} of your ${recall.total} recall questions were right.`}{" "}
-            That’s how much of earlier lessons is still with you.
+      <div className="mt-(--section-gap) grid grid-cols-1 gap-x-[72px] gap-y-16 md:grid-cols-2">
+        <section aria-labelledby="st-recall" className="min-w-0">
+          <h2 id="st-recall" className={LABEL}>
+            Recall accuracy
+          </h2>
+          {stats.recall.total > 0 ? (
+            <>
+              <p className={BIG}>{recallPercent}%</p>
+              <div
+                role="img"
+                aria-label={`${stats.recall.correct} of ${stats.recall.total} recall questions right`}
+                className="mt-7 h-[5px] bg-(--paper-sunk)"
+              >
+                <div className="h-full bg-(--ink)" style={{ width: `${recallPercent}%` }} />
+              </div>
+              <p className="m-0 mt-4 text-[17px] text-(--ink-soft)">
+                {stats.recall.total === 1
+                  ? `Your first recall question was ${stats.recall.correct ? "right" : "wrong"}.`
+                  : `${stats.recall.correct} of your ${stats.recall.total} recall questions were right.`}
+              </p>
+            </>
+          ) : (
+            <>
+              <p className={`${BIG} text-(--ink-muted)`}>Not yet</p>
+              <p className="m-0 mt-4 text-[17px] text-(--ink-soft)">
+                Starts with your second lesson, when there’s something to recall.
+              </p>
+            </>
+          )}
+        </section>
+
+        <section aria-labelledby="st-series" className="min-w-0">
+          <h2 id="st-series" className={LABEL}>
+            Series completed
+          </h2>
+          <p className={`${BIG} ${stats.seriesCompleted ? "" : "text-(--ink-muted)"}`}>
+            {stats.seriesCompleted}
+            {started > 0 && (
+              <span className="ml-3 text-[32px] tracking-[-0.01em] text-(--ink-muted) md:text-[40px]">of {started} started</span>
+            )}
           </p>
-        </>
-      ) : (
-        <>
-          <p className="m-0 mt-[10px] font-mono text-[40px] font-medium leading-[1.2] text-(--ink-muted)">Not yet</p>
-          <p className={cx(NOTE, "mt-3")}>Starts with your second lesson, when there’s something to recall.</p>
-        </>
-      )}
-    </section>
-  );
-}
-
-function SeriesSection({ stats, started }: { stats: Stats; started: number }) {
-  const scores = stats.masteryScores;
-  return (
-    <section aria-labelledby="st-series" className={cx(SECTION, "flex-[1_1_380px]")}>
-      <h2 id="st-series" className={HEADING}>
-        Series completed
-      </h2>
-      <p className={cx("m-0 mt-[10px] font-mono text-[30px] font-medium", scores.length === 0 && "text-(--ink-muted)")}>
-        {stats.seriesCompleted}
-        {started > 0 && <span className="text-[16px] text-(--ink-muted)"> of {started} started</span>}
-      </p>
-      {scores.length > 0 ? (
-        <>
-          <h3 className="m-0 mt-5 font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-(--ink-muted)">
-            Mastery Check scores
-          </h3>
-          <ul className="m-0 mt-2 list-none border-0 border-b border-solid border-(--rule) p-0">
-            {scores.map((score) => {
-              const passed = masteryPassed(score.best);
-              return (
-                <li
-                  key={score.seriesId}
-                  className="grid grid-cols-[minmax(0,1fr)_auto] gap-3 border-0 border-t border-solid border-(--rule) py-3"
-                >
-                  <span className="text-[17px] leading-[1.3]">{score.title}</span>
-                  <span
-                    className={cx(
-                      "inline-flex items-center gap-[5px] self-start font-mono text-[14px] font-medium",
-                      passed ? "text-(--correct)" : "text-(--incorrect)"
-                    )}
+          {stats.masteryScores.length > 0 ? (
+            <ul className="m-0 mt-7 list-none border-0 border-t border-solid border-(--ink) p-0">
+              {stats.masteryScores.map((score) => {
+                const passed = masteryPassed(score.best);
+                return (
+                  <li
+                    key={score.seriesId}
+                    className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-3 border-0 border-b border-solid border-(--rule) py-3"
                   >
-                    {passed ? <CheckIcon size={12} strokeWidth={2.8} /> : <CrossIcon size={12} strokeWidth={2.8} />}
-                    {score.best}/{MASTERY_QUESTIONS}
-                    {passed ? <span className="sr-only">, passed</span> : " · retake ready"}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-        </>
-      ) : (
-        <>
-          <p className={cx(NOTE, "mt-2")}>
-            Finish all five lessons of a series and pass its Mastery Check to complete it. Scores appear here.
-          </p>
-          <Link
-            href="/series/new"
-            className="mt-[10px] inline-flex min-h-11 items-center font-mono text-[13px] text-(--ink) underline underline-offset-4"
-          >
-            Start a series
-          </Link>
-        </>
-      )}
-    </section>
+                    <span className="text-[17px] leading-[1.3]">{score.title}</span>
+                    {passed ? (
+                      <span className="font-mono text-[13px]">
+                        {score.best}/{MASTERY_QUESTIONS}
+                        <span className="sr-only">, passed</span>
+                      </span>
+                    ) : (
+                      <span className="font-mono text-[13px] text-(--accent)">
+                        Retake ready<span className="sr-only">, best {score.best} of {MASTERY_QUESTIONS}</span>
+                      </span>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p className="m-0 mt-4 text-[17px] text-(--ink-soft)">
+              Pass a series’ Mastery Check to complete it. Scores appear here.{" "}
+              <Button variant="quiet" href="/series/new" className="min-h-0! text-[17px]!">
+                Start a series
+              </Button>
+            </p>
+          )}
+        </section>
+      </div>
+
+      <SubjectSection stats={stats} picked={subjects ?? []} />
+    </>
   );
 }
 
 function SubjectSection({ stats, picked }: { stats: Stats; picked: Subject[] }) {
   return (
-    <section aria-labelledby="st-cat" className={cx(SECTION, "flex-[1_1_520px]")}>
-      <div className="flex items-baseline justify-between gap-3">
-        <h2 id="st-cat" className={HEADING}>
+    <section aria-labelledby="st-cat" className="mt-(--section-gap)">
+      <div className="flex flex-wrap items-baseline justify-between gap-3">
+        <h2 id="st-cat" className="t-section m-0">
           By subject
         </h2>
-        <span className="font-mono text-[12px] text-(--ink-muted)">
+        <span className="font-mono text-[12px] uppercase tracking-[0.06em] text-(--ink-muted)">
           {stats.totalLessons ? lessons(stats.totalLessons) : "No lessons yet"}
         </span>
       </div>
       {stats.bySubject.length > 0 ? (
         <StatBars
-          className="mt-3"
+          className="mt-5"
           layout="rows"
           title="Lessons by subject"
           bars={stats.bySubject.map((row) => ({ label: row.subject, value: row.lessons }))}
         />
       ) : (
-        <p className={cx(NOTE, "mt-3")}>
+        <p className="m-0 mt-4 text-[17px] text-(--ink-soft)">
           Your lessons will add up here by subject.
           {picked.length > 0 &&
             ` You picked ${joinList(picked)}, so ${picked.length === 1 ? "that comes" : "those come"} first.`}

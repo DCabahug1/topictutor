@@ -7,15 +7,16 @@ import { cx } from "@/components/almanac/cx";
 import { CheckIcon, CrossIcon } from "@/components/almanac/icons";
 import { Notice } from "@/components/almanac/Notice";
 import type { SessionUser } from "@/components/almanac/SessionProvider";
-import { SubjectToggle } from "@/components/almanac/SubjectToggle";
+import { LeadBlock } from "@/components/almanac/LeadBlock";
+import { SubjectGrid, SubjectToggle } from "@/components/almanac/SubjectToggle";
 import { TextField } from "@/components/almanac/TextField";
 import { SUBJECTS, almanac, joinList, useAlmanac, type Subject } from "@/lib/almanac";
 import { authService } from "@/lib/auth";
 import { updateProfile, uploadProfileImage } from "@/lib/profiles";
 
 const NAME_MAX = 25;
-const LEGEND = "t-label p-0";
-const AVATAR = "h-24 w-24 rounded-(--radius-full)";
+const LEGEND = "m-0 p-0 font-mono text-[12px] uppercase tracking-[0.08em] text-(--ink-muted)";
+const AVATAR = "h-[72px] w-[72px] rounded-(--radius-full)";
 
 type SaveState = "idle" | "saving" | "saved" | "failed";
 
@@ -144,14 +145,21 @@ export function ProfileView({ user }: { user: SessionUser }) {
   };
 
   return (
-    <form
-      noValidate
-      onSubmit={saveChanges}
-      className="mt-6 max-w-[720px] border-0 border-t-[3px] border-solid border-(--ink) pt-5 md:mt-10"
-    >
-      <fieldset className="m-0 border-0 p-0">
-        <legend className={LEGEND}>Photo</legend>
-        <div className="mt-3 flex flex-wrap items-center gap-[18px]">
+    <form noValidate onSubmit={saveChanges} className="mt-(--lead-top) max-w-[760px]">
+      <LeadBlock
+        size="sm"
+        eyebrow="Profile"
+        title={currentName.trim() || user.email}
+        line={
+          <>
+            {user.email} · <span className="italic">email can’t be changed</span>
+          </>
+        }
+      />
+
+      <fieldset className="m-0 mt-14 border-0 p-0">
+        <legend className="sr-only">Photo</legend>
+        <div className="flex flex-wrap items-center gap-5">
           {photo ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -171,7 +179,7 @@ export function ProfileView({ user }: { user: SessionUser }) {
               aria-hidden="true"
               className={cx(
                 AVATAR,
-                "flex flex-none items-center justify-center bg-(--ink) text-[44px] font-medium text-(--on-ink)"
+                "flex flex-none items-center justify-center bg-(--ink) text-[32px] font-medium text-(--on-ink)"
               )}
             >
               {initial}
@@ -182,7 +190,7 @@ export function ProfileView({ user }: { user: SessionUser }) {
             <input id="profile-photo" type="file" accept="image/*" onChange={onPhoto} className="peer sr-only" />
             <label
               htmlFor="profile-photo"
-              className="inline-flex min-h-[46px] cursor-pointer items-center border-[1.5px] border-solid border-(--ink) px-4 font-mono text-[13px] hover:bg-(--paper-sunk) peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--focus)"
+              className="t-quiet-link inline-flex min-h-11 cursor-pointer items-center peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--focus)"
             >
               {photo || user.imageUrl ? "Choose a different photo" : "Upload a photo"}
             </label>
@@ -192,7 +200,7 @@ export function ProfileView({ user }: { user: SessionUser }) {
                 That file isn’t a picture. Choose a photo instead.
               </p>
             ) : (
-              <p className="t-note m-0 mt-2 text-(--ink-muted)">
+              <p className="m-0 text-[16px] text-(--ink-soft)">
                 {photo
                   ? photo.file
                     ? "Preview. Save to use it."
@@ -206,27 +214,22 @@ export function ProfileView({ user }: { user: SessionUser }) {
         </div>
       </fieldset>
 
-      <div className="mt-[26px] flex flex-wrap gap-5">
-        <div className="min-w-0 flex-[1_1_280px]">
-          <TextField
-            label="Name"
-            name="name"
-            autoComplete="name"
-            maxLength={NAME_MAX}
-            help="Shown in the account menu"
-            value={currentName}
-            onValueChange={(value) => {
-              setName(value.slice(0, NAME_MAX));
-              setSave("idle");
-            }}
-          />
-        </div>
-        <div className="min-w-0 flex-[1_1_280px]">
-          <TextField label="Email · can’t be changed" type="email" readOnly value={user.email} />
-        </div>
+      <div className="mt-10">
+        <TextField
+          label="Name"
+          name="name"
+          autoComplete="name"
+          maxLength={NAME_MAX}
+          help="Shown in the account menu"
+          value={currentName}
+          onValueChange={(value) => {
+            setName(value.slice(0, NAME_MAX));
+            setSave("idle");
+          }}
+        />
       </div>
 
-      <fieldset className="m-0 mt-[26px] border-0 p-0">
+      <fieldset className="m-0 mt-10 border-0 p-0">
         <legend className={LEGEND}>Subjects for your daily lesson</legend>
         {subjects.error ? (
           <Notice
@@ -236,21 +239,27 @@ export function ProfileView({ user }: { user: SessionUser }) {
             title="Your subjects didn’t load."
             body="It’s probably the connection. Nothing was lost."
             primary={{ label: "Try again", onClick: subjects.reload }}
-            secondary={{ label: "Go to Today", href: "/today" }}
+            secondary={{ label: "or go to Today", href: "/today" }}
           />
         ) : subjects.data ? (
-          <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-3">
+          <SubjectGrid label="Subjects for your daily lesson" columns={3} className="mt-3">
             {SUBJECTS.map((subject) => (
-              <SubjectToggle key={subject} name={subject} on={picked.includes(subject)} onToggle={() => toggle(subject)} />
+              <SubjectToggle
+                key={subject}
+                variant="row"
+                name={subject}
+                on={picked.includes(subject)}
+                onToggle={() => toggle(subject)}
+              />
             ))}
-          </div>
+          </SubjectGrid>
         ) : (
-          <div aria-busy="true" className="mt-3 h-[52px] bg-(--paper-sunk)" />
+          <div aria-busy="true" className="mt-3 h-[60px] bg-(--paper-sunk)" />
         )}
       </fieldset>
 
-      <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-[14px] border-0 border-t border-solid border-(--rule) pt-[18px]">
-        <Button type="submit" size="large" busy={saving}>
+      <div className="mt-12 flex flex-wrap items-center gap-x-7 gap-y-[14px]">
+        <Button type="submit" busy={saving} className="max-md:w-full">
           {saving ? "Saving" : save === "failed" && failure.retry ? "Try saving again" : "Save changes"}
         </Button>
         {/* The status region stays mounted so "Saved" is announced when it arrives. */}
@@ -275,7 +284,7 @@ export function ProfileView({ user }: { user: SessionUser }) {
         </div>
       </div>
 
-      <div className="mt-8 border-0 border-t border-solid border-(--rule) pt-[18px]">
+      <div className="mt-24">
         <button
           type="button"
           onClick={signOut}

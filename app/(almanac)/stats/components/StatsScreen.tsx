@@ -47,42 +47,31 @@ function StatsScreenInner() {
 
   return (
     <PaperPage current="stats">
-      <div className="mt-6 flex flex-wrap items-end justify-between gap-4 md:mt-9">
-        <h1 className="m-0 text-[40px] font-medium leading-none tracking-[-0.025em] md:text-[64px]">
-          {view === "stats" ? "Your stats" : "Profile"}
-        </h1>
-        <div
-          role="tablist"
-          aria-label="Stats and profile"
-          onKeyDown={onKeyDown}
-          className="flex border-[1.5px] border-solid border-(--ink)"
-        >
-          {VIEWS.map((v, i) => {
-            const selected = v.id === view;
-            return (
-              <button
-                key={v.id}
-                ref={(node) => {
-                  tabs.current[i] = node;
-                }}
-                type="button"
-                role="tab"
-                id={`stats-tab-${v.id}`}
-                aria-selected={selected}
-                aria-controls="stats-panel"
-                tabIndex={selected ? 0 : -1}
-                onClick={() => show(v.id)}
-                className={cx(
-                  "min-h-11 cursor-pointer border-0 border-solid border-(--ink) px-[18px] font-mono text-[14px] transition-colors duration-(--duration-instant) ease-out",
-                  i > 0 && "border-l-[1.5px]",
-                  selected ? "bg-(--ink) text-(--on-ink)" : "bg-transparent text-(--ink) hover:bg-(--paper-sunk)"
-                )}
-              >
-                {v.label}
-              </button>
-            );
-          })}
-        </div>
+      <div role="tablist" aria-label="Stats and profile" onKeyDown={onKeyDown} className="mt-5 flex gap-7">
+        {VIEWS.map((v, i) => {
+          const selected = v.id === view;
+          return (
+            <button
+              key={v.id}
+              ref={(node) => {
+                tabs.current[i] = node;
+              }}
+              type="button"
+              role="tab"
+              id={`stats-tab-${v.id}`}
+              aria-selected={selected}
+              aria-controls="stats-panel"
+              tabIndex={selected ? 0 : -1}
+              onClick={() => show(v.id)}
+              className={cx(
+                "min-h-11 cursor-pointer border-0 border-b-2 border-solid bg-transparent px-0 font-mono text-[13px] text-(--ink) transition-colors duration-(--duration-instant) ease-out",
+                selected ? "border-(--accent)" : "border-transparent hover:text-(--accent)"
+              )}
+            >
+              {v.label}
+            </button>
+          );
+        })}
       </div>
 
       <div role="tabpanel" id="stats-panel" aria-labelledby={`stats-tab-${view}`}>
@@ -93,13 +82,13 @@ function StatsScreenInner() {
         ) : (
           // The middleware sends guests to log in first, so this is a fallback.
           <Notice
-            className="mt-6 max-w-[720px] md:mt-10"
+            className="mt-(--lead-top) max-w-[780px]"
             tone="info"
             kicker="Signed out"
             title="Log in to see your profile."
             body="Your name, photo and subjects live in your account."
             primary={{ label: "Log in", href: "/login" }}
-            secondary={{ label: "Today’s lesson", href: "/today/lesson" }}
+            secondary={{ label: "or open today’s lesson", href: "/today/lesson" }}
           />
         )}
       </div>

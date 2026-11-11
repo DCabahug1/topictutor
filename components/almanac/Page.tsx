@@ -14,6 +14,8 @@ type PaperPageProps = {
   dateline?: boolean;
   /** False hides the phone tab bar, for pages that pin their own actions there. */
   tabs?: boolean;
+  /** Full-bleed bands after the content, outside the gutters: the landing page's tutor and closing bands. */
+  after?: ReactNode;
   children: ReactNode;
 };
 
@@ -21,15 +23,18 @@ type PaperPageProps = {
  * The frame for every page outside a session: gutters, the 1200px content
  * width, the masthead, and the bottom tabs for signed-in learners on phones.
  */
-export function PaperPage({ current, dateline, tabs = true, children }: PaperPageProps) {
+export function PaperPage({ current, dateline, tabs = true, after, children }: PaperPageProps) {
   const session = useSession();
   const user = tabs ? session : null;
   return (
-    <div className={cx("min-h-dvh px-(--gutter)", user ? "pb-[120px] md:pb-24" : "pb-16 md:pb-24")}>
-      <div className="mx-auto max-w-(--content-max)">
-        <Masthead current={current} dateline={dateline} />
-        <main>{children}</main>
+    <div className={cx("min-h-dvh", user && "pb-[88px] md:pb-0")}>
+      <div className={cx("px-(--gutter)", !after && "pb-16 md:pb-24")}>
+        <div className="mx-auto max-w-(--content-max)">
+          <Masthead current={current} dateline={dateline} />
+          <main>{children}</main>
+        </div>
       </div>
+      {after}
       {user && <BottomTabs current={current} />}
     </div>
   );

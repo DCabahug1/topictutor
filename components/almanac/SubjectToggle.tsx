@@ -4,6 +4,8 @@ type SubjectToggleProps = {
   name: string;
   on: boolean;
   onToggle: () => void;
+  /** tile: the first-time picker. row: the compact list in Profile, with the accent bar on the left. */
+  variant?: "tile" | "row";
   className?: string;
 };
 
@@ -12,7 +14,28 @@ type SubjectToggleProps = {
  * and "✓ In"; not selected is transparent with muted text and "+ Add". Never the
  * ink fill. Place tiles in a `SubjectGrid` so their hairlines meet.
  */
-export function SubjectToggle({ name, on, onToggle, className }: SubjectToggleProps) {
+export function SubjectToggle({ name, on, onToggle, variant = "tile", className }: SubjectToggleProps) {
+  if (variant === "row") {
+    return (
+      <button
+        type="button"
+        aria-pressed={on}
+        onClick={onToggle}
+        className={cx(
+          "relative -mb-px -mr-px flex min-h-[60px] cursor-pointer items-center justify-between gap-3 border border-solid border-(--ink) px-4 text-left font-serif text-[19px] transition-colors duration-(--duration-instant) ease-out",
+          on ? "bg-(--paper-raised) text-(--ink)" : "bg-transparent text-(--ink-muted) hover:text-(--ink)",
+          className
+        )}
+      >
+        {on && <span aria-hidden="true" className="absolute inset-y-0 -left-px w-1 bg-(--accent)" />}
+        <span>{name}</span>
+        <span aria-hidden="true" className={cx("font-mono text-[12px]", on ? "text-(--accent)" : "text-(--ink-muted)")}>
+          {on ? "✓" : "+"}
+        </span>
+      </button>
+    );
+  }
+
   return (
     <button
       type="button"
@@ -36,10 +59,24 @@ export function SubjectToggle({ name, on, onToggle, className }: SubjectTogglePr
   );
 }
 
-/** Lays tiles out so their hairlines meet: two columns on phones, four from 768px. */
-export function SubjectGrid({ label, children, className }: { label: string; children: React.ReactNode; className?: string }) {
+/** Lays tiles out so their hairlines meet: two columns on phones, four (or three for rows) from 768px. */
+export function SubjectGrid({
+  label,
+  columns = 4,
+  children,
+  className,
+}: {
+  label: string;
+  columns?: 3 | 4;
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <div role="group" aria-label={label} className={cx("grid grid-cols-2 pb-px pr-px md:grid-cols-4", className)}>
+    <div
+      role="group"
+      aria-label={label}
+      className={cx("grid grid-cols-2 pb-px pr-px", columns === 4 ? "md:grid-cols-4" : "md:grid-cols-3", className)}
+    >
       {children}
     </div>
   );

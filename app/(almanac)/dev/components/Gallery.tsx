@@ -520,10 +520,7 @@ export function Gallery() {
       <Section title="Masthead" note="The account menu opens on click. Escape closes it.">
         <Both>
           <State name="Signed out">
-            <Masthead user={null} guestStreak={0} />
-          </State>
-          <State name="Guest with progress">
-            <Masthead user={null} guestStreak={1} />
+            <Masthead user={null} />
           </State>
           <State name="Signed in, with the date line">
             <Masthead user={DUANE} current="today" dateline />
