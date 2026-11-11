@@ -14,6 +14,8 @@ type AnswerOptionProps = {
   unsure?: boolean;
   /** Locks the option once the answer is revealed. */
   locked?: boolean;
+  /** lg for lesson checks, where options are short. md for tests. */
+  size?: "lg" | "md";
   tabIndex?: number;
   onSelect?: () => void;
 };
@@ -24,7 +26,7 @@ type AnswerOptionProps = {
  * wrong carry a glyph and a word, never colour alone.
  */
 export const AnswerOption = forwardRef<HTMLButtonElement, AnswerOptionProps>(function AnswerOption(
-  { letter, text, selected = false, result = "none", unsure = false, locked = false, tabIndex, onSelect },
+  { letter, text, selected = false, result = "none", unsure = false, locked = false, size = "lg", tabIndex, onSelect },
   ref
 ) {
   const correct = result === "correct";
@@ -44,8 +46,9 @@ export const AnswerOption = forwardRef<HTMLButtonElement, AnswerOptionProps>(fun
       tabIndex={tabIndex}
       onClick={locked ? undefined : onSelect}
       className={cx(
-        "grid min-h-16 w-full grid-cols-[28px_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 text-left font-serif text-[18px] font-medium leading-[1.3] md:grid-cols-[36px_minmax(0,1fr)_auto] md:px-5 md:text-[22px] transition-colors duration-(--duration-instant) ease-out",
-        unsure ? "border-dashed italic" : "border-solid",
+        "grid w-full grid-cols-[28px_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 text-left font-serif leading-[1.3] md:grid-cols-[48px_minmax(0,1fr)_auto] md:px-5 transition-colors duration-(--duration-instant) ease-out",
+        size === "lg" ? "min-h-16 text-[18px] font-medium md:text-[22px]" : "min-h-[58px] text-[17px] md:text-[19px]",
+        "border-solid",
         selected && plain && !dimmed ? "border-2" : "border-[1.5px]",
         locked ? "cursor-default" : "cursor-pointer",
         correct && "border-(--correct) bg-(--correct-wash) text-(--ink)",
@@ -62,7 +65,7 @@ export const AnswerOption = forwardRef<HTMLButtonElement, AnswerOptionProps>(fun
           selected && plain && !dimmed ? "text-(--accent)" : "text-(--ink-muted)"
         )}
       >
-        {unsure ? "N" : letter}
+        {unsure ? "?" : letter}
       </span>
       <span>{text}</span>
       <span

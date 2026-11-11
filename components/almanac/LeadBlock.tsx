@@ -43,8 +43,8 @@ export function LeadBlock({
 }: LeadBlockProps) {
   return (
     <div className={cx("min-w-0", className)}>
-      {numeral && <div className="mb-6">{numeral}</div>}
       {eyebrow && <p className="t-eyebrow m-0">{eyebrow}</p>}
+      {numeral && <div className={eyebrow ? "mt-2" : undefined}>{numeral}</div>}
       <h1
         id={headingId}
         ref={focusRef}
@@ -52,7 +52,7 @@ export function LeadBlock({
         className={cx(
           size === "lg" ? "t-lead-h1" : "t-lead-h1-sm",
           "m-0 text-(--ink) [overflow-wrap:anywhere]",
-          eyebrow ? "mt-[18px]" : undefined
+          numeral ? "mt-6" : eyebrow ? "mt-[18px]" : undefined
         )}
       >
         {title}

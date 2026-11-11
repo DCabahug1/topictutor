@@ -2,12 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/almanac/Button";
-import { BackIcon } from "@/components/almanac/icons";
 import { SessionPage } from "@/components/almanac/Page";
 import { Question } from "@/components/almanac/Question";
-import { QuestionNav } from "@/components/almanac/QuestionNav";
+import { StepMeter } from "@/components/almanac/StepMeter";
 import { almanac, type Answer, type Mastery } from "@/lib/almanac";
-import { shortTitle } from "./copy";
 
 type MasteryTakingProps = {
   mastery: Mastery;
@@ -29,6 +27,8 @@ export function MasteryTaking({ mastery, focusHeading = false, onUpdate }: Maste
   const [submitFailed, setSubmitFailed] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
   const moved = useRef(false);
+  // Saves go out one after another, and submitting waits for the last one.
+  const saves = useRef<Promise<void>>(Promise.resolve());
 
   // After moving to another question, start reading from its prompt.
   useEffect(() => {
@@ -39,10 +39,8 @@ export function MasteryTaking({ mastery, focusHeading = false, onUpdate }: Maste
   if (!question) return null;
 
   const lastIndex = questions.length - 1;
-  const answered = answers.map((answer) => answer !== null);
-  const left = answered.filter((isAnswered) => !isAnswered).length;
-  const answeredLine = `${questions.length - left} of ${questions.length} answered`;
-  const from = `from lesson ${question.lessonNumber ?? index + 1}`;
+  const left = answers.filter((answer) => answer === null).length;
+  const answeredCount = questions.length - left;
 
   const jump = (next: number) => {
     moved.current = true;
@@ -52,17 +50,27 @@ export function MasteryTaking({ mastery, focusHeading = false, onUpdate }: Maste
 
   // Shown at once and saved on every change, so a refresh restores the check.
   const choose = (answer: Answer) => {
-    onUpdate({ ...mastery, answers: answers.map((previous, i) => (i === index ? answer : previous)) });
-    almanac
-      .saveMasteryAnswer(id, index, answer)
-      .then(() => setSaveFailed(false))
-      .catch(() => setSaveFailed(true));
+    const at = index;
+    onUpdate({ ...mastery, answers: answers.map((previous, i) => (i === at ? answer : previous)) });
+    setSaveFailed(false);
+    saves.current = saves.current
+      .then(() => almanac.saveMasteryAnswer(id, at, answer))
+      .then(
+        () => undefined,
+        () => setSaveFailed(true)
+      );
   };
 
   const submit = async () => {
     setSubmitting(true);
     setSubmitFailed(false);
     try {
+      await saves.current;
+      // If a save was lost on the way, send every answer again before submitting.
+      if (saveFailed) {
+        await Promise.all(answers.map((answer, i) => (answer === null ? null : almanac.saveMasteryAnswer(id, i, answer))));
+        setSaveFailed(false);
+      }
       const result = await almanac.submitMastery(id);
       window.scrollTo({ top: 0 });
       onUpdate(result);
@@ -72,139 +80,69 @@ export function MasteryTaking({ mastery, focusHeading = false, onUpdate }: Maste
     }
   };
 
-  const savedNote = "Saved as you go. Refreshing keeps your answers.";
+  const primary =
+    index < lastIndex ? (
+      <Button icon onClick={() => jump(index + 1)}>
+        Next question
+      </Button>
+    ) : left > 0 ? (
+      <Button disabled>Answer {left} more to submit</Button>
+    ) : (
+      <Button icon busy={submitting} onClick={submit}>
+        {submitting ? "Sending your answers" : "Submit answers"}
+      </Button>
+    );
 
   return (
     <SessionPage
       leaveHref={`/series/${id}`}
-      leaveLabel="Series"
-      width="wide"
-      footerDesktop={false}
-      footer={
-        <div>
-          <div className="flex gap-2 [&>*:last-child]:min-w-0 [&>*:last-child]:flex-auto">
-            {index > 0 && (
-              <Button variant="secondary" size="large" className="flex-none px-4! text-[14px]!" onClick={() => jump(index - 1)}>
-                Back
-              </Button>
-            )}
-            {index < lastIndex ? (
-              <Button size="large" icon onClick={() => jump(index + 1)}>
-                Next question
-              </Button>
-            ) : left > 0 ? (
-              <Button size="large" disabled>
-                Answer {left} more to submit
-              </Button>
-            ) : (
-              <Button size="large" icon busy={submitting} onClick={submit}>
-                Submit answers
-              </Button>
-            )}
-          </div>
-          <p className="m-0 mt-2 text-center font-mono text-[12px] text-(--ink-muted)">{savedNote}</p>
-        </div>
+      leaveLabel="Leave check"
+      rail={
+        <StepMeter
+          steps={questions.length}
+          current={index}
+          label={`Mastery Check · ${answeredCount} of ${questions.length} answered · saved as you go`}
+        />
+      }
+      stepKey={`question-${index}`}
+      footer={primary}
+      footerQuiet={
+        index > 0 ? (
+          <Button variant="quiet" onClick={() => jump(index - 1)}>
+            or go back to question {index}
+          </Button>
+        ) : undefined
       }
     >
-      <div className="flex flex-wrap items-start gap-x-[72px] gap-y-0 pt-5 md:gap-y-10 md:pt-10">
-        <div className="min-w-0 flex-[1_1_300px] md:max-w-[380px]">
-          <div className="t-label flex items-baseline justify-between gap-3 font-normal!">
-            <span className="text-(--accent)">
-              Mastery Check
-              <span className="hidden md:inline"> · {shortTitle(mastery.seriesTitle)}</span>
-            </span>
-            <span className="flex-none text-(--ink-muted) md:hidden">{answeredLine}</span>
-          </div>
-          <QuestionNav
-            variant="row"
-            className="mt-3 md:hidden"
-            count={questions.length}
-            current={index}
-            answered={answered}
-            onJump={jump}
-          />
-          <QuestionNav
-            variant="list"
-            className="mt-3 hidden md:block"
-            count={questions.length}
-            current={index}
-            answered={answered}
-            onJump={jump}
-            meta={questions.map((q, i) => `From lesson ${q.lessonNumber ?? i + 1}`)}
-          />
-          <p className="t-note m-0 mt-[14px] hidden text-(--ink-muted) md:block">{savedNote}</p>
-        </div>
-
-        <section className="min-w-0 max-w-[760px] flex-[999_1_560px]">
-          <div className="mt-[22px] flex justify-between gap-3 font-mono text-[12px] uppercase tracking-[0.06em] text-(--ink-muted) md:mt-0 md:tracking-[0.08em]">
-            <span>
-              Question {index + 1}
-              <span className="hidden md:inline"> of {questions.length}</span> · {from}
-            </span>
-            <span className="hidden flex-none md:inline">{answeredLine}</span>
-          </div>
-          <h1
-            ref={heading}
-            tabIndex={-1}
-            className="m-0 mt-2 text-[24px] font-medium leading-[1.22] outline-none md:mt-[14px] md:text-[32px] md:tracking-[-0.01em]"
-          >
-            {question.prompt}
-          </h1>
-          <Question
-            key={index}
-            className="mt-[18px] md:mt-7"
-            label={question.prompt}
-            options={question.options}
-            value={answers[index]}
-            onChange={choose}
-            mode="deferred"
-            allowUnsure
-          />
-          <p className="t-note m-0 mt-4 text-(--ink-muted) md:mt-[14px] md:text-[16px]">
-            You can change answers until you submit. “Not sure” counts as wrong, which is fine: it tells us what to
-            teach.
+      <section>
+        <p className="t-eyebrow m-0">
+          Question {index + 1} of {questions.length} · from lesson {question.lessonNumber ?? index + 1}
+        </p>
+        <h1 ref={heading} tabIndex={-1} className="m-0 mt-[18px] text-[24px] font-medium leading-[1.25] [overflow-wrap:anywhere] md:text-[32px]">
+          {question.prompt}
+        </h1>
+        <Question
+          key={index}
+          className="mt-7 md:mt-10"
+          label={question.prompt}
+          options={question.options}
+          value={answers[index]}
+          onChange={choose}
+          mode="deferred"
+          allowUnsure
+        />
+        <p className="m-0 mt-5 text-[16px] italic text-(--ink-muted)">You can change answers until you submit.</p>
+        {saveFailed && !submitFailed && (
+          <p role="alert" className="m-0 mt-3 text-[16px] text-(--incorrect)">
+            That answer didn’t save. It will be sent again when you submit.
           </p>
-          {saveFailed && (
-            <p role="alert" className="m-0 mt-3 text-[15px] text-(--incorrect)">
-              That answer didn’t save. Pick it again before you submit.
-            </p>
-          )}
-          {submitFailed && (
-            <p role="alert" className="m-0 mt-3 text-[15px] text-(--incorrect)">
-              Your answers didn’t go through. They are still saved. Try again.
-            </p>
-          )}
-
-          {/* On phones the same actions are pinned to the bottom of the screen. */}
-          <div className="mt-8 hidden flex-wrap items-center justify-between gap-[14px] border-0 border-t-[3px] border-solid border-(--ink) pt-[18px] md:flex">
-            {index > 0 ? (
-              <Button variant="secondary" onClick={() => jump(index - 1)}>
-                <BackIcon size={15} />
-                Question {index}
-              </Button>
-            ) : (
-              <span />
-            )}
-            <div className="flex flex-wrap gap-[10px]">
-              {left > 0 ? (
-                <Button disabled>Submit · answer {left} more</Button>
-              ) : (
-                <Button icon busy={submitting} onClick={submit}>
-                  Submit answers
-                </Button>
-              )}
-              {index < lastIndex && (
-                <Button variant={left > 0 ? "primary" : "secondary"} icon onClick={() => jump(index + 1)}>
-                  Question {index + 2}
-                </Button>
-              )}
-            </div>
-          </div>
-          <p className="m-0 mt-[10px] hidden font-mono text-[12px] text-(--ink-muted) md:block">
-            Keys: A to D, or N for Not sure
+        )}
+        {submitFailed && (
+          <p role="alert" className="m-0 mt-3 text-[16px] text-(--incorrect)">
+            Your answers didn’t go through. They are still here. Try again.
           </p>
-        </section>
-      </div>
+        )}
+      </section>
     </SessionPage>
   );
 }

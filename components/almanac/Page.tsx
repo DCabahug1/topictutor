@@ -53,6 +53,7 @@ type SessionPageProps = {
   leaveHref?: string;
   onLeave?: () => void;
   leaveLabel?: string;
+  leaveIcon?: "close" | "back";
   /** Sits under the bar, the width of the reading column: usually a StepMeter. */
   rail?: ReactNode;
   /** The step's one primary button. It closes the column under a hairline. */
@@ -78,6 +79,7 @@ export function SessionPage({
   leaveHref,
   onLeave,
   leaveLabel,
+  leaveIcon,
   rail,
   footer,
   footerQuiet,
@@ -89,16 +91,16 @@ export function SessionPage({
   const column = cx("mx-auto w-full", width === "reading" ? "max-w-(--reading-col)" : "max-w-[960px]");
   return (
     <div className="flex min-h-dvh flex-col px-(--gutter) pb-16 md:pb-24">
-      <SessionBar leaveHref={leaveHref} onLeave={onLeave} leaveLabel={leaveLabel} />
+      <SessionBar leaveHref={leaveHref} onLeave={onLeave} leaveLabel={leaveLabel} leaveIcon={leaveIcon} />
       {rail && <div className="mx-auto mt-2 w-full max-w-(--reading-col)">{rail}</div>}
       <div className={column}>
         <main key={stepKey} className="almanac-rise mt-12 md:mt-[88px]">
           {children}
         </main>
-        {footer && (
+        {(footer || footerNote) && (
           <div className="mt-14 border-0 border-t border-solid border-(--ink) pt-5 md:mt-16 md:pt-7">
             {footerNote && <div className="m-0 text-[17px] italic text-(--ink-muted) md:text-[18px]">{footerNote}</div>}
-            <LeadActions primary={footer} quiet={footerQuiet} className={footerNote ? undefined : "mt-0!"} />
+            {footer && <LeadActions primary={footer} quiet={footerQuiet} className={footerNote ? undefined : "mt-0!"} />}
           </div>
         )}
       </div>

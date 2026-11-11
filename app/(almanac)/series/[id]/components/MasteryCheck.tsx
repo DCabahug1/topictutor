@@ -5,7 +5,9 @@ import { useEffect, useRef, useState } from "react";
 import { Button, Caret } from "@/components/almanac/Button";
 import { Notice } from "@/components/almanac/Notice";
 import { SessionPage } from "@/components/almanac/Page";
+import { StepMeter } from "@/components/almanac/StepMeter";
 import { almanac, useAlmanac, type Mastery } from "@/lib/almanac";
+import { QUESTION_HEADING } from "../../new/components/parts";
 import { MasteryLocked } from "./MasteryLocked";
 import { MasteryResult } from "./MasteryResult";
 import { MasteryTaking } from "./MasteryTaking";
@@ -88,18 +90,16 @@ function MasteryForSeries({ id }: { id: string }) {
     case "ready":
       if (writeFailed) {
         return (
-          <SessionPage leaveHref={seriesHref} leaveLabel="Series">
-            <div className="pt-7 md:pt-12">
-              <Notice
-                tone="error"
-                headingLevel={1}
-                kicker="Couldn’t write questions"
-                title="Your Mastery Check didn’t come through."
-                body="Your lessons, checks and progress are untouched. Try again whenever you’re ready."
-                primary={{ label: "Try again", onClick: () => setWriteFailed(false) }}
-                secondary={{ label: "Back to the series", href: seriesHref }}
-              />
-            </div>
+          <SessionPage leaveHref={seriesHref} leaveLabel="Leave check">
+            <Notice
+              tone="error"
+              headingLevel={1}
+              kicker="Couldn’t write questions"
+              title="Your Mastery Check didn’t come through."
+              body="Your lessons, checks and progress are untouched. Try again whenever you’re ready."
+              primary={{ label: "Try again", onClick: () => setWriteFailed(false) }}
+              secondary={{ label: "or back to the series", href: seriesHref }}
+            />
           </SessionPage>
         );
       }
@@ -140,34 +140,30 @@ function MasteryWriting({ seriesHref, focusHeading }: { seriesHref: string; focu
   return (
     <SessionPage
       leaveHref={seriesHref}
-      leaveLabel="Series"
+      leaveLabel="Leave check"
+      rail={<StepMeter steps={5} current={-1} label="Mastery Check · writing the questions" />}
       footer={
-        <Button size="large" disabled busy>
+        <Button disabled busy>
           Writing questions
         </Button>
       }
     >
-      <section aria-busy="true" className="pt-7 md:pt-12">
-        <p className="t-label m-0 flex items-center gap-2 font-normal! text-(--accent)">
+      <section aria-busy="true">
+        <p className="t-eyebrow m-0 flex items-center gap-2">
           <Caret className="h-[14px]" />
           Mastery Check
         </p>
-        <h1
-          ref={heading}
-          tabIndex={-1}
-          className="m-0 mt-3 text-[32px] font-medium leading-[1.08] tracking-[-0.015em] outline-none md:mt-[14px] md:text-[44px] md:tracking-[-0.02em]"
-        >
+        <h1 ref={heading} tabIndex={-1} className={QUESTION_HEADING}>
           Writing five questions from your five lessons.
         </h1>
-        <p className="t-note m-0 mt-[10px] text-(--ink-muted) md:text-[17px]">
+        <p className="m-0 mt-5 text-[17px] italic text-(--ink-muted)">
           Usually a few seconds. You can leave and come back. Nothing is lost.
         </p>
-        <div aria-hidden="true" className="mt-7 flex flex-col gap-[10px]">
-          <span className="h-[22px] w-[88%] bg-(--paper-sunk)" />
-          <span className="h-[52px] bg-(--paper-sunk)" />
-          <span className="h-[52px] bg-(--paper-sunk)" />
-          <span className="h-[52px] bg-(--paper-sunk)" />
-          <span className="h-[52px] bg-(--paper-sunk)" />
+        <div aria-hidden="true" className="mt-10 flex flex-col gap-[10px]">
+          <span className="h-[58px] bg-(--paper-sunk)" />
+          <span className="h-[58px] bg-(--paper-sunk)" />
+          <span className="h-[58px] bg-(--paper-sunk)" />
+          <span className="h-[58px] bg-(--paper-sunk)" />
         </div>
       </section>
     </SessionPage>

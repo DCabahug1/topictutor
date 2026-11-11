@@ -12,9 +12,9 @@ export function BackLink({ href, children }: { href: string; children: ReactNode
   return (
     <Link
       href={href}
-      className="mt-2 inline-flex min-h-11 items-center gap-[6px] font-mono text-[13px] text-(--ink) no-underline hover:text-(--accent) md:mt-5"
+      className="mt-4 inline-flex min-h-11 items-center gap-2 font-mono text-[13px] text-(--ink) no-underline hover:text-(--accent) md:mt-5"
     >
-      <BackIcon size={15} />
+      <BackIcon size={16} />
       {children}
     </Link>
   );
@@ -37,7 +37,7 @@ export function PhoneActions({ note, children }: { note?: ReactNode; children: R
 export function SeriesLoading({ label }: { label: string }) {
   return (
     <PaperPage current="library">
-      <div aria-busy="true" className="pt-8 md:pt-12">
+      <div aria-busy="true" className="mt-(--lead-top)">
         <p role="status" className="sr-only">
           {label}
         </p>
@@ -112,7 +112,7 @@ export function SeriesProblem({ notFound, what, onRetry }: SeriesProblemProps) {
 
   return (
     <PaperPage current="library">
-      <div className="mx-auto mt-8 max-w-[640px] md:mt-[72px]">{notice}</div>
+      <div className="mt-(--lead-top) max-w-[780px]">{notice}</div>
     </PaperPage>
   );
 }

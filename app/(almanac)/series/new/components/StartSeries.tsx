@@ -1,28 +1,27 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useId, useState, type FormEvent } from "react";
 import { Button } from "@/components/almanac/Button";
-import { BackIcon } from "@/components/almanac/icons";
+import { LeadActions, LeadBlock } from "@/components/almanac/LeadBlock";
 import { Notice } from "@/components/almanac/Notice";
 import { PaperPage } from "@/components/almanac/Page";
 import { useSession } from "@/components/almanac/SessionProvider";
 import { AlmanacError, almanac, useAlmanac } from "@/lib/almanac";
+import { BackLink } from "../../[id]/components/SeriesStates";
 import { InlineAlert, LoadingLines } from "./parts";
 
 type Limit = "used" | "daily";
 
 const HOW_IT_WORKS = [
-  { title: "Placement test", text: "Five questions, easy to hard. “Not sure” is a fine answer." },
-  { title: "Your results", text: "See what you missed. That becomes the focus." },
-  { title: "Five lessons", text: "Written around your gaps, at your own pace. Each has a tutor and a check." },
-  { title: "Mastery Check", text: "Five questions from your lessons. 4 of 5 passes." },
+  { title: "Placement test", text: "Five questions, easy to hard." },
+  { title: "Your results", text: "What you missed becomes the focus." },
+  { title: "Five lessons", text: "Each with a tutor and a check." },
+  { title: "Mastery Check", text: "Pass with 4 of 5." },
 ];
 
-const FIELD_LABEL = "t-label block";
 const FIELD =
-  "box-border block w-full border-[1.5px] border-solid border-(--ink) bg-(--paper-raised) font-serif text-(--ink)";
+  "box-border block w-full rounded-none border border-solid border-(--ink) bg-(--paper-raised) font-serif text-(--ink)";
 
 export function StartSeries() {
   // useSearchParams needs a boundary so the rest of the page can prerender.
@@ -56,6 +55,7 @@ function StartSeriesInner() {
   // Null until the learner types, so the field can start from the link or the unfinished test.
   const [typedTopic, setTypedTopic] = useState<string | null>(null);
   const [typedFocus, setTypedFocus] = useState<string | null>(null);
+  const [focusOpen, setFocusOpen] = useState(false);
   const [starting, setStarting] = useState(false);
   const [failed, setFailed] = useState(false);
   const [refused, setRefused] = useState<Limit | null>(null);
@@ -63,6 +63,7 @@ function StartSeriesInner() {
   const pending = context?.pending ?? null;
   const topic = typedTopic ?? (fromUrl || pending?.topic || "");
   const focus = typedFocus ?? (fromUrl ? "" : (pending?.focus ?? ""));
+  const showFocus = focusOpen || focus.length > 0;
 
   const todaysLesson = context?.daily?.lesson ?? null;
   const fromToday = Boolean(todaysLesson && fromUrl && todaysLesson.deeperTopic.toLowerCase() === fromUrl.toLowerCase());
@@ -92,7 +93,9 @@ function StartSeriesInner() {
   if (loading && !context) {
     return (
       <PaperPage tabs={false}>
-        <LoadingLines label="Loading" />
+        <div className="mt-(--lead-top)">
+          <LoadingLines label="Loading" />
+        </div>
       </PaperPage>
     );
   }
@@ -100,7 +103,7 @@ function StartSeriesInner() {
   if (limit) {
     return (
       <PaperPage tabs={false}>
-        <div className="mx-auto mt-8 max-w-[640px] md:mt-[72px]">
+        <div className="mt-(--lead-top) max-w-[780px]">
           {limit === "daily" ? (
             <Notice
               tone="info"
@@ -108,8 +111,9 @@ function StartSeriesInner() {
               kicker="Daily limit reached"
               title="New series are paused for guests today."
               body="Guests share a daily limit, and it’s used up for today. The sample series is open to everyone, with working checks."
+              kept="Your daily lesson still works as usual."
               primary={{ label: "Open the sample series", href: "/series/sample" }}
-              secondary={{ label: "Create a free account", href: "/register" }}
+              secondary={{ label: "or create a free account", href: "/register" }}
             />
           ) : (
             <Notice
@@ -117,16 +121,12 @@ function StartSeriesInner() {
               headingLevel={1}
               kicker="Guest limit"
               title="You’ve used your guest series."
-              body="Guests can go deeper once. Your series is still yours in this browser. To start another, create a free account, or look around the sample series."
+              body="Guests can go deeper once, and your series is still yours in this browser. To start another, create a free account."
+              kept="Free, no credit card. Your progress comes with you."
               primary={{ label: "Create a free account", href: "/register" }}
-              secondary={{ label: "Open the sample series", href: "/series/sample" }}
+              secondary={{ label: "or open the sample series", href: "/series/sample" }}
             />
           )}
-          <p className="t-note m-0 mt-[14px] px-5 text-(--ink-muted)">
-            {limit === "daily"
-              ? "Your daily lesson still works as usual."
-              : "Free, no credit card. Your progress so far comes with you."}
-          </p>
         </div>
       </PaperPage>
     );
@@ -134,32 +134,17 @@ function StartSeriesInner() {
 
   return (
     <PaperPage tabs={false}>
-      {fromToday && (
-        <Link
-          href="/today/lesson"
-          className="mt-5 hidden min-h-11 items-center gap-[6px] font-mono text-[13px] text-(--ink) no-underline hover:text-(--accent) md:inline-flex"
-        >
-          <BackIcon size={15} />
-          Today’s lesson
-        </Link>
-      )}
-      <div
-        className={
-          fromToday
-            ? "flex flex-wrap items-start gap-x-24 gap-y-12 pb-36 pt-7 md:pb-0 md:pt-6"
-            : "flex flex-wrap items-start gap-x-24 gap-y-12 pb-36 pt-7 md:pb-0 md:pt-14"
-        }
-      >
-        <form onSubmit={start} className="min-w-0 max-w-[680px] flex-[999_1_520px]">
-          <p className="t-label m-0 font-normal! text-(--accent)">Go deeper · new series</p>
-          <h1 className="m-0 mt-3 text-[38px] font-medium leading-[1.04] tracking-[-0.02em] md:mt-[14px] md:text-[clamp(42px,5vw,72px)] md:leading-[0.98] md:tracking-[-0.025em]">
-            What do you want to learn?
-          </h1>
-          <p className="m-0 mt-[10px] text-[17px] leading-normal text-(--ink-soft) md:mt-4 md:text-[20px]">
-            Five short questions find what you already know. Then we write five lessons around what you don’t.
-          </p>
+      {fromToday && <BackLink href="/today/lesson">Today’s lesson</BackLink>}
+      <form onSubmit={start} className={fromToday ? "mt-10 md:mt-16" : "mt-(--lead-top)"}>
+        <LeadBlock
+          eyebrow="Go deeper · new series"
+          title="What do you want to learn?"
+          line="Five quick questions find what you already know. Then you get five lessons built around the rest."
+          className="max-w-[860px]"
+        />
 
-          <label htmlFor="series-topic" className={`${FIELD_LABEL} mt-[26px] md:mt-9`}>
+        <div className="mt-10 max-w-[860px] md:mt-12">
+          <label htmlFor="series-topic" className="t-label block font-normal! text-(--ink-muted)">
             Topic
           </label>
           <input
@@ -167,84 +152,80 @@ function StartSeriesInner() {
             type="text"
             value={topic}
             onChange={(event) => setTypedTopic(event.target.value)}
-            placeholder="Basics of Web Development"
+            placeholder="Basics of web development"
             autoComplete="off"
-            aria-describedby={prefilled ? "series-topic-note" : undefined}
-            className={`${FIELD} mt-2 h-[52px] px-[14px] text-[19px] md:mt-[10px] md:h-[58px] md:px-4 md:text-[24px]`}
+            maxLength={120}
+            className={`${FIELD} mt-[10px] h-16 px-4 text-[22px] md:h-[72px] md:px-5 md:text-[30px]`}
           />
-          {prefilled && (
-            <p id="series-topic-note" className="m-0 mt-2 text-[15px] italic text-(--ink-muted) md:text-[16px]">
-              {fromToday && todaysLesson
-                ? `Filled in from today’s lesson, ${todaysLesson.title}. Change it if you like.`
-                : "Filled in from your suggestion. Change it if you like."}
-            </p>
-          )}
-
-          <label htmlFor="series-focus" className={`${FIELD_LABEL} mt-[22px] md:mt-7`}>
-            Anything specific? <span className="font-normal text-(--ink-muted)">· optional</span>
-          </label>
-          <textarea
-            id="series-focus"
-            rows={3}
-            value={focus}
-            onChange={(event) => setTypedFocus(event.target.value)}
-            placeholder="I never know why my CSS doesn’t apply"
-            className={`${FIELD} mt-2 resize-y px-[14px] py-3 text-[18px] leading-[1.45] md:mt-[10px] md:px-4 md:py-[14px] md:text-[20px]`}
-          />
-
-          {failed && (
-            <InlineAlert className="mt-4">
-              The test didn’t start. Check your connection and try again.
-            </InlineAlert>
-          )}
-
-          {/* Pinned to the bottom of the screen on phones, in the form from 768px. */}
-          <div className="fixed inset-x-0 bottom-0 z-10 border-0 border-t border-solid border-(--rule) bg-(--paper) px-6 pb-5 pt-3 md:static md:mt-7 md:flex md:flex-wrap md:items-center md:gap-x-6 md:gap-y-[14px] md:border-t-0 md:bg-transparent md:p-0">
-            {topic.trim() ? (
-              <Button type="submit" size="large" icon busy={starting} className="w-full md:min-h-[58px] md:w-auto md:px-7">
-                {starting ? "Starting your test" : "Take the placement test"}
-              </Button>
-            ) : (
-              <Button type="submit" size="large" disabled className="w-full md:min-h-[58px] md:w-auto md:px-7">
-                Name a topic to start
-              </Button>
-            )}
-            <p className="m-0 mt-2 text-center font-mono text-[12px] text-(--ink-muted) md:mt-0 md:text-left md:text-[13px]">
-              5 questions · about 2 minutes
-            </p>
-          </div>
-        </form>
-
-        <aside aria-labelledby={howId} className="min-w-0 flex-[1_1_360px] border-0 border-t-[3px] border-solid border-(--ink) pt-4">
-          <h2 id={howId} className="t-label m-0 text-(--ink-muted)">
-            How a series works
-          </h2>
-          <ol className="m-0 mt-[10px] list-none p-0">
-            {HOW_IT_WORKS.map((step, i) => (
-              <li
-                key={step.title}
-                className="grid grid-cols-[40px_minmax(0,1fr)] gap-3 border-0 border-t border-solid border-(--rule) py-4"
+          <p className="m-0 mt-2 text-[16px] italic text-(--ink-muted)">
+            {prefilled && (fromToday ? "Filled in from today’s lesson. " : "Filled in from your suggestion. ")}
+            {!showFocus && (
+              <button
+                type="button"
+                onClick={() => setFocusOpen(true)}
+                className="cursor-pointer border-0 bg-transparent p-0 font-serif text-[16px] italic text-(--ink-soft) underline underline-offset-[5px] hover:text-(--ink)"
               >
-                <span aria-hidden="true" className="font-mono text-[13px] text-(--accent)">
-                  0{i + 1}
-                </span>
-                <span>
-                  <span className="block text-[19px] font-medium md:text-[21px]">{step.title}</span>
-                  <span className="mt-[3px] block text-[16px] leading-[1.45] text-(--ink-soft) md:text-[17px]">
-                    {step.text}
-                  </span>
-                </span>
-              </li>
-            ))}
-          </ol>
-          <p className="m-0 mt-4 text-[17px] text-(--ink-soft)">
-            Want to see one first?{" "}
-            <Link href="/series/sample" className="py-3 font-mono text-[14px] text-(--ink)">
-              Open the sample series
-            </Link>
+                Add anything specific
+              </button>
+            )}
           </p>
-        </aside>
-      </div>
+
+          {showFocus && (
+            <div className="mt-6">
+              <label htmlFor="series-focus" className="t-label block font-normal! text-(--ink-muted)">
+                Anything specific · optional
+              </label>
+              <textarea
+                id="series-focus"
+                rows={3}
+                value={focus}
+                autoFocus={focusOpen && typedFocus === null}
+                onChange={(event) => setTypedFocus(event.target.value)}
+                placeholder="I never know why my CSS doesn’t apply"
+                maxLength={300}
+                className={`${FIELD} mt-[10px] resize-y px-4 py-3 text-[18px] leading-[1.45] md:px-5 md:text-[20px]`}
+              />
+            </div>
+          )}
+
+          {failed && <InlineAlert className="mt-4">The test didn’t start. Check your connection and try again.</InlineAlert>}
+
+          <LeadActions
+            primary={
+              topic.trim() ? (
+                <Button type="submit" icon busy={starting}>
+                  {starting ? "Starting your test" : "Take the placement test"}
+                </Button>
+              ) : (
+                <Button type="submit" disabled>
+                  Name a topic to start
+                </Button>
+              )
+            }
+            quiet={<span className="text-[18px] italic text-(--ink-muted)">5 questions · about 2 minutes</span>}
+          />
+        </div>
+      </form>
+
+      <section aria-labelledby={howId} className="mt-(--section-gap)">
+        <h2 id={howId} className="t-label m-0 text-(--ink-muted)">
+          How a series works
+        </h2>
+        <ol className="m-0 mt-4 grid list-none grid-cols-1 gap-x-8 gap-y-6 border-0 border-t border-solid border-(--rule) p-0 pt-6 sm:grid-cols-2 md:grid-cols-4">
+          {HOW_IT_WORKS.map((step, i) => (
+            <li key={step.title}>
+              <span aria-hidden="true" className="font-mono text-[13px] text-(--ink-muted)">
+                0{i + 1}
+              </span>
+              <span className="mt-1 block text-[21px] font-medium">{step.title}</span>
+              <span className="mt-1 block text-[17px] leading-[1.45] text-(--ink-soft)">{step.text}</span>
+            </li>
+          ))}
+        </ol>
+        <Button variant="quiet" href="/series/sample" className="mt-6">
+          or open the sample series first
+        </Button>
+      </section>
     </PaperPage>
   );
 }

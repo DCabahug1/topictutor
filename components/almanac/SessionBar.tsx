@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CloseIcon } from "./icons";
+import { BackIcon, CloseIcon } from "./icons";
 import { ThemeButton } from "./ThemeButton";
 
 type SessionBarProps = {
@@ -8,17 +8,30 @@ type SessionBarProps = {
   onLeave?: () => void;
   /** Says what is being left: "Leave lesson", "Leave test", "Close". */
   leaveLabel?: string;
+  /** close for sessions and tests, back for a series lesson. */
+  leaveIcon?: "close" | "back";
 };
 
 /**
  * Replaces the masthead inside the daily session, series lessons and tests:
  * a close control, the name, and the theme button.
  */
-export function SessionBar({ leaveHref = "/", onLeave, leaveLabel = "Leave lesson" }: SessionBarProps) {
+export function SessionBar({ leaveHref = "/", onLeave, leaveLabel = "Leave lesson", leaveIcon = "close" }: SessionBarProps) {
+  // Phones get one word: "Leave", "Close", "Series".
+  const short = leaveLabel === "Back to series" ? "Series" : leaveLabel.split(" ")[0];
   const content = (
     <>
-      <CloseIcon size={16} strokeWidth={1.8} />
-      {leaveLabel}
+      {leaveIcon === "back" ? <BackIcon size={16} /> : <CloseIcon size={16} strokeWidth={1.8} />}
+      {short === leaveLabel ? (
+        leaveLabel
+      ) : (
+        <>
+          <span aria-hidden="true" className="sm:hidden">
+            {short}
+          </span>
+          <span className="max-sm:sr-only">{leaveLabel}</span>
+        </>
+      )}
     </>
   );
   const classes =

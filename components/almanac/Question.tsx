@@ -145,6 +145,7 @@ export function Question({
             selected={value === answer}
             result={resultFor(answer)}
             locked={revealed}
+            size={mode === "instant" ? "lg" : "md"}
             tabIndex={i === tabStop ? 0 : -1}
             onSelect={() => select(answer)}
           />
