@@ -123,6 +123,7 @@ export async function writePlacementTest(learner: Learner): Promise<Placement> {
       const { questions } = await generateStructured({
         ...placementPrompt(start.topic, start.focus),
         schema: placementSchema,
+        route: "placement",
         effort: "medium",
       });
       check(
@@ -245,6 +246,7 @@ export async function* streamOutline(learner: Learner): AsyncGenerator<OutlineRo
     const stream = streamStructured({
       ...outlinePrompt(row.topic, row.focus, row.questions, missed),
       schema: outlineSchema,
+      route: "outline",
       effort: "medium",
     });
 

@@ -40,6 +40,7 @@ export const generatePlacementTest = async (Topic: string) => {
         "You are a helpful assistant that generates a placement test for a course. You are to generate a placement test for the course. The placement test should have 5 multiple choice questions with 4 UNIQUE options each, one correct answer. The questions should be related to the course, with a mix of easy, medium, and hard questions.",
       user: Topic,
       schema: placementTestSchema,
+      route: "legacy-placement",
     });
     console.log("Placement test generated:", placementTestData);
 

@@ -1,5 +1,5 @@
 import "server-only";
-import { GenerationError, generateStructured } from "@/lib/claude";
+import { GenerationError, HAIKU, generateStructured } from "@/lib/claude";
 import type { SeriesRequest, TopicCheck } from "../types";
 import { requireUser, type Learner } from "./context";
 import { topicCheckPrompt, topicCheckSchema } from "./prompts";
@@ -29,6 +29,8 @@ export async function checkTopic(learner: Learner, request: SeriesRequest): Prom
     const raw = await generateStructured({
       ...topicCheckPrompt(topic, focus),
       schema: topicCheckSchema,
+      route: "topic-check",
+      model: HAIKU,
       effort: "low",
       maxTokens: 800,
     });

@@ -1,5 +1,5 @@
 import "server-only";
-import { streamText } from "@/lib/claude";
+import { HAIKU, streamText } from "@/lib/claude";
 import type { TutorContext } from "../source";
 import { AlmanacError, type TutorChunk } from "../types";
 import { requireUser, type Learner } from "./context";
@@ -29,7 +29,7 @@ export async function* askTutor(learner: Learner, context: TutorContext, questio
       : await seriesLessonText(learner, context.seriesId, context.number);
 
   let head = asked === null ? null : "";
-  for await (const chunk of streamText({ ...tutorPrompt(lesson.title, lesson.paragraphs, asked), effort: "low", maxTokens: 1200 })) {
+  for await (const chunk of streamText({ ...tutorPrompt(lesson.title, lesson.paragraphs, asked), route: "tutor", model: HAIKU, effort: "low", maxTokens: 1200 })) {
     if (head === null) {
       yield { kind: "text", text: chunk };
       continue;

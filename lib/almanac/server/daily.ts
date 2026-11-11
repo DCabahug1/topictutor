@@ -1,5 +1,5 @@
 import "server-only";
-import { GenerationError, generateStructured, streamText } from "@/lib/claude";
+import { GenerationError, HAIKU, generateStructured, streamText } from "@/lib/claude";
 import { SECTION_BREAK, lastSevenDays, longestStreak, parseLocalDate, shiftDate, streakCount } from "../rules";
 import {
   AlmanacError,
@@ -111,7 +111,7 @@ export async function ensureDailyLesson(date: string, subject: Subject): Promise
       const titles = recent.map((r) => r.title);
       let meta;
       try {
-        meta = await generateStructured({ ...dailyMetaPrompt(subject, titles), schema: dailyMetaSchema, effort: "low" });
+        meta = await generateStructured({ ...dailyMetaPrompt(subject, titles), schema: dailyMetaSchema, route: "daily-meta", effort: "low" });
       } catch (cause) {
         // A refusal blocks one topic, not the subject: ask once more for something else.
         if (!(cause instanceof GenerationError)) throw cause;
@@ -119,6 +119,7 @@ export async function ensureDailyLesson(date: string, subject: Subject): Promise
           ...dailyMetaPrompt(subject, titles),
           user: `${dailyMetaPrompt(subject, titles).user}\nChoose a different, everyday idea.`,
           schema: dailyMetaSchema,
+          route: "daily-meta-retry",
           effort: "low",
         });
       }
@@ -333,7 +334,7 @@ export async function answerDailyCheck(learner: Learner, index: number, answer: 
 
 async function writeProse(lesson: LessonRow, onText: (text: string) => void): Promise<string[]> {
   let text = "";
-  for await (const chunk of streamText({ ...dailyProsePrompt(lesson.subject, lesson.title, lesson.key_points), effort: "medium" })) {
+  for await (const chunk of streamText({ ...dailyProsePrompt(lesson.subject, lesson.title, lesson.key_points), route: "daily-prose", model: HAIKU, effort: "medium" })) {
     text += chunk;
     onText(chunk);
   }

@@ -70,6 +70,7 @@ async function generate(series: SeriesRow, lessons: LessonRow[], leanOn: number[
       leanOn
     ),
     schema: masterySchema,
+    route: "mastery",
     effort: "medium",
   });
   const questions: ChoiceQuestion[] = result.questions.map((q, i) => ({ ...finishChoice(q), lessonNumber: q.lessonNumber ?? i + 1 }));

@@ -45,6 +45,7 @@ export const generateTopicTest = async (Topic: string, chapters: Chapter[], plac
         placementTestResults,
       }),
       schema: topicTestSchema,
+      route: "legacy-final-test",
     });
     console.log("Topic test generated:", topicTestData);
 

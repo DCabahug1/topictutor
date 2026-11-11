@@ -41,6 +41,7 @@ export const generateCourse = async ({
         "You generate a personalized course using two inputs: the topic and the placement test result. Rename the topic to a more specific and accurate title if the test indicates a clearer focus. Assign the topic to the most appropriate category, choosing from: Math, Science, Technology, History, Literature, Business, Finance, Arts, Language, Health and Wellness, Other. Create a 10-chapter course. Each chapter must include a clear and concise title (text only, no chapter numbers), a short description, and an array called content_paragraphs containing 3 paragraphs. Each paragraph must have at least 3 complete sentences. This course is for a single user. Prioritize the areas where the placement test shows the greatest weakness. If any paragraph contains fewer than 3 sentences, you must expand it so it meets the requirement.",
       user: JSON.stringify({ topic, placementTestResults }),
       schema: topicAndChaptersSchema,
+      route: "legacy-course",
     });
 
     const topicData = topicAndChaptersData.topic;

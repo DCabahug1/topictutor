@@ -1,5 +1,5 @@
 import "server-only";
-import { GenerationError, streamText } from "@/lib/claude";
+import { GenerationError, HAIKU, streamText } from "@/lib/claude";
 import { SAMPLE_LESSONS, SAMPLE_SERIES } from "../fixtures/sample-series";
 import { LESSONS_PER_SERIES, SECTION_BREAK, percentComplete, seriesStatus } from "../rules";
 import {
@@ -243,7 +243,7 @@ export async function getSeriesLesson(learner: Learner, id: string, number: numb
 async function writeLesson(row: SeriesRow, lesson: LessonRow, onText: (text: string) => void): Promise<string[]> {
   let text = "";
   const prompt = seriesProsePrompt(row.title, lesson.number, lesson.title, lesson.key_points, lesson.focus);
-  for await (const chunk of streamText({ ...prompt, effort: "medium", maxTokens: 5_000 })) {
+  for await (const chunk of streamText({ ...prompt, route: "series-prose", model: HAIKU, effort: "medium", maxTokens: 5_000 })) {
     text += chunk;
     onText(chunk);
   }
