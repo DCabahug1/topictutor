@@ -5,21 +5,47 @@ import { AskBox } from "@/components/almanac/AskBox";
 import { Button } from "@/components/almanac/Button";
 import { ConfirmDialog } from "@/components/almanac/ConfirmDialog";
 import { LessonBody } from "@/components/almanac/LessonBody";
+import { LessonRow } from "@/components/almanac/LessonRow";
 import { BottomTabs, Masthead } from "@/components/almanac/Masthead";
 import { Notice } from "@/components/almanac/Notice";
 import { Question, type Answer } from "@/components/almanac/Question";
 import { QuestionNav } from "@/components/almanac/QuestionNav";
 import { SessionBar } from "@/components/almanac/SessionBar";
+import { SeriesRow } from "@/components/almanac/SeriesRow";
 import { SessionProgress } from "@/components/almanac/SessionProgress";
 import type { SessionUser } from "@/components/almanac/SessionProvider";
+import { StatBars } from "@/components/almanac/StatBars";
 import { ProgressMeter, StatusLabel } from "@/components/almanac/StatusLabel";
 import { StreakMark } from "@/components/almanac/StreakMark";
 import { SubjectToggle } from "@/components/almanac/SubjectToggle";
 import { TextField } from "@/components/almanac/TextField";
 import { ThemeButton } from "@/components/almanac/ThemeButton";
-import { FORCE_FLAGS, almanac, lastSevenDays, localDate, shiftDate, type ForceFlag } from "@/lib/almanac";
+import {
+  FORCE_FLAGS,
+  almanac,
+  lastSevenDays,
+  localDate,
+  shiftDate,
+  type ForceFlag,
+  type SeriesSummary,
+} from "@/lib/almanac";
 import { getForced, resetFixture, setForced, subscribeForced } from "@/lib/almanac/fixture-source";
 import { DAILY } from "@/lib/almanac/fixtures/content";
+
+const WEB_SERIES: SeriesSummary = {
+  id: "web",
+  title: "How a Web Page Gets Built: HTML, CSS and the Browser",
+  category: "Technology",
+  description: "From the request your browser sends to the styled page on screen.",
+  status: "inProgress",
+  lessonsDone: 2,
+  masteryPassed: false,
+  masteryBest: null,
+  percent: 33,
+  updatedAt: new Date().toISOString(),
+  isSample: false,
+  nextLesson: { number: 3, title: "How the browser decides which CSS rule wins" },
+};
 
 const DUANE: SessionUser = {
   id: "dev",
@@ -462,6 +488,79 @@ export function Gallery() {
               primary={{ label: "Go to Library", href: "#" }}
             />
           </div>
+        </Both>
+      </Section>
+
+      <Section title="SeriesRow" note="Today and Library. Titles wrap and are never cut short.">
+        <Both>
+          <State name="Series first, with the updated stamp">
+            <SeriesRow series={WEB_SERIES} today={today} href="#" />
+          </State>
+          <State name="Next lesson first">
+            <SeriesRow series={WEB_SERIES} lead="nextLesson" href="#" />
+          </State>
+        </Both>
+      </Section>
+
+      <Section title="LessonRow" note="The why line turns accent when the lesson is there because a test question was missed.">
+        <Both>
+          <LessonRow
+            number={2}
+            title="HTML gives a page its structure"
+            description="Elements, nesting, and why the right tag matters."
+            why="A quick refresher. You got question 2 right."
+            focus={false}
+            status="done"
+            href="#"
+          />
+          <LessonRow
+            number={3}
+            title="How the browser decides which CSS rule wins"
+            description="Specificity, order, and the cascade."
+            why="Here because you missed question 3, on which CSS rule wins."
+            focus
+            status="upNext"
+            href="#"
+          />
+          <LessonRow
+            number={4}
+            title="Boxes, flow and layout"
+            description="The box model and how elements take up space."
+            why="A quick refresher. You got question 4 right."
+            focus={false}
+            status="notStarted"
+            href="#"
+          />
+        </Both>
+      </Section>
+
+      <Section title="StatBars" note="Every number is printed, and the whole chart is one labelled image.">
+        <Both>
+          <State name="Columns · lessons per day">
+            <StatBars
+              title="Lessons finished"
+              layout="columns"
+              bars={sixDone.map((day, i) => ({
+                label: day.isToday ? "Today" : day.short,
+                spoken: day.name,
+                value: [1, 1, 2, 1, 1, 3, 0][i],
+                current: day.isToday,
+              }))}
+              className="max-w-[420px]"
+            />
+          </State>
+          <State name="Rows · by subject">
+            <StatBars
+              title="Lessons by subject"
+              layout="rows"
+              bars={[
+                { label: "Science", value: 31 },
+                { label: "History", value: 28 },
+                { label: "Health and Wellness", value: 13 },
+              ]}
+              className="max-w-[520px]"
+            />
+          </State>
         </Both>
       </Section>
 

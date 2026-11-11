@@ -31,10 +31,10 @@ function NavBar({
       {isAuthPage && !profile ? (
         <>
           <div className="flex gap-2">
-            <Link href="/auth/login">
+            <Link href="/login">
               <Button variant="ghost">Login</Button>
             </Link>
-            <Link href="/auth/register">
+            <Link href="/register">
               <Button variant="default">Register</Button>
             </Link>
           </div>

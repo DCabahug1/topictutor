@@ -235,7 +235,7 @@ export function Masthead({ current, dateline = false, user: userProp, guestStrea
         </nav>
       </header>
       {/* The double rule: 3px ink, 3px gap, 1px ink. */}
-      <div aria-hidden="true" className="h-[3px] border-0 border-b border-t-[3px] border-solid border-(--ink)" />
+      <div aria-hidden="true" className="h-[7px] border-0 border-b border-t-[3px] border-solid border-(--ink)" />
       {dateline && <Dateline className="mt-[10px]" />}
     </div>
   );

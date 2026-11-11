@@ -66,7 +66,7 @@ export async function updateSession(request: NextRequest) {
   if (!user && !isPublicPath(pathname)) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
-    url.pathname = "/auth/login";
+    url.pathname = "/login";
     return redirectKeepingCookies(url, supabaseResponse);
   }
 
