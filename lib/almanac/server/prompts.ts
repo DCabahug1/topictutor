@@ -8,7 +8,8 @@ import { SUBJECTS } from "../types";
 const VOICE = `Write for a curious adult reading on a phone. Plain, warm and a little dry. Short sentences.
 Sentence case in titles. No em dashes, no exclamation marks, no emoji, no headings.
 Be accurate. If something is uncertain or debated, say so plainly.
-In titles, questions, options and explanations, use plain text, with **bold**, *italic* or \`code\` only where it truly helps.`;
+Titles, descriptions, topics, hints and suggestions are plain text, with no markdown at all.
+Questions, options and explanations are plain text too, with **bold**, *italic* or \`code\` only where it truly helps.`;
 
 /** Markdown for prose: the lesson and the tutor's answers. */
 const MARKDOWN = `Write in markdown, but only where it helps a reader take it in:

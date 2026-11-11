@@ -1,22 +1,39 @@
 import Link from "next/link";
 import { ArrowIcon } from "@/components/almanac/icons";
+import { Markdown } from "@/components/almanac/Markdown";
 import { Notice } from "@/components/almanac/Notice";
 import type { AlmanacError, DailySession } from "@/lib/almanac";
 
 const CARD =
   "mx-auto mt-16 box-border max-w-[760px] border border-solid border-(--ink) bg-(--paper-raised) px-6 py-6 md:mt-28 md:px-[52px] md:py-11";
 
-/** The first sentences of a paragraph, enough to start reading. */
-function opening(paragraph: string, sentences = 2): string {
+/**
+ * The first sentences of a lesson's first section, enough to start reading.
+ * It takes the first block only (a list or table stays for the lesson) and
+ * never cuts through a bold or italic span, so the markdown still renders.
+ */
+function opening(section: string, sentences = 2): string {
+  const first = section.split(/\n\s*\n/)[0].trim();
   // A full stop inside a number ("365.2422") is not followed by a space, so it is skipped.
-  const ends = /[.!?]["’”)]?(?=\s)/g;
+  const ends = /[.!?]["’”)]?(?:\*{1,2}|_{1,2})?(?=\s)/g;
   let end = 0;
   for (let i = 0; i < sentences; i += 1) {
-    const match = ends.exec(paragraph);
-    if (!match) return paragraph;
+    const match = ends.exec(first);
+    if (!match) return first;
     end = match.index + match[0].length;
   }
-  return paragraph.slice(0, end);
+  const cut = first.slice(0, end);
+  const balanced = (cut.match(/\*\*/g) ?? []).length % 2 === 0 && (cut.replace(/\*\*/g, "").match(/\*/g) ?? []).length % 2 === 0;
+  return balanced ? cut : first;
+}
+
+const COUNT = ["No", "One", "Two", "Three", "Four"];
+
+/** What is left after the opening, in the footer line. */
+function restLine(sections: number): string {
+  const rest = sections - 1;
+  if (rest <= 0) return "Then a quick check.";
+  return `${COUNT[rest] ?? rest} more short ${rest === 1 ? "section" : "sections"}, then a quick check.`;
 }
 
 type LessonTeaserProps = {
@@ -70,22 +87,18 @@ export function LessonTeaser({ session, error, onRetry }: LessonTeaserProps) {
       </div>
       <h2 className="m-0 mt-4 text-[34px] font-medium leading-[1.02] tracking-[-0.02em] md:text-[52px]">{lesson.title}</h2>
       {text ? (
-        <p className="m-0 mt-5 text-[18px] leading-[1.6] text-(--ink-soft) md:text-[21px]">
-          <span aria-hidden="true" className="float-left pr-[10px] pt-[6px] text-[58px] font-medium leading-[0.82] text-(--ink) md:text-[72px]">
-            {text[0]}
-          </span>
-          <span className="sr-only">{text[0]}</span>
-          {text.slice(1)}
-        </p>
+        <Markdown dropCap className="mt-5 text-[18px] leading-[1.6] text-(--ink-soft) md:text-[21px]">
+          {text}
+        </Markdown>
       ) : (
         // Nobody has opened today's lesson yet, so there is no text to quote.
         <p className="m-0 mt-5 text-[18px] leading-[1.6] text-(--ink-soft) md:text-[21px]">
-          Three short paragraphs and a quick check. About three minutes.
+          A short lesson and a quick check. About three minutes.
         </p>
       )}
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-0 border-t border-solid border-(--rule) pt-4">
         <span className="text-[16px] italic text-(--ink-muted)">
-          {done ? "You finished this one today." : "Two more paragraphs, then a quick check."}
+          {done ? "You finished this one today." : text ? restLine(lesson.paragraphs?.length ?? 0) : "Then a quick check."}
         </span>
         <Link
           href={done ? "/today/lesson?read=1" : "/today/lesson"}
