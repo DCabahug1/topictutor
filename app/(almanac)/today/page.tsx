@@ -154,50 +154,42 @@ export default function TodayPage() {
         )}
       </section>
 
-      <Section
-        id="series"
-        title={series.length ? "Pick up your series" : "Go deeper on anything"}
-        aside={
-          series.length > 0 ? (
+      {/* Only once there is a series. Starting one is offered by the lesson's own buttons above. */}
+      {series.length > 0 && (
+        <Section
+          id="series"
+          title="Pick up your series"
+          aside={
             <Link href="/library" className="py-2 font-label text-[13px] text-(--ink) underline-offset-4">
               All series
             </Link>
-          ) : undefined
-        }
-      >
-        {open.length > 0 ? (
-          <ul className="almanac-stagger m-0 list-none p-0 [--stagger-base:120ms] [--stagger-step:50ms]">
-            {open.map((s) => (
-              <li key={s.id} className="border-0 border-b border-solid border-(--rule)">
-                <SeriesRow series={s} lead="nextLesson" />
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div className="pt-5">
-            <p className="m-0 max-w-[540px] text-[18px] leading-normal text-(--ink-soft) md:text-[20px]">
-              {series.length
-                ? "Every series you started is finished. Start another whenever a lesson grabs you."
-                : "Name any topic and get five lessons that start where you are."}
-            </p>
-            <LeadActions
-              className="mt-6!"
-              primary={
-                <Button variant="outline" icon href="/series/new">
-                  Start a series
-                </Button>
-              }
-              quiet={
-                series.length ? undefined : (
-                  <Button variant="quiet" href="/series/sample">
-                    or look at a sample series
+          }
+        >
+          {open.length > 0 ? (
+            <ul className="almanac-stagger m-0 list-none p-0 [--stagger-base:120ms] [--stagger-step:50ms]">
+              {open.map((s) => (
+                <li key={s.id} className="border-0 border-b border-solid border-(--rule)">
+                  <SeriesRow series={s} lead="nextLesson" />
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="pt-5">
+              <p className="m-0 max-w-[540px] text-[18px] leading-normal text-(--ink-soft) md:text-[20px]">
+                Every series you started is finished. Start another whenever a lesson grabs you.
+              </p>
+              <LeadActions
+                className="mt-6!"
+                primary={
+                  <Button variant="outline" icon href="/series/new">
+                    Start a series
                   </Button>
-                )
-              }
-            />
-          </div>
-        )}
-      </Section>
+                }
+              />
+            </div>
+          )}
+        </Section>
+      )}
     </PaperPage>
   );
 }
