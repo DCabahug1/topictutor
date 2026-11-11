@@ -1,19 +1,15 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
-import { adoptAfterSignIn } from "@/lib/almanac/server/adopt";
-import { createAdminClient } from "@/utils/supabase/admin";
+import { adoptPending } from "@/lib/almanac/server/adopt";
 import { createClient } from "@/utils/supabase/server";
 
 export const maxDuration = 30;
 
-const body = z.object({ guestToken: z.string().max(4096).nullable().optional() });
-
 /**
- * After a password log-in: moves the guest who was signed in on this device
- * into the account. The browser proves it held the guest by sending the
- * guest's access token, which is checked with Supabase, never just read.
+ * After a password log-in: moves in the guest recorded when this account was
+ * made by email, if any. A guest who happens to be signed in on this device is
+ * never folded into an account that already existed.
  */
-export async function POST(request: Request) {
+export async function POST() {
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims;
@@ -21,15 +17,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false }, { status: 401 });
   }
 
-  const parsed = body.safeParse(await request.json().catch(() => ({})));
-  const token = parsed.success ? parsed.data.guestToken : null;
-
-  let guestId: string | null = null;
-  if (token) {
-    const { data: guest } = await createAdminClient().auth.getUser(token);
-    if (guest.user?.is_anonymous) guestId = guest.user.id;
-  }
-
-  await adoptAfterSignIn(claims.sub, guestId);
+  await adoptPending(claims.sub);
   return NextResponse.json({ ok: true });
 }

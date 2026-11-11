@@ -2,8 +2,25 @@ import { NextResponse } from 'next/server'
 // The client you created from the Server-Side Auth instructions
 import { createClient } from '@/utils/supabase/server'
 import { ensureProfileExists } from '@/lib/profiles'
-import { adoptAfterSignIn } from '@/lib/almanac/server/adopt'
+import type { User } from '@supabase/supabase-js'
+import { adoptGuest, adoptPending, hasOwnProgress } from '@/lib/almanac/server/adopt'
 import { safeNext } from '@/lib/next-path'
+
+const SIGN_UP_MS = 10 * 60 * 1000
+
+const isRecent = (at: string | undefined) => {
+  const made = at ? Date.parse(at) : NaN
+  return Number.isFinite(made) && Date.now() - made < SIGN_UP_MS
+}
+
+/**
+ * This sign-in signed the learner up: it made the account, or it is their first
+ * Google sign-in, which Supabase attaches to an older account with the same
+ * email (often one made by email long ago and never used here).
+ */
+function isSignUp(user: User): boolean {
+  return isRecent(user.created_at) || Boolean(user.identities?.some((identity) => isRecent(identity.created_at)))
+}
 
 export async function GET(request: Request) {
   console.log("callback", request.url )
@@ -25,7 +42,13 @@ export async function GET(request: Request) {
       const { data: userData, error: userError } = await supabase.auth.getUser()
 
       if (!userError && userData?.user && !userData.user.is_anonymous) {
-        await adoptAfterSignIn(userData.user.id, guestId)
+        // The guest on this device moves in only when this sign-in signed the learner up and
+        // the account has no progress of its own yet. Folding a guest into an account someone
+        // already uses would mark a lesson as done in it that they never did.
+        const user = userData.user
+        if (guestId && isSignUp(user) && !(await hasOwnProgress(user.id))) await adoptGuest(guestId, user.id)
+        // The guest recorded when this account was made by email, if any.
+        await adoptPending(userData.user.id)
       }
 
       if (!userError && userData?.user) {

@@ -78,10 +78,6 @@ const signUpWithEmailAndPasswordServer = async (email: string, password: string,
 const signInWithEmailAndPassword = async (email: string, password: string) => {
   const supabase = createClient();
 
-  // A guest signed in on this device: their token proves it to the server after the log-in.
-  const { data: current } = await supabase.auth.getSession();
-  const guestToken = current.session?.user.is_anonymous ? current.session.access_token : null;
-
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -91,12 +87,10 @@ const signInWithEmailAndPassword = async (email: string, password: string) => {
     return { success: false, error };
   }
 
-  // Moves the guest's progress into the account. A failure never blocks the log-in.
-  await fetch("/api/almanac/adopt", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ guestToken }),
-  }).catch(() => undefined);
+  // A guest on this device is never folded into an account that already existed: it would
+  // mark someone else's lesson as done. Only a guest recorded when this account was made
+  // (an email sign-up confirmed elsewhere) moves over. A failure never blocks the log-in.
+  await fetch("/api/almanac/adopt", { method: "POST" }).catch(() => undefined);
 
   return { success: true, data };
 };

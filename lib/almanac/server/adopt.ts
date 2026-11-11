@@ -15,6 +15,25 @@ async function isGuest(id: string): Promise<boolean> {
   return !error && Boolean(data.user?.is_anonymous);
 }
 
+/**
+ * The account already has lessons or series of its own. Errors read as true, so
+ * a guest is never folded in when it can't be told.
+ */
+export async function hasOwnProgress(userId: string): Promise<boolean> {
+  try {
+    const admin = createAdminClient();
+    const [daily, finishes, series] = await Promise.all([
+      admin.from("daily_progress").select("user_id", { count: "exact", head: true }).eq("user_id", userId),
+      admin.from("lesson_finishes").select("user_id", { count: "exact", head: true }).eq("user_id", userId),
+      admin.from("series").select("user_id", { count: "exact", head: true }).eq("user_id", userId).eq("is_sample", false),
+    ]);
+    if (daily.error || finishes.error || series.error) return true;
+    return (daily.count ?? 0) + (finishes.count ?? 0) + (series.count ?? 0) > 0;
+  } catch {
+    return true;
+  }
+}
+
 /** Moves `guestId`'s progress to `userId` and deletes the guest. */
 export async function adoptGuest(guestId: string, userId: string): Promise<boolean> {
   if (!guestId || guestId === userId) return false;
@@ -65,10 +84,4 @@ export async function adoptPending(userId: string): Promise<boolean> {
     console.error("[almanac] pending adoption:", cause);
     return false;
   }
-}
-
-/** Everything that should follow a sign-in: the guest who was signed in on this device, then any recorded at sign-up. */
-export async function adoptAfterSignIn(userId: string, guestId: string | null): Promise<void> {
-  if (guestId) await adoptGuest(guestId, userId);
-  await adoptPending(userId);
 }
