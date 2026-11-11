@@ -137,6 +137,12 @@ pnpm exec tsc --noEmit
 pnpm build
 ```
 
+Run the tests:
+
+```bash
+pnpm test
+```
+
 Then run the linter:
 
 ```bash
@@ -145,7 +151,7 @@ pnpm lint
 
 `pnpm lint` currently fails because of existing problems across the codebase. Please don't add new ones, and fix any in the code you touch where that is practical.
 
-The project has no automated tests, so try your change in the running app. For anything touching the main flow, walk through it end to end:
+Only the pure rules have tests so far (`lib/almanac/*.test.ts`, run with Vitest). For anything else, try your change in the running app. For anything touching the main flow, walk through it end to end:
 
 1. Sign in, or register and confirm your email.
 2. Start a topic from the dashboard and finish the placement test.

@@ -73,11 +73,6 @@ function SeriesLesson({ id, number }: { id: string; number: number }) {
   };
 
   // A wrong answer is shown with the right one, then the check comes back in new words.
-  const checkState: "unanswered" | "missed" | "passed" = lesson.checkPassed
-    ? "passed"
-    : lesson.checkAnswer !== null
-      ? "missed"
-      : "unanswered";
   const retry = () => {
     setRetrying(true);
     setRetryFailed(false);
@@ -126,8 +121,8 @@ function SeriesLesson({ id, number }: { id: string; number: number }) {
     ),
     unanswered: <Button disabled>Answer the check to continue</Button>,
     passed: onward,
-  }[checkState];
-  const footerNote = checkState === "missed" ? "Get the check right to move on. It comes back in new words." : onwardNote;
+  }[lesson.checkState];
+  const footerNote = lesson.checkState === "missed" ? "Get the check right to move on. It comes back in new words." : onwardNote;
 
   return (
     <SessionPage
@@ -205,7 +200,7 @@ function SeriesLesson({ id, number }: { id: string; number: number }) {
               className="mt-7"
               label={lesson.check.prompt}
               options={lesson.check.options}
-              value={lesson.checkAnswer}
+              value={lesson.checkPick}
               onChange={(choice) => {
                 if (typeof choice === "number") answer(choice);
               }}

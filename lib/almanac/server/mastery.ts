@@ -1,11 +1,12 @@
 import "server-only";
 import { generateStructured } from "@/lib/claude";
+import { isDone, wasMissed } from "../lesson-check";
 import { LESSONS_PER_SERIES, masteryPassed, scoreAnswers } from "../rules";
 import { AlmanacError, type Answer, type ChoiceQuestion, type Mastery } from "../types";
 import { claim, release, waitFor } from "./claims";
 import { check, db, requireUser, type Learner } from "./context";
 import { finishChoice, masteryPrompt, masterySchema } from "./prompts";
-import { resolveSeries, type LessonRow, type SeriesRow } from "./series";
+import { checkOf, resolveSeries, type LessonRow, type SeriesRow } from "./series";
 
 type MasteryRow = {
   series_id: string;
@@ -29,7 +30,7 @@ async function readMastery(seriesId: string): Promise<MasteryRow | null> {
 }
 
 function toMastery(series: SeriesRow, lessons: LessonRow[], m: MasteryRow | null): Mastery {
-  const unfinished = lessons.filter((l) => l.check_answer === null).map((l) => l.number);
+  const unfinished = lessons.filter((l) => !isDone(checkOf(l))).map((l) => l.number);
   let status: Mastery["status"];
   if (series.is_sample || unfinished.length > 0) status = "locked";
   else if (!m?.questions) status = "ready";
@@ -54,10 +55,7 @@ function toMastery(series: SeriesRow, lessons: LessonRow[], m: MasteryRow | null
 
 /** The lessons the learner got wrong along the way, or missed in the last attempt. */
 function weakLessons(lessons: LessonRow[], m: MasteryRow | null): number[] {
-  // check_was_missed covers retries; the second test covers lessons answered wrong before retries existed.
-  const wrongChecks = lessons.filter(
-    (l) => l.check_was_missed || (l.check_answer !== null && l.check_answer !== l.check_question.correctIndex)
-  );
+  const wrongChecks = lessons.filter((l) => wasMissed(checkOf(l)));
   const missed =
     m?.questions && m.submitted
       ? m.questions.filter((q, i) => m.answers[i] !== q.correctIndex).map((q) => q.lessonNumber ?? 0)
@@ -112,7 +110,7 @@ async function writeFirst(series: SeriesRow, lessons: LessonRow[]): Promise<Mast
   }
 }
 
-/** Run in the background when the fifth lesson check is answered. */
+/** Run in the background when the fifth lesson check is passed. */
 export async function prepareMastery(seriesId: string): Promise<void> {
   try {
     const series = check(await db().from("series").select("*").eq("id", seriesId).maybeSingle()) as SeriesRow | null;
@@ -120,7 +118,7 @@ export async function prepareMastery(seriesId: string): Promise<void> {
     const lessons = check(
       await db().from("series_lessons").select("*").eq("series_id", seriesId).order("number")
     ) as LessonRow[];
-    if (lessons.some((l) => l.check_answer === null)) return;
+    if (lessons.some((l) => !isDone(checkOf(l)))) return;
     await writeFirst(series, lessons);
   } catch (cause) {
     console.error("[almanac] prepare mastery:", cause);

@@ -183,19 +183,3 @@ export function shuffleChoice<T extends { options: string[]; correctIndex: numbe
   }
   return { ...question, options: order.map((i) => question.options[i]), correctIndex: order.indexOf(question.correctIndex) };
 }
-
-/**
- * A missed question asked again in the same words: reshuffled so the right answer
- * moves off the slot just shown. Options whose order matters stay where they are.
- */
-export function askAgain<T extends { options: string[]; correctIndex: number }>(question: T): T {
-  const count = question.options.length;
-  if (count < 2 || keepsOrder(question.options)) return question;
-  const next = shuffleChoice(question);
-  if (next.correctIndex !== question.correctIndex) return next;
-  // Swap the right answer with any other slot.
-  const to = (next.correctIndex + 1 + Math.floor(Math.random() * (count - 1))) % count;
-  const options = [...next.options];
-  [options[next.correctIndex], options[to]] = [options[to], options[next.correctIndex]];
-  return { ...next, options, correctIndex: to };
-}

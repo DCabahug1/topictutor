@@ -22,8 +22,16 @@ import {
 } from "./fixtures/content";
 import { SAMPLE_LESSONS, SAMPLE_SERIES } from "./fixtures/sample-series";
 import {
+  answerCheck,
+  askCheckAgain,
+  canAskAgain,
+  checkForScreen,
+  isDone,
+  moveRightAnswer,
+  type LessonCheck,
+} from "./lesson-check";
+import {
   LESSONS_PER_SERIES,
-  askAgain,
   focusLine,
   lastSevenDays,
   recentDays,
@@ -86,6 +94,8 @@ type StoredSeries = {
   checkMissed?: Array<number | null>;
   /** A check asked again replaces the lesson's own. */
   retryChecks?: Array<ChoiceQuestion | null>;
+  /** Any pick on the lesson was ever wrong. Missing in stores saved before it existed. */
+  checkWasMissed?: boolean[];
   mastery: {
     written: boolean;
     answers: Array<Answer | null>;
@@ -385,10 +395,32 @@ function masteryQuestions(series: StoredSeries): ChoiceQuestion[] {
   return lessonsOf(series).map((lesson, i) => ({ ...lesson.check, lessonNumber: i + 1 }));
 }
 
+/** Lesson i's check, as the lesson check module sees it. */
+function checkOf(series: StoredSeries, i: number): LessonCheck {
+  return {
+    question: series.retryChecks?.[i] ?? lessonsOf(series)[i].check,
+    passed: series.checkAnswers[i],
+    missed: series.checkMissed?.[i] ?? null,
+    everMissed: series.checkWasMissed?.[i] ?? false,
+  };
+}
+
+/** Stores a check the module decided. The question goes to retryChecks only once it is asked again. */
+function putCheck(series: StoredSeries, i: number, decided: LessonCheck) {
+  const blank = <T,>(value: T) => Array<T>(LESSONS_PER_SERIES).fill(value);
+  const asked = JSON.stringify(checkOf(series, i).question) !== JSON.stringify(decided.question);
+  series.checkAnswers[i] = decided.passed;
+  (series.checkMissed ??= blank(null))[i] = decided.missed;
+  (series.checkWasMissed ??= blank(false))[i] = decided.everMissed;
+  if (asked) (series.retryChecks ??= blank(null))[i] = decided.question;
+}
+
+const lessonDone = (series: StoredSeries, i: number) => isDone({ passed: series.checkAnswers[i] });
+
 function summarize(series: StoredSeries): SeriesSummary {
   const lessons = lessonsOf(series);
-  const lessonsDone = series.checkAnswers.filter((a) => a !== null).length;
-  const next = series.checkAnswers.findIndex((a) => a === null);
+  const lessonsDone = lessons.filter((_, i) => lessonDone(series, i)).length;
+  const next = lessons.findIndex((_, i) => !lessonDone(series, i));
   return {
     id: series.id,
     title: series.title,
@@ -406,7 +438,9 @@ function summarize(series: StoredSeries): SeriesSummary {
 }
 
 function unfinishedOf(series: StoredSeries): number[] {
-  return series.checkAnswers.map((a, i) => (a === null ? i + 1 : 0)).filter((n) => n > 0);
+  return lessonsOf(series)
+    .map((_, i) => i + 1)
+    .filter((n) => !lessonDone(series, n - 1));
 }
 
 function findSeries(store: Store, id: string): StoredSeries {
@@ -509,9 +543,7 @@ function toSeriesLesson(series: StoredSeries, number: number): SeriesLesson {
     description: lesson.description,
     why: series.whys[number - 1] ?? "",
     paragraphs: series.written[number - 1] ? lesson.paragraphs : null,
-    check: series.retryChecks?.[number - 1] ?? lesson.check,
-    checkAnswer: series.checkAnswers[number - 1] ?? series.checkMissed?.[number - 1] ?? null,
-    checkPassed: series.checkAnswers[number - 1] !== null,
+    ...checkForScreen(checkOf(series, number - 1)),
     askHint: lesson.askHint,
     nextReady: number < LESSONS_PER_SERIES && series.written[number],
     unfinished: unfinishedOf(series),
@@ -720,7 +752,7 @@ export const fixtureSource: AlmanacSource = {
           description: lesson.description,
           why: series.whys[i] ?? "",
           focus: series.focus[i] ?? false,
-          done: series.checkAnswers[i] !== null,
+          done: lessonDone(series, i),
           written: series.written[i],
         })
       ),
@@ -760,15 +792,12 @@ export const fixtureSource: AlmanacSource = {
     const store = load();
     const series = findSeries(store, id);
     const i = number - 1;
-    const missed = (series.checkMissed ??= Array(LESSONS_PER_SERIES).fill(null));
-    if (series.checkAnswers[i] === null && missed[i] === null) {
-      const question = series.retryChecks?.[i] ?? lessonsOf(series)[i].check;
-      if (answer === question.correctIndex) {
-        series.checkAnswers[i] = answer;
+    const { check: decided, outcome } = answerCheck(checkOf(series, i), answer);
+    if (outcome !== "ignored") {
+      putCheck(series, i, decided);
+      if (outcome === "passed") {
         series.updatedAt = new Date().toISOString();
         store.finished.push({ date: localDate(), subject: series.category, kind: "series" });
-      } else {
-        missed[i] = answer;
       }
       save(store);
     }
@@ -780,11 +809,10 @@ export const fixtureSource: AlmanacSource = {
     const store = load();
     const series = findSeries(store, id);
     const i = number - 1;
-    if (series.checkAnswers[i] === null && series.checkMissed?.[i] != null) {
+    const current = checkOf(series, i);
+    if (canAskAgain(current)) {
       // The sample data can't be reworded, so the fixture only moves the right answer.
-      const question = series.retryChecks?.[i] ?? lessonsOf(series)[i].check;
-      (series.retryChecks ??= Array(LESSONS_PER_SERIES).fill(null))[i] = askAgain(question);
-      series.checkMissed[i] = null;
+      putCheck(series, i, askCheckAgain(current, moveRightAnswer(current.question)));
       save(store);
     }
     return toSeriesLesson(series, number);

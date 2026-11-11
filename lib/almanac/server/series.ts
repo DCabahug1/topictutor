@@ -1,7 +1,16 @@
 import "server-only";
 import { GenerationError, HAIKU, generateStructured, streamText } from "@/lib/claude";
 import { SAMPLE_LESSONS, SAMPLE_SERIES } from "../fixtures/sample-series";
-import { LESSONS_PER_SERIES, SECTION_BREAK, askAgain, percentComplete, seriesStatus } from "../rules";
+import {
+  answerCheck,
+  askCheckAgain,
+  canAskAgain,
+  checkForScreen,
+  isDone,
+  moveRightAnswer,
+  type LessonCheck,
+} from "../lesson-check";
+import { LESSONS_PER_SERIES, SECTION_BREAK, percentComplete, seriesStatus } from "../rules";
 import {
   AlmanacError,
   type ChoiceQuestion,
@@ -87,13 +96,34 @@ function sampleLessonRows(): LessonRow[] {
   }));
 }
 
+/** A lesson row's check, as the lesson check module sees it. Rows read before the migration lack check_was_missed. */
+export function checkOf(lesson: LessonRow): LessonCheck {
+  return {
+    question: lesson.check_question,
+    passed: lesson.check_answer,
+    missed: lesson.check_missed,
+    everMissed: lesson.check_was_missed ?? false,
+  };
+}
+
+/** Puts a check the module decided back on its row, after the write. */
+function putCheck(lesson: LessonRow, decided: LessonCheck) {
+  lesson.check_question = decided.question;
+  lesson.check_answer = decided.passed;
+  lesson.check_missed = decided.missed;
+  lesson.check_was_missed = decided.everMissed;
+}
+
+/** For list rows, which load only check_answer. */
+const lessonDone = (lesson: Pick<LessonRow, "check_answer">) => isDone({ passed: lesson.check_answer });
+
 /** The id the screens use: the sample is always "sample". */
 const publicId = (row: SeriesRow) => (row.is_sample ? SAMPLE_SERIES.id : row.id);
 
 export function summarize(row: SeriesRow, lessons: LessonRow[]): SeriesSummary {
   const sorted = [...lessons].sort((a, b) => a.number - b.number);
-  const lessonsDone = sorted.filter((l) => l.check_answer !== null).length;
-  const next = sorted.find((l) => l.check_answer === null);
+  const lessonsDone = sorted.filter(lessonDone).length;
+  const next = sorted.find((l) => !lessonDone(l));
   return {
     id: publicId(row),
     title: row.title,
@@ -202,7 +232,7 @@ export async function getSeries(learner: Learner, id: string): Promise<Series> {
         description: l.description,
         why: l.why,
         focus: l.focus,
-        done: l.check_answer !== null,
+        done: lessonDone(l),
         written: l.paragraphs !== null,
       })
     ),
@@ -227,12 +257,10 @@ function toLesson(row: SeriesRow, lessons: LessonRow[], number: number): SeriesL
     description: lesson.description,
     why: lesson.why,
     paragraphs: lesson.paragraphs,
-    check: lesson.check_question,
-    checkAnswer: lesson.check_answer ?? lesson.check_missed,
-    checkPassed: lesson.check_answer !== null,
+    ...checkForScreen(checkOf(lesson)),
     askHint: lesson.ask_hint,
     nextReady: Boolean(next?.paragraphs),
-    unfinished: lessons.filter((l) => l.check_answer === null).map((l) => l.number),
+    unfinished: lessons.filter((l) => !lessonDone(l)).map((l) => l.number),
   };
 }
 
@@ -331,27 +359,27 @@ export async function answerSeriesCheck(learner: Learner, id: string, number: nu
   const lesson = lessons.find((l) => l.number === number);
   if (!lesson) throw new AlmanacError("notFound");
 
-  // One pick per question. Only a right one finishes the lesson; a wrong one waits for a retry.
-  if (lesson.check_answer !== null || lesson.check_missed !== null) return toLesson(row, lessons, number);
+  const { check: decided, outcome } = answerCheck(checkOf(lesson), answer);
+  if (outcome === "ignored") return toLesson(row, lessons, number);
 
-  if (answer !== lesson.check_question.correctIndex) {
+  // The .is() filters repeat "still unanswered" in the database, so two tabs can't both write.
+  if (outcome === "missed") {
     check(
       await db()
         .from("series_lessons")
-        .update({ check_missed: answer, check_was_missed: true })
+        .update({ check_missed: decided.missed, check_was_missed: decided.everMissed })
         .eq("series_id", row.id)
         .eq("number", number)
         .is("check_answer", null)
         .is("check_missed", null)
     );
-    lesson.check_missed = answer;
-    lesson.check_was_missed = true;
+    putCheck(lesson, decided);
   } else {
     const now = new Date().toISOString();
     check(
       await db()
         .from("series_lessons")
-        .update({ check_answer: answer, answered_at: now })
+        .update({ check_answer: decided.passed, answered_at: now })
         .eq("series_id", row.id)
         .eq("number", number)
         .is("check_answer", null)
@@ -365,9 +393,9 @@ export async function answerSeriesCheck(learner: Learner, id: string, number: nu
           { onConflict: "user_id,kind,ref", ignoreDuplicates: true }
         )
     );
-    lesson.check_answer = answer;
-    // The fifth answer opens the Mastery Check: write it now, so it is ready when they get there.
-    if (!row.is_sample && lessons.every((l) => l.check_answer !== null)) learner.defer(prepareMastery(row.id));
+    putCheck(lesson, decided);
+    // The fifth pass opens the Mastery Check: write it now, so it is ready when they get there.
+    if (!row.is_sample && lessons.every(lessonDone)) learner.defer(prepareMastery(row.id));
   }
   return toLesson(row, lessons, number);
 }
@@ -388,7 +416,7 @@ async function rephraseCheck(lesson: LessonRow): Promise<ChoiceQuestion> {
   } catch (cause) {
     // Never leave the learner stuck: the same question, with the right answer moved, still asks them to think again.
     console.error("[almanac] check retry:", cause);
-    return askAgain(missed);
+    return moveRightAnswer(missed);
   }
 }
 
@@ -398,14 +426,15 @@ export async function retrySeriesCheck(learner: Learner, id: string, number: num
   const { row, lessons, stored } = await resolveSeries(learner, id);
   const lesson = lessons.find((l) => l.number === number);
   if (!lesson) throw new AlmanacError("notFound");
-  if (!stored || lesson.check_answer !== null || lesson.check_missed === null) return toLesson(row, lessons, number);
+  if (!stored || !canAskAgain(checkOf(lesson))) return toLesson(row, lessons, number);
 
   const held = await claim(`series-check:${row.id}:${number}`);
   if (!held) {
     // A second tap, or another tab: wait for that rewrite instead of writing another.
     const fresh = await waitFor(async () => {
       const current = await lessonsOf(row.id);
-      return current.find((l) => l.number === number)?.check_missed === null ? current : null;
+      const lesson = current.find((l) => l.number === number);
+      return lesson && !canAskAgain(checkOf(lesson)) ? current : null;
     });
     return toLesson(row, fresh, number);
   }
@@ -413,20 +442,19 @@ export async function retrySeriesCheck(learner: Learner, id: string, number: num
     // Someone may have asked it again between the first read and the claim.
     const current = await lessonsOf(row.id);
     const missed = current.find((l) => l.number === number);
-    if (!missed || missed.check_answer !== null || missed.check_missed === null) return toLesson(row, current, number);
+    if (!missed || !canAskAgain(checkOf(missed))) return toLesson(row, current, number);
 
-    const question = await rephraseCheck(missed);
+    const decided = askCheckAgain(checkOf(missed), await rephraseCheck(missed));
     check(
       await db()
         .from("series_lessons")
-        .update({ check_question: question, check_missed: null })
+        .update({ check_question: decided.question, check_missed: decided.missed })
         .eq("series_id", row.id)
         .eq("number", number)
         .is("check_answer", null)
         .not("check_missed", "is", null)
     );
-    missed.check_question = question;
-    missed.check_missed = null;
+    putCheck(missed, decided);
     return toLesson(row, current, number);
   } finally {
     await release(held);

@@ -104,10 +104,10 @@ Live component previews (HTML, use the same CSS variables) are in `system/compon
 
 Rules:
 
-- Percent complete = (lessons with their check answered, plus 1 if the Mastery Check is passed) / 6. All five lessons without a pass is 83%.
+- Percent complete = (lessons with their check passed, plus 1 if the Mastery Check is passed) / 6. All five lessons without a pass is 83%.
 - Streak = consecutive days, in the learner's timezone, with any lesson finished. Not having finished one yet today never breaks it. Finishing a past daily lesson counts.
 - A lesson is finished once its check is answered right. A wrong pick is shown with the right answer, then the check can be asked again, rephrased with new specifics and the right answer in a new place.
-- The Mastery Check opens when all five lesson checks are answered. Passing is 4 of 5. A retake leans toward missed questions and wrong lesson checks.
+- The Mastery Check opens when all five lesson checks are passed. Passing is 4 of 5. A retake leans toward missed questions and lessons whose check was ever missed.
 - Placement tests and Mastery Checks save answers on every change. A refresh restores the test and answers. "Not sure" is stored as its own value and scored as wrong.
 - Outline writing starts automatically on submit.
 - Guests can go deeper once. There's also a daily limit across all guests. Both point to the sample series.

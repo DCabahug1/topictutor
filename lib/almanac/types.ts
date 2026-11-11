@@ -151,6 +151,9 @@ export type Series = SeriesSummary & {
   placementScore: number | null;
 };
 
+/** Where a lesson check stands (lib/almanac/lesson-check.ts). */
+export type CheckState = "unanswered" | "missed" | "passed";
+
 export type SeriesLesson = {
   seriesId: string;
   seriesTitle: string;
@@ -161,13 +164,10 @@ export type SeriesLesson = {
   /** Null until written. Stream it with streamSeriesLesson. */
   paragraphs: string[] | null;
   check: ChoiceQuestion;
-  /** The pick on the current question, right or wrong. Null until one is made. */
-  checkAnswer: number | null;
-  /**
-   * The check was answered right, so the lesson is finished. A wrong pick
-   * leaves this false until retrySeriesCheck asks again and the next pick is right.
-   */
-  checkPassed: boolean;
+  /** Passed finishes the lesson. Missed waits for retrySeriesCheck to ask it again. */
+  checkState: CheckState;
+  /** The pick to show on the current question, right or wrong. Null while unanswered. */
+  checkPick: number | null;
   askHint: string;
   /** The next lesson is already written, so "Next" opens instantly. */
   nextReady: boolean;

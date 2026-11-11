@@ -27,5 +27,6 @@ export type { AlmanacSource, TutorContext } from "./source";
 export * from "./types";
 export * from "./rules";
 export * from "./copy";
+export * from "./lesson-check";
 export { useAlmanac } from "./use-almanac";
 export { useTextStream, prefersReducedMotion, type StreamStatus } from "./use-stream";
