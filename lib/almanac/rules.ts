@@ -115,9 +115,14 @@ export function longestStreak(finishedDates: Iterable<string>): number {
 
 /** The last seven days, oldest first, ending today. */
 export function lastSevenDays(finishedDates: Iterable<string>, today: string = localDate()): StreakDay[] {
+  return recentDays(finishedDates, 7, today);
+}
+
+/** The last `length` days, oldest first, ending today. */
+export function recentDays(finishedDates: Iterable<string>, length: number, today: string = localDate()): StreakDay[] {
   const done = new Set(finishedDates);
-  return Array.from({ length: 7 }, (_, i) => {
-    const date = shiftDate(today, i - 6);
+  return Array.from({ length }, (_, i) => {
+    const date = shiftDate(today, i - (length - 1));
     const name = parseLocalDate(date).toLocaleDateString("en-US", { weekday: "long" });
     return {
       letter: name[0],

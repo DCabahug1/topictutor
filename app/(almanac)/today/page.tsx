@@ -9,19 +9,13 @@ import { Section } from "@/components/almanac/Section";
 import { SeriesRow } from "@/components/almanac/SeriesRow";
 import { useSession } from "@/components/almanac/SessionProvider";
 import { StreakMark } from "@/components/almanac/StreakMark";
-import { almanac, useAlmanac, type DailySession, type SeriesSummary, type Streak } from "@/lib/almanac";
-import { deeperHref, spellOut } from "./lesson/components/copy";
+import { almanac, useAlmanac, type DailySession, type SeriesSummary } from "@/lib/almanac";
+import { deeperHref } from "./lesson/components/copy";
 
 function timeOfDay(hour: number): string {
   if (hour >= 5 && hour < 12) return "Good morning";
   if (hour >= 12 && hour < 18) return "Good afternoon";
   return "Good evening";
-}
-
-function streakNote(streak: Streak): string {
-  if (streak.todayDone) return streak.count <= 1 ? "Day one. See you tomorrow." : `${spellOut(streak.count)} days running.`;
-  const longest = streak.longest > streak.count ? ` Longest so far: ${streak.longest}.` : "";
-  return `Today still counts until midnight.${longest}`;
 }
 
 /** The sentence under today's title. */
@@ -135,12 +129,14 @@ export default function TodayPage() {
           }
         />
         {!isNew && (
-          <aside
-            aria-label="Streak"
-            className="min-w-0 flex-[0_1_280px] border-0 border-t border-solid border-(--rule) pt-5"
-          >
-            <StreakMark count={streak.count} week={streak.week} todayDone={streak.todayDone} note={streakNote(streak)} />
-          </aside>
+          <StreakMark
+            count={streak.count}
+            days={streak.month}
+            todayDone={streak.todayDone}
+            longest={streak.longest}
+            size="auto"
+            className="min-w-0 flex-[1_1_100%] md:flex-[0_1_300px]"
+          />
         )}
       </section>
 

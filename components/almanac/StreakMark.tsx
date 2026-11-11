@@ -1,97 +1,143 @@
+import type { CSSProperties } from "react";
+import { parseLocalDate } from "@/lib/almanac/rules";
 import type { StreakDay } from "@/lib/almanac/types";
 import { cx } from "./cx";
 
-type StreakMarkProps = {
+/**
+ * Card metrics as CSS variables, so one render can change size at a breakpoint.
+ * md is the drawn size (Today, desktop). sm is the phone. lg is for Stats and was not drawn.
+ * auto is sm on phones and md from the md breakpoint up.
+ */
+const SIZES = {
+  sm: "[--num:56px] [--label:18px] [--cell:22px] [--gap:5px] [--pad:24px]",
+  md: "max-w-[300px] [--num:72px] [--label:20px] [--cell:26px] [--gap:6px] [--pad:28px]",
+  lg: "max-w-[380px] [--num:96px] [--label:22px] [--cell:34px] [--gap:8px] [--pad:32px]",
+  auto:
+    "[--num:56px] [--label:18px] [--cell:22px] [--gap:5px] [--pad:24px] md:max-w-[300px] md:[--num:72px] md:[--label:20px] md:[--cell:26px] md:[--gap:6px] md:[--pad:28px]",
+} as const;
+
+const GRID = "grid grid-cols-[repeat(7,var(--cell))] gap-(--gap)";
+
+function shortDate(iso: string): string {
+  return parseLocalDate(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+type FourWeekGridProps = {
+  /** The last 28 days, oldest first, ending today (Streak.month). */
+  days: StreakDay[];
+  /** The current run. Includes today only once today is done. */
   count: number;
-  /** The last seven days, oldest first. Omit to show the numeral alone. */
-  week?: StreakDay[];
   todayDone: boolean;
-  /** lg: set aside beside a lead (80px, 56px on phones). md: 40px. sm: 15px mono in the nav. */
-  size?: "lg" | "md" | "sm";
-  /** The finish moment: the numeral turns accent. Everywhere else it is ink. */
-  celebrate?: boolean;
-  /** Shown under the strip. Defaults follow the state. */
-  note?: string;
   className?: string;
 };
 
-/** Spells the strip out for screen readers. */
-export function weekLabel(week: StreakDay[]): string {
-  const done = week.filter((d) => d.done && !d.isToday).map((d) => d.name);
-  const today = week.find((d) => d.isToday);
-  const before = done.length ? `Done ${done.join(", ")}` : "No days done before today";
-  return `${before}. Today ${today?.done ? "done" : "not done yet"}.`;
-}
+/**
+ * The 4 x 7 grid of the last 28 days, with weekday letters above and the range below.
+ * Sized by the --cell, --gap and --meta (letter size, 11px by default) variables on a parent.
+ */
+export function FourWeekGrid({ days, count, todayDone, className }: FourWeekGridProps) {
+  if (!days.length) return null;
+  const last = days.length - 1;
 
-/** The seven-day strip: filled dots for done days, a dashed ring for today not done yet. */
-export function WeekStrip({ week, className }: { week: StreakDay[]; className?: string }) {
+  // Where the current run starts inside the window. Today joins it only once done.
+  let runStart = todayDone ? last : last - 1;
+  while (runStart >= 0 && days[runStart].done) runStart -= 1;
+  runStart += 1;
+
+  const earlierDone = days.slice(0, last).filter((d) => d.done).length;
+  const label =
+    `Last four weeks: ${earlierDone} of ${last} earlier days done, ` +
+    `current streak ${count} ${count === 1 ? "day" : "days"}, today ${todayDone ? "done" : "not done yet"}.`;
+
+  function cellClass(day: StreakDay, i: number): string {
+    if (day.isToday) return todayDone ? "border-solid border-(--accent) bg-(--accent)" : "border-dashed border-(--ink)";
+    if (!day.done) return "border-solid border-(--rule)";
+    return i >= runStart ? "border-solid border-(--ink) bg-(--ink)" : "border-solid border-(--ink-muted) bg-(--ink-muted)";
+  }
+
+  const meta = "font-mono text-[length:var(--meta,11px)]";
+
   return (
-    <div
-      role="img"
-      aria-label={weekLabel(week)}
-      className={cx("grid grid-cols-[repeat(7,28px)] gap-1 text-center font-mono text-[11px]", className)}
-    >
-      {week.map((day) => (
-        <div key={day.date} className={day.isToday ? "text-(--ink)" : "text-(--ink-muted)"}>
-          <div
+    <div role="img" aria-label={label} className={cx("w-fit", className)}>
+      <div aria-hidden="true" className={cx(GRID, meta, "text-center")}>
+        {days.slice(-7).map((day) => (
+          <span key={day.date} className={day.isToday ? "font-medium text-(--ink)" : "text-(--ink-muted)"}>
+            {day.letter}
+          </span>
+        ))}
+      </div>
+      <div aria-hidden="true" className={cx(GRID, "mt-2")}>
+        {days.map((day, i) => (
+          <span
+            key={day.date}
             className={cx(
-              "mx-auto mb-[5px] box-border h-3 w-3 rounded-(--radius-full) border-[1.5px]",
-              day.done && !day.isToday && "border-solid border-(--ink) bg-(--ink)",
-              day.done && day.isToday && "border-solid border-(--accent) bg-(--accent)",
-              !day.done && day.isToday && "border-dashed border-(--ink)",
-              !day.done && !day.isToday && "border-solid border-(--ink-muted)"
+              "box-border block h-(--cell) w-(--cell) border-[1.5px] transition-colors duration-(--duration-step) ease-(--ease-enter)",
+              cellClass(day, i)
             )}
           />
-          {day.letter}
-        </div>
-      ))}
+        ))}
+      </div>
+      <div aria-hidden="true" className={cx(meta, "mt-2.5 flex justify-between uppercase tracking-[0.04em] text-(--ink-muted)")}>
+        <span>{shortDate(days[0].date)}</span>
+        <span>Today</span>
+      </div>
     </div>
   );
 }
 
+type StreakMarkProps = {
+  /** The current run. Includes today only once today is done. */
+  count: number;
+  /** The last 28 days, oldest first, ending today (Streak.month). */
+  days: StreakDay[];
+  todayDone: boolean;
+  /** The longest run ever, for the note. */
+  longest: number;
+  size?: keyof typeof SIZES;
+  className?: string;
+};
+
 /**
- * The streak, set aside from the lead: a Newsreader numeral in ink with the
- * seven-day strip. Zero is muted and never a warning. Accent only with `celebrate`.
+ * The streak card, "Four weeks": the count, a 4 x 7 grid of the last 28 days, one italic note.
+ * Current run is ink, older finished days ink-muted, missed days a rule outline, today a dashed
+ * ink outline until it is done and then the card's only accent.
  */
-export function StreakMark({ count, week, todayDone, size = "lg", celebrate = false, note, className }: StreakMarkProps) {
-  const unit = count === 1 ? "day in a row" : "days in a row";
+export function StreakMark({ count, days, todayDone, longest, size = "md", className }: StreakMarkProps) {
+  const best = Math.max(longest, count);
+  const note =
+    count === 0
+      ? "Finish today’s lesson to start a streak."
+      : todayDone
+        ? `Done for today. Longest so far: ${best}.`
+        : `Today still counts until midnight. Longest so far: ${best}.`;
 
-  if (size === "sm") {
-    return (
-      <span
-        className={cx(
-          "font-mono text-[15px] font-medium",
-          count ? (celebrate ? "text-(--accent)" : "text-(--ink)") : "text-(--ink-muted)",
-          className
-        )}
-      >
-        {count}
-        <span className="sr-only"> {unit}</span>
-      </span>
-    );
-  }
-
-  const defaultNote =
-    count === 0 ? "Finish one lesson to start a streak." : todayDone ? undefined : "Today still counts until midnight.";
+  const pad: CSSProperties = { padding: "var(--pad) var(--pad) calc(var(--pad) - 2px)" };
 
   return (
-    <div className={className}>
-      <div className="flex items-end gap-3">
+    <aside
+      aria-label="Streak"
+      className={cx(
+        "box-border w-full border border-solid border-(--rule) bg-(--paper-raised) font-serif text-(--ink)",
+        SIZES[size],
+        className
+      )}
+      style={pad}
+    >
+      <div className="flex items-baseline gap-3">
         <p
           className={cx(
-            "m-0 font-serif font-medium leading-[0.8] tracking-[-0.04em]",
-            size === "lg" ? "text-[56px] md:text-[80px]" : "text-[40px]",
-            !count ? "text-(--ink-muted)" : celebrate ? "text-(--accent)" : "text-(--ink)"
+            "m-0 text-(length:--num) font-medium leading-[0.85] tracking-[-0.04em] tabular-nums",
+            count === 0 ? "text-(--ink-muted)" : "text-(--ink)"
           )}
         >
           {count}
         </p>
-        <p className="m-0 mb-1 font-mono text-[12px] uppercase tracking-[0.06em] text-(--ink-muted)">{unit}</p>
+        <p className="m-0 text-(length:--label) text-(--ink-muted)">day streak</p>
       </div>
-      {week && count > 0 && <WeekStrip week={week} className="mt-[18px]" />}
-      {(note ?? defaultNote) && (
-        <p className="m-0 mt-[14px] text-[16px] italic leading-[1.4] text-(--ink-muted)">{note ?? defaultNote}</p>
-      )}
-    </div>
+
+      <FourWeekGrid days={days} count={count} todayDone={todayDone} className="mt-6" />
+
+      <p className="m-0 mt-[18px] text-[16px] italic leading-[1.4] text-(--ink-muted)">{note}</p>
+    </aside>
   );
 }

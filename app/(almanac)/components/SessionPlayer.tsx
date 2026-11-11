@@ -148,7 +148,7 @@ export function SessionPlayer() {
                       13
                     </span>
                   </div>
-                  <p className="m-0 mb-[14px] font-mono text-[13px] uppercase tracking-[0.06em] text-(--ink-muted)">days in a row</p>
+                  <p className="m-0 mb-[14px] font-serif text-[24px] leading-none text-(--ink-muted)">day streak</p>
                 </div>
               </>
             )}

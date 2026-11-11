@@ -16,7 +16,7 @@ import {
   type Streak,
   type Subject,
 } from "@/lib/almanac";
-import { spellOut } from "../../today/lesson/components/copy";
+import { runLength, spellOut } from "../../today/lesson/components/copy";
 
 const MASTERY_QUESTIONS = 5;
 const LABEL = "m-0 font-mono text-[12px] uppercase tracking-[0.08em] text-(--ink-muted)";
@@ -24,17 +24,11 @@ const BIG = "after-eyebrow big-numeral m-0 font-serif text-[80px] font-medium le
 
 const lessons = (n: number) => `${n} ${n === 1 ? "lesson" : "lessons"}`;
 
-/** "Almost seven weeks without a miss." for 47. */
+/** "Almost two weeks without a miss." for 13. Same rule as the Finish screen (runLength). */
 function streakHeadline(count: number): string {
   if (count === 0) return "No streak right now.";
   if (count === 1) return "Day one.";
-  if (count < 7) return `${spellOut(count)} days in a row.`;
-  const weeks = Math.floor(count / 7);
-  const rest = count % 7;
-  const word = (n: number) => (n === 1 ? "a week" : `${spellOut(n).toLowerCase()} weeks`);
-  if (rest === 0) return `${spellOut(weeks)} ${weeks === 1 ? "week" : "weeks"} without a miss.`;
-  if (rest >= 5) return `Almost ${word(weeks + 1)} without a miss.`;
-  return `Over ${word(weeks)} without a miss.`;
+  return `${runLength(count) ?? `${spellOut(count)} days in a row`}.`;
 }
 
 /** "Since September 24", the first day of the streak. */
@@ -102,7 +96,7 @@ export function StatsView() {
               }`}
             >
               {streak.count}
-              <span className="sr-only"> {streak.count === 1 ? "day in a row" : "days in a row"}</span>
+              <span className="sr-only"> day streak</span>
             </p>
           }
           title={streakHeadline(streak.count)}

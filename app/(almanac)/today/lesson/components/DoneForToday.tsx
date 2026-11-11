@@ -37,8 +37,8 @@ export function DoneForToday({ session }: { session: DailySession }) {
         />
         <div className="mt-14 flex max-w-[360px] items-end gap-3 border-0 border-t border-solid border-(--rule) pt-[18px]">
           <span className="text-[56px] font-medium leading-[0.8] tracking-[-0.04em]">{streak.count}</span>
-          <span className="font-mono text-[12px] uppercase tracking-[0.06em] text-(--ink-muted)">
-            {streak.count === 1 ? "day in a row" : "days in a row"}
+          <span className="font-serif text-[20px] leading-none text-(--ink-muted)">
+            day streak
           </span>
         </div>
       </section>

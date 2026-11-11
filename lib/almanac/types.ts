@@ -53,6 +53,8 @@ export type Streak = {
   longest: number;
   /** The last seven days, oldest first, ending today. */
   week: StreakDay[];
+  /** The last 28 days (four weeks), oldest first, ending today. For the streak card. */
+  month: StreakDay[];
 };
 
 // ---- Daily lesson ----

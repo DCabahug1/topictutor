@@ -5,9 +5,9 @@ import { Button } from "@/components/almanac/Button";
 import { cx } from "@/components/almanac/cx";
 import { LeadActions } from "@/components/almanac/LeadBlock";
 import { useSession } from "@/components/almanac/SessionProvider";
-import { WeekStrip } from "@/components/almanac/StreakMark";
+import { FourWeekGrid } from "@/components/almanac/StreakMark";
 import { almanac, prefersReducedMotion, useAlmanac, type DailySession } from "@/lib/almanac";
-import { deeperHref, spellOut } from "./copy";
+import { deeperHref, runLength } from "./copy";
 
 /** The subject picker is offered once, after the first lesson. */
 function useSubjectsPrompted(): boolean | null {
@@ -20,6 +20,16 @@ function checkLine(correct: number, total: number): string {
   if (correct === total) return total === 1 ? "You got the check right." : `You got all ${total} on the check.`;
   if (correct === 0) return "You missed the check, and it still counts.";
   return `You got ${correct} of ${total} on the check.`;
+}
+
+/**
+ * The headline under the streak numeral. It never repeats the number, which is right above it:
+ * short runs say a day was added, longer ones say how long it feels, the same way Stats does.
+ */
+function finishHeadline(count: number): string {
+  if (count <= 1) return "Your first day is done!";
+  const long = runLength(count);
+  return long ? `${long}!` : "Another day done!";
 }
 
 /**
@@ -45,7 +55,7 @@ export function Finish({ session, headingRef }: { session: DailySession; heading
   const stopHref = user ? "/today" : "/welcome/account";
   const deeper = deeperHref(lesson.deeperTopic);
 
-  const head = to === 1 ? "Your first day is done!" : `${spellOut(to)} days in a row!`;
+  const head = finishHeadline(to);
   const next = series?.nextLesson
     ? `Up next in your series is lesson ${series.nextLesson.number}: ${series.nextLesson.title}.`
     : pickSubjects
@@ -82,40 +92,51 @@ export function Finish({ session, headingRef }: { session: DailySession; heading
   const slide = "absolute bottom-0 left-0 transition-[transform,opacity] duration-(--duration-moment) ease-(--ease-enter)";
 
   return (
-    <div>
-      <p className="t-eyebrow m-0">Lesson finished · {lesson.subject}</p>
-      <div className="mt-(--eyebrow-gap) flex flex-wrap items-end gap-x-12 gap-y-4">
-        <div className="relative h-[1em] min-w-[1.1em] overflow-hidden text-[120px] font-medium leading-none tracking-[-0.05em] md:text-[160px]">
-          {/* Reserves the width of the widest number. */}
-          <span aria-hidden="true" className="invisible">
-            {to}
-          </span>
-          <span
-            aria-hidden="true"
-            className={cx(slide, "text-(--ink-muted)", flipped ? "-translate-y-full opacity-0" : "translate-y-0 opacity-100")}
-          >
-            {from}
-          </span>
-          <span
-            aria-hidden="true"
-            className={cx(slide, "text-(--accent)", flipped ? "translate-y-0 opacity-100" : "translate-y-full opacity-0")}
-          >
-            {to}
-          </span>
+    <div className="md:flex md:items-center md:justify-between md:gap-12 lg:gap-20">
+      <div className="min-w-0">
+        <p className="t-eyebrow m-0">Lesson finished · {lesson.subject}</p>
+        <div className="mt-(--eyebrow-gap) flex items-baseline gap-4 md:gap-5">
+          <div className="relative h-[1em] w-fit min-w-[1.1em] shrink-0 overflow-hidden text-[120px] font-medium leading-none tracking-[-0.05em] md:text-[160px]">
+            {/* Reserves the width of the widest number. */}
+            <span aria-hidden="true" className="invisible">
+              {to}
+            </span>
+            <span
+              aria-hidden="true"
+              className={cx(slide, "text-(--ink-muted)", flipped ? "-translate-y-full opacity-0" : "translate-y-0 opacity-100")}
+            >
+              {from}
+            </span>
+            <span
+              aria-hidden="true"
+              className={cx(slide, "text-(--accent)", flipped ? "translate-y-0 opacity-100" : "translate-y-full opacity-0")}
+            >
+              {to}
+            </span>
+          </div>
+          <p aria-hidden="true" className="m-0 font-serif text-[24px] leading-none text-(--ink-muted) md:text-[28px]">
+            day streak
+          </p>
         </div>
-        <WeekStrip week={streak.week} className="mb-3 hidden md:grid" />
-      </div>
-      <p role="status" className="sr-only">
-        {flipped ? `${to} ${to === 1 ? "day" : "days"} in a row.` : ""}
-      </p>
+        <p role="status" className="sr-only">
+          {flipped ? `${to} ${to === 1 ? "day" : "days"} in a row.` : ""}
+        </p>
 
-      <h1 ref={headingRef} tabIndex={-1} className="t-lead-h1-sm m-0 mt-6">
-        {head}
-      </h1>
-      <p className="t-lead m-0 mt-5 max-w-[560px]">
-        {checkLine(correct, lesson.check.length)} {next}
-      </p>
-      <LeadActions primary={primary} quiet={quiet} />
+        <h1 ref={headingRef} tabIndex={-1} className="t-lead-h1-sm m-0 mt-6">
+          {head}
+        </h1>
+        <p className="t-lead m-0 mt-5 max-w-[560px]">
+          {checkLine(correct, lesson.check.length)} {next}
+        </p>
+        <LeadActions primary={primary} quiet={quiet} />
+      </div>
+      {/* Today's square fills in accent as the number flips. Phones keep just the number. */}
+      <FourWeekGrid
+        days={streak.month}
+        count={flipped ? to : from}
+        todayDone={flipped}
+        className="hidden shrink-0 [--cell:28px] [--gap:6px] [--meta:12px] md:block lg:[--cell:44px] lg:[--gap:8px] lg:[--meta:13px]"
+      />
     </div>
   );
 }
