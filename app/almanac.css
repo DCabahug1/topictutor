@@ -267,7 +267,8 @@ body { margin: 0; font-family: var(--font-serif); background: var(--paper); colo
  * motion is allowed, so with reduced motion everything is simply there.
  */
 @keyframes stair-rise { from { transform: translateY(calc(100% + 4px)); } to { transform: none; } }
-@keyframes stair-rise-row { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+/* On phones the steps are stacked rows, so they slide out from the right edge one after another. */
+@keyframes stair-slide { from { transform: translateX(calc(100% + 8px)); } to { transform: none; } }
 @media (prefers-reduced-motion: no-preference) {
   .typed-rest { visibility: hidden; }
 
@@ -290,8 +291,8 @@ body { margin: 0; font-family: var(--font-serif); background: var(--paper); colo
   .stair { transform: translateY(calc(100% + 4px)); }
   .stair.is-in { animation: stair-rise var(--duration-moment) var(--ease-enter) both; animation-delay: calc(var(--i, 0) * 110ms); }
   @media (max-width: 767px) {
-    .stair { transform: none; opacity: 0; }
-    .stair.is-in { animation-name: stair-rise-row; }
+    .stair { transform: translateX(calc(100% + 8px)); }
+    .stair.is-in { animation-name: stair-slide; }
   }
 }
 

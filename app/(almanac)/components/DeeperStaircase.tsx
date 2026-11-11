@@ -15,7 +15,8 @@ const TOPICS = [
 export function DeeperStaircase() {
   const [topic, setTopic] = useState(0);
   const current = TOPICS[topic];
-  // The steps rise one after another, like a drawer opening upward, once the staircase is in view.
+  // Once the staircase is in view, the steps come out one after another like drawers:
+  // rising from the baseline on wider screens, sliding in from the side on phones.
   const [stairsRef, inView] = useInView<HTMLOListElement>({ threshold: 0.35 });
 
   return (
@@ -53,7 +54,7 @@ export function DeeperStaircase() {
       <ol
         ref={stairsRef}
         aria-label={`${current.name}: five lessons`}
-        className="m-0 mt-10 flex list-none flex-col gap-[6px] p-0 md:mt-14 md:flex-row md:items-end md:gap-2 md:overflow-hidden"
+        className="m-0 mt-10 flex list-none flex-col gap-[6px] p-0 md:mt-14 md:flex-row md:items-end md:gap-2 overflow-hidden"
       >
         {current.lessons.map((title, i) => {
           const skip = i < current.start;
