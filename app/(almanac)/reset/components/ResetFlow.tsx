@@ -131,14 +131,14 @@ function RequestLink({ email, onEmail, onSent }: { email: string; onEmail: (valu
 
   return (
     <>
-      {alert && <FormAlert kicker="Couldn’t send the link">{alert}</FormAlert>}
       <form noValidate onSubmit={submit}>
         <FormHeader
           kicker="Password reset"
           title="Forgot your password?"
           lead="Enter your email and we’ll send a link to set a new one."
         />
-        <div className="mt-5">
+        {alert && <FormAlert kicker="Couldn’t send the link">{alert}</FormAlert>}
+        <div className="mt-7">
           <TextField
             id="reset-email"
             label="Email"
@@ -154,7 +154,7 @@ function RequestLink({ email, onEmail, onSent }: { email: string; onEmail: (valu
             }}
           />
         </div>
-        <Button type="submit" size="large" fullWidth busy={busy} className="mt-6">
+        <Button type="submit" icon fullWidth busy={busy} className="mt-8">
           {busy ? "Sending the link" : "Send reset link"}
         </Button>
         <FootLine lead="Remembered it?" label="Log in" href="/login" />
@@ -215,10 +215,10 @@ function NewPassword({ email, onDone, onExpired }: NewPasswordProps) {
 
   return (
     <>
-      {alert && <FormAlert kicker="Couldn’t save the password">{alert}</FormAlert>}
       <form noValidate onSubmit={submit}>
         <FormHeader kicker="Password reset" title="Set a new password" lead={`For ${email}.`} />
-        <div className="mt-5 flex flex-col gap-[18px]">
+        {alert && <FormAlert kicker="Couldn’t save the password">{alert}</FormAlert>}
+        <div className="mt-7 flex flex-col gap-6">
           <TextField
             id="reset-password"
             label="New password"
@@ -247,7 +247,7 @@ function NewPassword({ email, onDone, onExpired }: NewPasswordProps) {
             }}
           />
         </div>
-        <Button type="submit" size="large" fullWidth busy={busy} className="mt-6">
+        <Button type="submit" icon fullWidth busy={busy} className="mt-8">
           {busy ? "Saving" : "Save new password"}
         </Button>
         <FootLine lead="Changed your mind?" label="Log in" href="/login" />

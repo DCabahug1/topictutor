@@ -11,9 +11,9 @@ import { authService } from "@/lib/auth";
 
 export const PASSWORD_MIN = 8;
 
-const TITLE = "m-0 mt-[10px] text-[38px] font-medium leading-[1.04] tracking-[-0.02em] md:text-[46px]";
+const TITLE = "t-lead-h1-sm m-0 mt-[18px] [overflow-wrap:anywhere]";
 const INLINE_ACTION =
-  "inline-flex min-h-11 cursor-pointer items-center border-0 bg-transparent p-0 font-mono text-[14px] text-(--ink) underline underline-offset-4";
+  "inline-flex min-h-11 cursor-pointer items-center border-0 bg-transparent p-0 font-serif text-[17px] italic text-(--ink) underline underline-offset-[5px] hover:text-(--accent)";
 
 /** What is wrong with an email, in plain words, or undefined when it looks right. */
 export function emailProblem(value: string): string | undefined {
@@ -35,9 +35,9 @@ export function focusField(id: string | undefined) {
 export function FormHeader({ kicker, title, lead }: { kicker: string; title: string; lead?: string }) {
   return (
     <>
-      <p className="t-label m-0 text-(--accent)">{kicker}</p>
+      <p className="t-eyebrow m-0">{kicker}</p>
       <h1 className={TITLE}>{title}</h1>
-      {lead && <p className="m-0 mt-[10px] text-[17px] leading-normal text-(--ink-soft)">{lead}</p>}
+      {lead && <p className="t-lead m-0 mt-5">{lead}</p>}
     </>
   );
 }
@@ -47,9 +47,9 @@ export function FormAlert({ kicker, children }: { kicker: string; children: Reac
   return (
     <div
       role="alert"
-      className="mb-[22px] border-0 border-t-[3px] border-solid border-(--incorrect) bg-(--incorrect-wash) px-4 py-[14px]"
+      className="mt-7 border-0 border-l-4 border-solid border-(--incorrect) bg-(--incorrect-wash) px-4 py-[14px]"
     >
-      <p className="t-label m-0 flex items-center gap-[6px] text-(--incorrect)">
+      <p className="m-0 flex items-center gap-[6px] font-mono text-[12px] uppercase tracking-[0.08em] text-(--incorrect)">
         <CrossIcon size={12} strokeWidth={2.8} />
         {kicker}
       </p>
@@ -76,7 +76,7 @@ export function GoogleSignIn({ fallback }: { fallback: string }) {
 
   return (
     <>
-      <Button variant="secondary" size="large" fullWidth busy={starting} onClick={start} className="mt-6">
+      <Button variant="outline" fullWidth busy={starting} onClick={start} className="mt-10 border! border-(--ink)!">
         {!starting && <GoogleIcon />}
         Continue with Google
       </Button>
@@ -101,7 +101,7 @@ export function GoogleSignIn({ fallback }: { fallback: string }) {
 /** The line under a form: "New here? Create an account". */
 export function FootLine({ lead, label, href }: { lead: string; label: string; href: string }) {
   return (
-    <p className="m-0 mt-2 text-[16px] text-(--ink-muted)">
+    <p className="m-0 mt-4 text-[17px] text-(--ink-muted)">
       {lead}{" "}
       <Link href={href} className={INLINE_ACTION}>
         {label}
@@ -128,7 +128,6 @@ type MessageStateProps = {
 /** The states that are a message, not a form: check your email, all set, link expired. */
 export function MessageState({ icon, tone = "plain", kicker, title, body, primary, secondary, status }: MessageStateProps) {
   const heading = useRef<HTMLHeadingElement>(null);
-  const ink = tone === "done" ? "text-(--correct)" : tone === "expired" ? "text-(--incorrect)" : "text-(--ink)";
 
   // These replace a form, so reading starts again from the title.
   useEffect(() => {
@@ -137,19 +136,25 @@ export function MessageState({ icon, tone = "plain", kicker, title, body, primar
 
   return (
     <div className="almanac-rise">
-      <div aria-hidden="true" className={cx("flex h-16 w-16 items-center justify-center border-[1.5px] border-solid border-current", ink)}>
-        {icon === "check" ? <CheckIcon size={30} strokeWidth={2} /> : <LineIcon name={icon} />}
-      </div>
-      <p className={cx("t-label m-0 mt-5", ink)}>{kicker}</p>
-      <h1 ref={heading} tabIndex={-1} className={cx(TITLE, "outline-none")}>
+      <p
+        className={cx(
+          "t-eyebrow m-0 flex items-center gap-2",
+          tone === "done" && "text-(--correct)!",
+          tone === "expired" && "text-(--incorrect)!"
+        )}
+      >
+        {icon === "check" ? <CheckIcon size={12} strokeWidth={2.8} /> : tone === "expired" ? <LineIcon name={icon} /> : null}
+        {kicker}
+      </p>
+      <h1 ref={heading} tabIndex={-1} className={TITLE}>
         {title}
       </h1>
-      <p className="m-0 mt-3 text-[18px] leading-normal text-(--ink-soft)">{body}</p>
-      <Button size="large" fullWidth href={primary.href} onClick={primary.onClick} busy={primary.busy} className="mt-6">
+      <p className="t-lead m-0 mt-5">{body}</p>
+      <Button icon fullWidth href={primary.href} onClick={primary.onClick} busy={primary.busy} className="mt-8">
         {primary.label}
       </Button>
       {secondary && (
-        <p className="m-0 mt-1 text-[16px] text-(--ink-muted)">
+        <p className="m-0 mt-4 text-[17px] text-(--ink-muted)">
           {secondary.lead}{" "}
           {secondary.href ? (
             <Link href={secondary.href} className={INLINE_ACTION}>
@@ -174,8 +179,9 @@ export function MessageState({ icon, tone = "plain", kicker, title, body, primar
 function LineIcon({ name }: { name: "mail" | "clock" }) {
   return (
     <svg
-      width="30"
-      height="30"
+      aria-hidden="true"
+      width="14"
+      height="14"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"

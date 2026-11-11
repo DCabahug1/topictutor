@@ -93,7 +93,7 @@ export function SeriesProblem({ notFound, what, onRetry }: SeriesProblemProps) {
         title="This lesson isn’t here."
         body="The link may be mistyped, or the lesson belongs to another account."
         primary={user ? { label: "Go to Today", href: "/today" } : start}
-        secondary={user ? { label: "Library", href: "/library" } : sample}
+        secondary={user ? { label: "Go to your Library", href: "/library" } : sample}
       />
     );
   } else {

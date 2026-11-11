@@ -26,7 +26,7 @@ export default function PastDailyLessonPage() {
   if (error?.kind === "notFound") {
     return (
       <PaperPage current="library">
-        <div className="mx-auto mt-8 max-w-[640px] md:mt-[72px]">
+        <div className="mt-(--lead-top)">
           <Notice
             tone="info"
             headingLevel={1}
@@ -34,7 +34,7 @@ export default function PastDailyLessonPage() {
             title="This lesson isn’t here."
             body="The link may be mistyped, or the lesson belongs to another account."
             primary={{ label: "Go to Today", href: "/today" }}
-            secondary={{ label: "Library", href: "/library" }}
+            secondary={{ label: "or go to your Library", href: "/library" }}
           />
         </div>
       </PaperPage>
@@ -45,7 +45,7 @@ export default function PastDailyLessonPage() {
   if (error || (lesson && !lesson.paragraphs)) {
     return (
       <PaperPage current="library">
-        <div className="mx-auto mt-8 max-w-[640px] md:mt-[72px]">
+        <div className="mt-(--lead-top)">
           <Notice
             tone="error"
             headingLevel={1}
@@ -53,7 +53,7 @@ export default function PastDailyLessonPage() {
             title="This lesson didn’t load."
             body="It’s probably the connection. Nothing was lost."
             primary={{ label: "Try again", onClick: reload }}
-            secondary={{ label: "Go to Library", href: "/library" }}
+            secondary={{ label: "or go to your Library", href: "/library" }}
           />
         </div>
       </PaperPage>
@@ -65,13 +65,13 @@ export default function PastDailyLessonPage() {
   if (!lesson) {
     return (
       <SessionPage {...leave}>
-        <div aria-busy="true" className="pt-7 md:pt-12">
+        <div aria-busy="true">
           <p className="sr-only" role="status">
             Loading the lesson
           </p>
           <div aria-hidden="true" className="flex flex-col gap-3">
             <span className="h-3 w-40 bg-(--paper-sunk)" />
-            <span className="mt-2 h-10 w-[70%] bg-(--paper-sunk)" />
+            <span className="mt-4 h-12 w-[70%] bg-(--paper-sunk)" />
           </div>
         </div>
       </SessionPage>
@@ -82,25 +82,19 @@ export default function PastDailyLessonPage() {
     <SessionPage
       {...leave}
       footer={
-        <Button size="large" variant="secondary" href="/library">
-          Back to Library
+        <Button icon href="/library">
+          Back to your Library
         </Button>
       }
     >
       <article>
-        <header className="pt-7 md:pt-12">
-          <div className="t-label flex flex-wrap justify-between gap-2 font-normal!">
-            <span className="text-(--accent)">
-              {lesson.subject} · <span className="md:hidden">{lessonDate(lesson.date, true)}</span>
-              <span className="hidden md:inline">{lessonDate(lesson.date)}</span>
-            </span>
-            <span className="hidden text-(--ink-muted) md:inline">About {lesson.minutes} minutes</span>
-          </div>
-          <h1 className="m-0 mt-3 text-[42px] font-medium leading-[1.02] tracking-[-0.02em] md:mt-4 md:text-[clamp(42px,5vw,64px)] md:leading-none md:tracking-[-0.025em]">
-            {lesson.title}
-          </h1>
+        <header>
+          <p className="t-eyebrow m-0">
+            {lesson.subject} · {lessonDate(lesson.date)}
+          </p>
+          <h1 className="t-lead-h1-sm m-0 mt-[18px] [overflow-wrap:anywhere]">{lesson.title}</h1>
         </header>
-        <LessonBody dropCap paragraphs={lesson.paragraphs ?? []} className="mt-[22px] md:mt-8" />
+        <LessonBody dropCap paragraphs={lesson.paragraphs ?? []} className="mt-7 md:mt-9" />
       </article>
     </SessionPage>
   );

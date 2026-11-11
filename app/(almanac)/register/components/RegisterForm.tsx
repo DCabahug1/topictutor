@@ -127,16 +127,16 @@ export function RegisterForm() {
 
   return (
     <AuthFrame>
-      {alert && <FormAlert kicker="Couldn’t create your account">{alert}</FormAlert>}
       <form noValidate onSubmit={submit}>
         <FormHeader
           kicker="Free · no credit card"
           title="Create your account"
           lead="If you started as a guest, your streak and lessons come with you."
         />
+        {alert && <FormAlert kicker="Couldn’t create your account">{alert}</FormAlert>}
         <GoogleSignIn fallback="sign up with your email" />
 
-        <div className="mt-5 flex flex-col gap-[18px]">
+        <div className="mt-7 flex flex-col gap-6">
           <TextField
             id="register-name"
             label="Name"
@@ -183,7 +183,7 @@ export function RegisterForm() {
           />
         </div>
 
-        <Button type="submit" size="large" fullWidth busy={busy} className="mt-6">
+        <Button type="submit" icon fullWidth busy={busy} className="mt-8">
           {busy ? "Creating your account" : "Create account"}
         </Button>
         <FootLine lead="Already have one?" label="Log in" href="/login" />

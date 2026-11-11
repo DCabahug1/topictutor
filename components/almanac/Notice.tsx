@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Button } from "./Button";
 import { cx } from "./cx";
-import { CrossIcon } from "./icons";
+import { LeadActions } from "./LeadBlock";
 
 type NoticeAction = { label: string; href?: string; onClick?: () => void; busy?: boolean };
 
@@ -12,56 +12,69 @@ type NoticeProps = {
   kicker: string;
   /** What happened, in plain words. No error codes. */
   title: string;
-  /** What to do next. */
+  /** What to do next, in one or two sentences. */
   body?: ReactNode;
-  /** Names what was saved, for example "Your answers are saved." */
+  /** Names what was kept, for example "Your streak is safe." It sits under a hairline. */
   kept?: string;
-  /** Errors always offer a retry here. */
+  /** The one next step, usually "Try again". */
   primary?: NoticeAction;
-  /** A way to leave. */
+  /** The quiet way out. It reads as "or …". */
   secondary?: NoticeAction;
-  /** h2 inside a page that has its own title, h1 when the notice is the page. */
+  /** h1 when the notice is the page, h2 inside a page that has its own title. */
   headingLevel?: 1 | 2;
   className?: string;
 };
 
-/** A block for things that went wrong or ran out. Every one offers a next step. */
+/** "Go to Library" becomes "or go to Library", so every way out reads as a quiet link. */
+function quiet(label: string): string {
+  return label.startsWith("or ") ? label : `or ${label.charAt(0).toLowerCase()}${label.slice(1)}`;
+}
+
+/**
+ * A screen or block for things that went wrong or ran out: a lead block with
+ * one primary (usually "Try again") and a quiet way out. Every one offers a next step.
+ */
 export function Notice({ tone, kicker, title, body, kept, primary, secondary, headingLevel = 2, className }: NoticeProps) {
   const error = tone === "error";
   const Heading = headingLevel === 1 ? "h1" : "h2";
   return (
-    <div
-      role={error ? "alert" : "status"}
-      className={cx(
-        "border-0 border-t-[3px] border-solid p-5",
-        error ? "border-(--incorrect) bg-(--incorrect-wash)" : "border-(--ink) bg-(--paper-raised)",
-        className
-      )}
-    >
-      <p className={cx("t-label m-0 flex items-center gap-[6px]", error && "text-(--incorrect)")}>
-        {error && <CrossIcon size={13} strokeWidth={2.6} />}
+    <div role={error ? "alert" : "status"} className={cx("max-w-[720px]", className)}>
+      <p className={cx("t-eyebrow m-0", error ? "text-(--incorrect)!" : "text-(--ink-muted)!")}>
+        {error ? "✕ " : ""}
         {kicker}
       </p>
-      <Heading className="m-0 mt-[10px] text-[24px] font-medium leading-[1.15]">{title}</Heading>
-      {(body || kept) && (
-        <p className="m-0 mt-2 text-[16px] leading-normal text-(--ink-soft)">
-          {kept && <>{kept} </>}
-          {body}
-        </p>
-      )}
+      <Heading
+        className={cx(
+          "m-0 mt-[18px] font-medium [overflow-wrap:anywhere]",
+          headingLevel === 1 ? "t-lead-h1-sm" : "text-[28px] leading-[1.1] tracking-[-0.015em] md:text-[36px]"
+        )}
+      >
+        {title}
+      </Heading>
+      {body && <p className={cx("m-0 mt-5 max-w-[560px]", headingLevel === 1 ? "t-lead" : "text-[18px] leading-normal text-(--ink-soft)")}>{body}</p>}
       {(primary || secondary) && (
-        <div className="mt-4 flex flex-wrap gap-2">
-          {primary && (
-            <Button size="compact" href={primary.href} onClick={primary.onClick} busy={primary.busy}>
-              {primary.label}
-            </Button>
-          )}
-          {secondary && (
-            <Button size="compact" variant="secondary" href={secondary.href} onClick={secondary.onClick}>
-              {secondary.label}
-            </Button>
-          )}
-        </div>
+        <LeadActions
+          className={headingLevel === 1 ? undefined : "mt-7!"}
+          primary={
+            primary && (
+              <Button icon href={primary.href} onClick={primary.onClick} busy={primary.busy}>
+                {primary.label}
+              </Button>
+            )
+          }
+          quiet={
+            secondary && (
+              <Button variant="quiet" href={secondary.href} onClick={secondary.onClick} busy={secondary.busy}>
+                {quiet(secondary.label)}
+              </Button>
+            )
+          }
+        />
+      )}
+      {kept && (
+        <p className="m-0 mt-14 max-w-[560px] border-0 border-t border-solid border-(--rule) pt-6 text-[17px] italic text-(--ink-muted)">
+          {kept}
+        </p>
       )}
     </div>
   );

@@ -37,15 +37,15 @@ export default async function NotFound() {
   return (
     <SessionProvider user={user}>
       <PaperPage>
-        <div className="mx-auto mt-8 max-w-[640px] md:mt-[72px]">
+        <div className="mt-(--lead-top)">
           <Notice
             tone="info"
             headingLevel={1}
             kicker="Not found"
             title="This page isn’t here."
             body="The link may be mistyped, or the page belongs to another account."
-            primary={user ? { label: "Go to Today", href: "/today" } : { label: "Today’s lesson", href: "/today/lesson" }}
-            secondary={user ? { label: "Library", href: "/library" } : { label: "Log in", href: "/login" }}
+            primary={user ? { label: "Go to Today", href: "/today" } : { label: "Start today’s lesson", href: "/today/lesson" }}
+            secondary={user ? { label: "or go to your Library", href: "/library" } : { label: "or log in", href: "/login" }}
           />
         </div>
       </PaperPage>

@@ -59,12 +59,12 @@ export function LoginForm() {
 
   return (
     <AuthFrame>
-      {alert && <FormAlert kicker="Couldn’t log in">{alert}</FormAlert>}
       <form noValidate onSubmit={submit}>
         <FormHeader kicker="Welcome back" title="Log in" />
+        {alert && <FormAlert kicker="Couldn’t log in">{alert}</FormAlert>}
         <GoogleSignIn fallback="log in with your email" />
 
-        <div className="mt-5 flex flex-col gap-[18px]">
+        <div className="mt-7 flex flex-col gap-6">
           <TextField
             id="login-email"
             label="Email"
@@ -96,14 +96,14 @@ export function LoginForm() {
             {/* Sits on the label's line. TextField has no slot there, so it is placed over it. */}
             <Link
               href="/reset"
-              className="absolute -top-[14px] right-0 inline-flex min-h-11 items-center font-mono text-[12px] text-(--ink) underline underline-offset-4"
+              className="absolute -top-[15px] right-0 inline-flex min-h-11 items-center font-mono text-[12px] text-(--ink) underline underline-offset-4"
             >
               Forgot password?
             </Link>
           </div>
         </div>
 
-        <Button type="submit" size="large" fullWidth busy={busy} className="mt-6">
+        <Button type="submit" icon fullWidth busy={busy} className="mt-8">
           {busy ? "Logging in" : "Log in"}
         </Button>
         <FootLine lead="New here?" label="Create an account" href="/register" />

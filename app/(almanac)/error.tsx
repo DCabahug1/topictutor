@@ -22,7 +22,7 @@ export default function AlmanacErrorPage({ error, reset }: ErrorPageProps) {
 
   return (
     <PaperPage>
-      <div className="mx-auto mt-8 max-w-[640px] md:mt-[72px]">
+      <div className="mt-(--lead-top)">
         <Notice
           tone="error"
           headingLevel={1}

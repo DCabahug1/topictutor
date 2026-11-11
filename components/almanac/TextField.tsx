@@ -43,14 +43,14 @@ export function TextField({
 
   return (
     <div>
-      <label htmlFor={id} className={cx("t-label block", !boxed && "text-(--ink-muted)")}>
+      <label htmlFor={id} className="block font-mono text-[12px] uppercase tracking-[0.08em] text-(--ink-muted)">
         {label}
       </label>
       <div
         className={cx(
-          "mt-2 flex items-center",
+          "mt-[10px] flex items-center",
           boxed && "border-solid bg-(--paper-raised)",
-          boxed && !error && !readOnly && "border-[1.5px] border-(--ink)",
+          boxed && !error && !readOnly && "border border-(--ink)",
           boxed && error && "border-2 border-(--incorrect)",
           boxed && readOnly && "border-[1.5px] border-dashed! border-(--ink-muted) bg-transparent!",
           !boxed && "border-0 border-b-[1.5px] border-solid",
@@ -68,7 +68,7 @@ export function TextField({
           aria-describedby={describedBy}
           className={cx(
             "min-w-0 flex-auto rounded-none border-0 bg-transparent font-serif text-(--ink)",
-            boxed ? "h-[50px] px-[14px] text-[18px]" : "h-12 px-[2px] text-[19px]",
+            boxed ? "h-[54px] px-4 text-[19px]" : "h-12 px-[2px] text-[19px]",
             readOnly && "text-(--ink-muted)"
           )}
           {...rest}
@@ -78,7 +78,7 @@ export function TextField({
             type="button"
             aria-pressed={shown}
             onClick={() => setShown((s) => !s)}
-            className="h-[50px] flex-none cursor-pointer border-0 border-l border-solid border-(--rule) bg-transparent px-[14px] font-mono text-[13px] text-(--ink)"
+            className="h-[54px] flex-none cursor-pointer border-0 bg-transparent px-4 font-mono text-[13px] text-(--ink-soft) hover:text-(--ink)"
           >
             {shown ? "Hide" : "Show"}
             <span className="sr-only"> password</span>
