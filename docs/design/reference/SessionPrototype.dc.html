@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Daily session · phone prototype</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #E0552B;outline-offset:2px}
+input::placeholder{color:inherit;opacity:.62}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; background: {{t.bg}}; color: {{t.ink}}; font-family: 'Newsreader', Georgia, serif; transition: background 240ms, color 240ms">
+
+  <!-- ===== Top bar: session ===== -->
+  <sc-if value="{{inSession}}" hint-placeholder-val="{{ false }}">
+    <header style="flex: none; display: flex; align-items: center; justify-content: space-between; padding: 6px 8px 0">
+      <button type="button" aria-label="Leave lesson" onClick="{{goDone}}" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: {{t.ink}}; cursor: pointer">
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+      </button>
+      <p style="margin: 0; font-size: 19px; font-weight: 600; letter-spacing: -0.01em">TopicTutor</p>
+      <button type="button" aria-label="{{themeLabel}}" onClick="{{toggleTheme}}" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: {{t.ink}}; cursor: pointer">
+        <sc-if value="{{isLight}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></sc-if>
+        <sc-if value="{{dark}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"></path></svg></sc-if>
+      </button>
+    </header>
+    <nav aria-label="Session progress" style="flex: none; margin: 4px 24px 0; border-top: 3px solid {{t.ink}}; border-bottom: 1px solid {{t.ink}}; padding-top: 3px">
+      <ol style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: {{stepCols}}; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase">
+        <sc-for list="{{steps}}" as="s" hint-placeholder-count="4">
+          <li aria-current="{{s.current}}" style="display: flex; align-items: center; gap: 5px; padding: 11px 0 {{s.padB}}; color: {{s.ink}}; font-weight: {{s.weight}}; border-bottom: {{s.under}}">
+            <sc-if value="{{s.done}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>{{s.label}}<sc-if value="{{s.done}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">, done</span></sc-if>
+          </li>
+        </sc-for>
+      </ol>
+    </nav>
+  </sc-if>
+
+  <!-- ===== Top bar: outside the session ===== -->
+  <sc-if value="{{outSession}}" hint-placeholder-val="{{ true }}">
+    <header style="flex: none; padding: 6px 8px 0 24px">
+      <div style="display: flex; align-items: center; justify-content: space-between">
+        <p style="margin: 0; font-size: 24px; font-weight: 600; letter-spacing: -0.015em">TopicTutor</p>
+        <div style="display: flex; align-items: center">
+          <sc-if value="{{showGuestKeep}}" hint-placeholder-val="{{ false }}">
+            <button type="button" onClick="{{goAccount}}" style="min-height: 36px; padding: 0 10px; background: transparent; border: 1.5px solid {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: {{t.ink}}; cursor: pointer">Keep streak</button>
+          </sc-if>
+          <sc-if value="{{showLogin}}" hint-placeholder-val="{{ true }}">
+            <a href="#" style="padding: 12px 8px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: {{t.ink}}; text-decoration: none">Log in</a>
+          </sc-if>
+          <sc-if value="{{showAvatar}}" hint-placeholder-val="{{ false }}">
+            <button type="button" aria-label="Account: Duane" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer"><span aria-hidden="true" style="width: 30px; height: 30px; border-radius: 999px; background: {{t.ink}}; color: {{t.bg}}; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 500">D</span></button>
+          </sc-if>
+          <button type="button" aria-label="{{themeLabel}}" onClick="{{toggleTheme}}" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: {{t.ink}}; cursor: pointer">
+            <sc-if value="{{isLight}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></sc-if>
+            <sc-if value="{{dark}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"></path></svg></sc-if>
+          </button>
+        </div>
+      </div>
+      <p style="margin: 2px 16px 0 0; padding-bottom: 8px; border-bottom: 3px double {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.muted}}">Tuesday, November 10 · Day 314 of 365</p>
+    </header>
+  </sc-if>
+
+  <!-- ===== Scrolling content ===== -->
+  <main ref="{{setScroll}}" style="flex: 1 1 auto; min-height: 0; overflow-y: auto">
+    <div style="opacity: {{fadeOp}}; transform: translateY({{fadeY}}px); transition: {{fadeTransition}}">
+
+      <!-- LANDING -->
+      <sc-if value="{{isLanding}}" hint-placeholder-val="{{ true }}">
+        <section style="padding: 28px 24px 24px">
+          <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.accent}}">A new lesson every day · about 3 min</p>
+          <h1 style="margin: 16px 0 0; font-size: 52px; line-height: 0.96; font-weight: 500; letter-spacing: -0.025em">Learn one thing <em style="font-weight: 400">well</em>, every day.</h1>
+          <p style="margin: 18px 0 0; font-size: 19px; line-height: 1.5; color: {{t.soft}}">A short lesson from the subjects you choose. Recall keeps yesterday from fading. Go Deeper writes a series around what you got wrong.</p>
+          <div style="margin-top: 24px; padding: 20px; background: {{t.raised}}; border: 1px solid {{t.ink}}">
+            <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.accent}}">Today in Science</p>
+            <h2 style="margin: 8px 0 0; font-size: 30px; line-height: 1.05; font-weight: 500; letter-spacing: -0.015em">Why leap years exist</h2>
+            <p style="margin: 8px 0 0; font-size: 16px; line-height: 1.45; color: {{t.muted}}">Lesson, then a quick check. About three minutes.</p>
+          </div>
+          <a href="#" style="display: inline-block; margin-top: 18px; padding: 10px 0; font-size: 17px; font-style: italic; color: {{t.ink}}; text-underline-offset: 4px">Or name something you want to learn</a>
+        </section>
+      </sc-if>
+
+      <!-- RECALL -->
+      <sc-if value="{{isRecall}}" hint-placeholder-val="{{ false }}">
+        <section style="padding: 28px 24px 24px">
+          <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.accent}}">Recall · from Monday · Finance</p>
+          <h1 style="margin: 12px 0 0; font-size: 26px; line-height: 1.2; font-weight: 500; letter-spacing: -0.01em">When interest compounds monthly instead of yearly, what happens to the total after one year?</h1>
+          <div role="radiogroup" aria-label="Recall question" style="display: flex; flex-direction: column; gap: 8px; margin-top: 20px">
+            <sc-for list="{{recallQ.options}}" as="o" hint-placeholder-count="4">
+              <button type="button" role="radio" aria-checked="{{o.checked}}" disabled="{{o.locked}}" onClick="{{o.pick}}" style="display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 12px; align-items: start; width: 100%; text-align: left; padding: 14px; background: {{o.bg}}; border: 1.5px solid {{o.border}}; color: {{t.ink}}; font-family: 'Newsreader', Georgia, serif; font-size: 17px; line-height: 1.4; cursor: pointer">
+                <span aria-hidden="true" style="width: 22px; height: 22px; margin-top: 1px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 1.5px solid {{o.keyBorder}}; background: {{o.keyBg}}; color: {{o.keyInk}}; border-radius: 2px; font-family: 'IBM Plex Mono', monospace; font-size: 12px">
+                  <sc-if value="{{o.showLetter}}" hint-placeholder-val="{{ true }}">{{o.letter}}</sc-if>
+                  <sc-if value="{{o.isRight}}" hint-placeholder-val="{{ false }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+                  <sc-if value="{{o.isWrong}}" hint-placeholder-val="{{ false }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></sc-if>
+                </span>
+                <span style="display: flex; flex-direction: column; gap: 4px"><span style="color: {{o.textInk}}">{{o.text}}</span><sc-if value="{{o.hasTag}}" hint-placeholder-val="{{ false }}"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: {{o.tagInk}}">{{o.tag}}</span></sc-if></span>
+              </button>
+            </sc-for>
+          </div>
+          <sc-if value="{{recallQ.revealed}}" hint-placeholder-val="{{ false }}">
+            <p role="status" style="margin: 16px 0 0; padding-top: 14px; border-top: 1px solid {{t.rule}}; font-size: 17px; line-height: 1.5"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: {{recallQ.verdictInk}}">{{recallQ.verdict}}</span> {{recallQ.explain}}</p>
+          </sc-if>
+        </section>
+      </sc-if>
+
+      <!-- LESSON (writing and written) -->
+      <sc-if value="{{isLessonStep}}" hint-placeholder-val="{{ false }}">
+        <article style="padding: 28px 24px 0">
+          <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.accent}}">Science · Tue, Nov 10</p>
+          <h1 style="margin: 12px 0 0; font-size: 42px; line-height: 1.02; font-weight: 500; letter-spacing: -0.02em">Why leap years exist</h1>
+          <sc-if value="{{isWriting}}" hint-placeholder-val="{{ false }}">
+            <p style="margin: 12px 0 0; display: flex; align-items: center; gap: 8px; font-size: 15px; font-style: italic; color: {{t.muted}}"><span aria-hidden="true" style="width: 7px; height: 15px; background: {{t.accent}}"></span>You’re the first to open today’s lesson, so it’s being written now.</p>
+          </sc-if>
+          <div aria-busy="{{isWriting}}" style="display: flex; flex-direction: column; gap: 18px; margin-top: 22px; font-size: 18.5px; line-height: 1.55">
+            <sc-for list="{{paras}}" as="p" hint-placeholder-count="3">
+              <div>
+                <sc-if value="{{p.started}}" hint-placeholder-val="{{ true }}">
+                  <p style="margin: 0"><sc-if value="{{p.drop}}" hint-placeholder-val="{{ false }}"><span style="float: left; font-size: 66px; line-height: 0.82; font-weight: 500; padding: 6px 8px 0 0">E</span></sc-if>{{p.text}}<sc-if value="{{p.caret}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="display: inline-block; width: 7px; height: 17px; margin-left: 3px; vertical-align: -2px; background: {{t.accent}}"></span></sc-if></p>
+                </sc-if>
+                <sc-if value="{{p.waiting}}" hint-placeholder-val="{{ false }}">
+                  <div aria-hidden="true" style="display: flex; flex-direction: column; gap: 10px; padding-top: 6px">
+                    <span style="height: 14px; background: {{t.sunk}}"></span><span style="height: 14px; background: {{t.sunk}}"></span><span style="height: 14px; background: {{t.sunk}}"></span><span style="height: 14px; width: 62%; background: {{t.sunk}}"></span>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </article>
+
+        <sc-if value="{{isWritten}}" hint-placeholder-val="{{ false }}">
+          <section aria-labelledby="ask-label" style="margin: 32px 24px 24px; padding-top: 18px; border-top: 1px solid {{t.rule}}">
+            <label id="ask-label" for="ask-input" style="display: block; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.muted}}">Ask the tutor about this lesson</label>
+            <sc-if value="{{askHasQ}}" hint-placeholder-val="{{ false }}">
+              <p style="margin: 12px 0 0; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: {{t.muted}}">You asked: {{askQ}}</p>
+              <div style="margin-top: 8px; padding: 14px 16px; background: {{t.raised}}; border: 1px solid {{t.rule}}; font-size: 17px; line-height: 1.55">{{askShown}}<sc-if value="{{askStreaming}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="display: inline-block; width: 7px; height: 16px; margin-left: 3px; vertical-align: -2px; background: {{t.accent}}"></span></sc-if></div>
+              <sc-if value="{{askDone}}" hint-placeholder-val="{{ false }}"><p role="status" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Answer ready</p></sc-if>
+            </sc-if>
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px">
+              <input id="ask-input" type="text" value="{{askText}}" onChange="{{onAskChange}}" onKeyDown="{{onAskKey}}" placeholder="{{askPlaceholder}}" style="flex: 1 1 auto; min-width: 0; height: 48px; padding: 0 2px; background: transparent; border: none; border-bottom: 1.5px solid {{t.ink}}; border-radius: 0; font-family: 'Newsreader', Georgia, serif; font-size: 19px; color: {{t.ink}}">
+              <button type="button" aria-label="Ask" onClick="{{askSubmit}}" disabled="{{askStreaming}}" style="flex: none; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: {{t.ink}}; color: {{t.bg}}; border: none; cursor: pointer">
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"></path></svg>
+              </button>
+            </div>
+            <button type="button" onClick="{{askDifferently}}" disabled="{{askStreaming}}" style="margin-top: 14px; min-height: 44px; padding: 0 16px; background: transparent; border: 1px solid {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: {{t.ink}}; cursor: pointer">Explain this differently</button>
+            <p style="margin: 12px 0 0; font-size: 15px; font-style: italic; color: {{t.muted}}">Answers come from this lesson. Nothing is saved when you leave.</p>
+          </section>
+        </sc-if>
+        <sc-if value="{{isWriting}}" hint-placeholder-val="{{ false }}"><div style="height: 40px"></div></sc-if>
+      </sc-if>
+
+      <!-- CHECK -->
+      <sc-if value="{{isCheck}}" hint-placeholder-val="{{ false }}">
+        <section style="padding: 28px 24px 24px">
+          <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.accent}}">Check · question {{checkNum}} of 2</p>
+          <h1 style="margin: 12px 0 0; font-size: 26px; line-height: 1.2; font-weight: 500; letter-spacing: -0.01em">{{checkQ.prompt}}</h1>
+          <div role="radiogroup" aria-label="Check question" style="display: flex; flex-direction: column; gap: 8px; margin-top: 20px">
+            <sc-for list="{{checkQ.options}}" as="o" hint-placeholder-count="4">
+              <button type="button" role="radio" aria-checked="{{o.checked}}" disabled="{{o.locked}}" onClick="{{o.pick}}" style="display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 12px; align-items: start; width: 100%; text-align: left; padding: 14px; background: {{o.bg}}; border: 1.5px solid {{o.border}}; color: {{t.ink}}; font-family: 'Newsreader', Georgia, serif; font-size: 17px; line-height: 1.4; cursor: pointer">
+                <span aria-hidden="true" style="width: 22px; height: 22px; margin-top: 1px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 1.5px solid {{o.keyBorder}}; background: {{o.keyBg}}; color: {{o.keyInk}}; border-radius: 2px; font-family: 'IBM Plex Mono', monospace; font-size: 12px">
+                  <sc-if value="{{o.showLetter}}" hint-placeholder-val="{{ true }}">{{o.letter}}</sc-if>
+                  <sc-if value="{{o.isRight}}" hint-placeholder-val="{{ false }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+                  <sc-if value="{{o.isWrong}}" hint-placeholder-val="{{ false }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></sc-if>
+                </span>
+                <span style="display: flex; flex-direction: column; gap: 4px"><span style="color: {{o.textInk}}">{{o.text}}</span><sc-if value="{{o.hasTag}}" hint-placeholder-val="{{ false }}"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: {{o.tagInk}}">{{o.tag}}</span></sc-if></span>
+              </button>
+            </sc-for>
+          </div>
+          <sc-if value="{{checkQ.revealed}}" hint-placeholder-val="{{ false }}">
+            <p role="status" style="margin: 16px 0 0; padding-top: 14px; border-top: 1px solid {{t.rule}}; font-size: 17px; line-height: 1.5"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: {{checkQ.verdictInk}}">{{checkQ.verdict}}</span> {{checkQ.explain}}</p>
+          </sc-if>
+        </section>
+      </sc-if>
+
+      <!-- FINISH -->
+      <sc-if value="{{isFinish}}" hint-placeholder-val="{{ false }}">
+        <section style="padding: 32px 24px 24px">
+          <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.muted}}">Lesson finished · Science</p>
+          <div aria-live="polite" style="margin-top: 18px; display: flex; align-items: flex-end; gap: 14px">
+            <div style="position: relative; height: 128px; min-width: 140px; overflow: hidden">
+              <span aria-hidden="true" style="position: absolute; left: 0; bottom: 0; font-size: 128px; line-height: 1; font-weight: 500; letter-spacing: -0.04em; color: {{t.muted}}; opacity: {{oldOp}}; transform: translateY({{oldY}}%); transition: {{flipTransition}}">{{streakFrom}}</span>
+              <span style="position: absolute; left: 0; bottom: 0; font-size: 128px; line-height: 1; font-weight: 500; letter-spacing: -0.04em; color: {{t.accent}}; opacity: {{newOp}}; transform: translateY({{newY}}%); transition: {{flipTransition}}">{{streakTo}}</span>
+            </div>
+            <p style="margin: 0 0 14px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: {{t.muted}}">{{streakUnit}}</p>
+          </div>
+          <div aria-hidden="true" style="height: 3px; margin-top: 10px; background: {{t.ink}}; width: {{ruleW}}%; transition: {{ruleTransition}}"></div>
+          <div aria-hidden="true" style="height: 1px; margin-top: 3px; background: {{t.ink}}; width: {{ruleW}}%; transition: {{ruleTransition}}"></div>
+          <h1 style="margin: 22px 0 0; font-size: 36px; line-height: 1.05; font-weight: 500; letter-spacing: -0.02em">{{finishHead}}</h1>
+          <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.5; color: {{t.soft}}">{{finishBody}}</p>
+
+          <ul style="list-style: none; margin: 26px 0 0; padding: 0; border-top: 1px solid {{t.rule}}">
+            <sc-if value="{{returning}}" hint-placeholder-val="{{ false }}">
+              <li style="border-bottom: 1px solid {{t.rule}}">
+                <a href="#" style="display: grid; grid-template-columns: minmax(0, 1fr) 20px; gap: 12px; align-items: center; padding: 16px 0; color: {{t.ink}}; text-decoration: none">
+                  <span><span style="display: block; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.muted}}">Continue · Lesson 3 of 5</span><span style="display: block; margin-top: 4px; font-size: 19px; line-height: 1.25">How the browser decides which CSS rule wins</span><span style="display: block; margin-top: 2px; font-size: 15px; font-style: italic; color: {{t.muted}}">Basics of Web Development</span></span>
+                  <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+                </a>
+              </li>
+            </sc-if>
+            <li style="border-bottom: 1px solid {{t.rule}}">
+              <a href="#" style="display: grid; grid-template-columns: minmax(0, 1fr) 20px; gap: 12px; align-items: center; padding: 16px 0; color: {{t.ink}}; text-decoration: none">
+                <span><span style="display: block; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.accent}}">Go deeper</span><span style="display: block; margin-top: 4px; font-size: 19px; line-height: 1.25">A five-lesson series on calendars and time</span><span style="display: block; margin-top: 2px; font-size: 15px; font-style: italic; color: {{t.muted}}">Starts with a short test, then focuses on what you miss.</span></span>
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+              </a>
+            </li>
+          </ul>
+        </section>
+      </sc-if>
+
+      <!-- INTEREST PICKER -->
+      <sc-if value="{{isInterests}}" hint-placeholder-val="{{ false }}">
+        <section style="padding: 28px 24px 24px">
+          <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.accent}}">Your subjects</p>
+          <h1 style="margin: 12px 0 0; font-size: 36px; line-height: 1.05; font-weight: 500; letter-spacing: -0.02em">What should tomorrow be about?</h1>
+          <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.5; color: {{t.soft}}">Your daily lesson rotates through the subjects you pick. Change them any time in your profile.</p>
+          <div role="group" aria-label="Subjects" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 22px">
+            <sc-for list="{{subjects}}" as="c" hint-placeholder-count="11">
+              <button type="button" aria-pressed="{{c.on}}" onClick="{{c.toggle}}" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 52px; padding: 0 14px; text-align: left; background: {{c.bg}}; color: {{c.ink}}; border: 1.5px solid {{t.ink}}; font-family: 'Newsreader', Georgia, serif; font-size: 17px; line-height: 1.2; cursor: pointer">
+                <span>{{c.name}}</span>
+                <sc-if value="{{c.on}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+                <sc-if value="{{c.off}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 6v12M6 12h12"></path></svg></sc-if>
+              </button>
+            </sc-for>
+          </div>
+          <p style="margin: 14px 0 0; font-size: 15px; font-style: italic; color: {{t.muted}}">{{subjectNote}}</p>
+        </section>
+      </sc-if>
+
+      <!-- ACCOUNT OFFER -->
+      <sc-if value="{{isAccount}}" hint-placeholder-val="{{ false }}">
+        <section style="padding: 32px 24px 24px">
+          <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.accent}}">Free · no credit card</p>
+          <h1 style="margin: 12px 0 0; font-size: 40px; line-height: 1.02; font-weight: 500; letter-spacing: -0.02em">Keep your streak.</h1>
+          <p style="margin: 12px 0 0; font-size: 18px; line-height: 1.5; color: {{t.soft}}">Right now your progress lives in this browser. With an account, today’s lesson, your 1-day streak and your subjects come with you to any device.</p>
+          <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 26px">
+            <button type="button" onClick="{{goDoneSigned}}" style="min-height: 56px; display: flex; align-items: center; justify-content: center; gap: 12px; background: {{t.ink}}; color: {{t.bg}}; border: 1.5px solid {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500; cursor: pointer">
+              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20 12.2c0-.6 0-1.2-.2-1.7H12v3.3h4.5a3.9 3.9 0 0 1-1.7 2.5v2.1h2.7c1.6-1.5 2.5-3.7 2.5-6.2zM12 20.5c2.3 0 4.2-.8 5.5-2.1l-2.7-2.1c-.7.5-1.7.8-2.8.8a4.9 4.9 0 0 1-4.6-3.4H4.6v2.2A8.5 8.5 0 0 0 12 20.5zM7.4 13.7a5 5 0 0 1 0-3.4V8.1H4.6a8.5 8.5 0 0 0 0 7.8zM12 6.9c1.2 0 2.3.4 3.2 1.2l2.4-2.4A8.5 8.5 0 0 0 4.6 8.1l2.8 2.2A4.9 4.9 0 0 1 12 6.9z"></path></svg>
+              Continue with Google
+            </button>
+            <button type="button" onClick="{{goDoneSigned}}" style="min-height: 56px; background: transparent; color: {{t.ink}}; border: 1.5px solid {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500; cursor: pointer">Sign up with email</button>
+          </div>
+          <p style="margin: 18px 0 0; font-size: 15px; font-style: italic; color: {{t.muted}}">Already have an account? <a href="#" style="color: {{t.ink}}">Log in</a> and today’s lesson is added to it.</p>
+        </section>
+      </sc-if>
+
+      <!-- DONE FOR TODAY -->
+      <sc-if value="{{isDone}}" hint-placeholder-val="{{ false }}">
+        <section style="padding: 26px 24px 28px">
+          <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.muted}}">{{doneGreeting}}</p>
+          <h1 style="margin: 10px 0 0; font-size: 38px; line-height: 1.04; font-weight: 500; letter-spacing: -0.02em">You’re done for today.</h1>
+          <div style="margin-top: 22px; padding: 18px 20px; background: {{t.raised}}; border: 1px solid {{t.rule}}">
+            <p style="margin: 0; display: flex; align-items: center; gap: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.correct}}"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Done · Science</p>
+            <p style="margin: 8px 0 0; font-size: 24px; line-height: 1.15; font-weight: 500">Why leap years exist</p>
+            <a href="#" style="display: inline-block; margin-top: 8px; padding: 6px 0; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: {{t.ink}}; text-underline-offset: 4px">Read it again</a>
+          </div>
+          <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-top: 26px; padding-bottom: 18px; border-bottom: 1px solid {{t.rule}}">
+            <div>
+              <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.muted}}">Streak</p>
+              <p style="margin: 4px 0 0; font-size: 56px; line-height: 1; font-weight: 500; letter-spacing: -0.03em; color: {{t.accent}}">{{streakTo}}</p>
+            </div>
+            <p style="margin: 0 0 6px; max-width: 190px; text-align: right; font-size: 16px; line-height: 1.4; font-style: italic; color: {{t.soft}}">Tomorrow’s lesson is in <strong style="font-style: normal; font-weight: 600; color: {{t.ink}}">{{tomorrow}}</strong>. It arrives at midnight.</p>
+          </div>
+          <a href="#" style="display: grid; grid-template-columns: minmax(0, 1fr) 20px; gap: 12px; align-items: center; padding: 16px 0; border-bottom: 1px solid {{t.rule}}; color: {{t.ink}}; text-decoration: none">
+            <span><span style="display: block; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.accent}}">Still curious?</span><span style="display: block; margin-top: 4px; font-size: 19px">Go deeper on calendars and time</span></span>
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </a>
+          <button type="button" onClick="{{restart}}" style="margin-top: 28px; min-height: 44px; padding: 0; background: transparent; border: none; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: {{t.muted}}; text-decoration: underline; text-underline-offset: 4px; cursor: pointer">Restart prototype</button>
+        </section>
+      </sc-if>
+    </div>
+  </main>
+
+  <!-- ===== Pinned footer ===== -->
+  <sc-if value="{{hasFooter}}" hint-placeholder-val="{{ true }}">
+    <footer style="flex: none; padding: 14px 24px 22px; border-top: 1px solid {{t.rule}}; background: {{t.bg}}">
+      <button type="button" onClick="{{primary}}" disabled="{{primaryDisabled}}" style="width: 100%; min-height: 56px; display: flex; align-items: center; justify-content: center; gap: 12px; background: {{pBg}}; color: {{pInk}}; border: 1.5px {{pBorderStyle}} {{pBorder}}; font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 120ms">
+        <sc-if value="{{primaryBusy}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width: 7px; height: 16px; background: {{t.accent}}"></span></sc-if>
+        {{primaryLabel}}
+        <sc-if value="{{primaryArrow}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></sc-if>
+      </button>
+      <sc-if value="{{hasSecondary}}" hint-placeholder-val="{{ false }}">
+        <button type="button" onClick="{{secondary}}" style="width: 100%; min-height: 44px; margin-top: 6px; background: transparent; border: none; font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: {{t.ink}}; text-decoration: underline; text-underline-offset: 4px; cursor: pointer">{{secondaryLabel}}</button>
+      </sc-if>
+      <sc-if value="{{footNote}}" hint-placeholder-val="{{ false }}">
+        <p style="margin: 8px 0 0; text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: {{t.muted}}">{{footNote}}</p>
+      </sc-if>
+    </footer>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"returning":{"editor":"boolean","default":false},"dark":{"editor":"boolean","default":false},"reduceMotion":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.P = [
+      'arth takes about 365.2422 days to circle the Sun, not a neat 365. A calendar of exactly 365 days slips behind the seasons by almost six hours a year. Left alone, that adds up to a full day every four years.',
+      'Julius Caesar’s fix in 46 BC was simple: add one extra day every fourth year. That assumes a year of 365.25 days, about eleven minutes too long. By the 1500s the error had grown to ten days, and the spring equinox was arriving around March 11.',
+      'The Gregorian calendar of 1582 trimmed the excess. Century years skip the leap day unless they divide evenly by 400. That is why 1900 was not a leap year but 2000 was. The rule keeps the calendar within a day of the seasons for about 3,000 years.'
+    ];
+    this.W = this.P.map((p) => p.split(' '));
+    this.TOTAL = this.W.reduce((a, w) => a + w.length, 0);
+    this.ANS_Q = 'Because 400 gets the average year very close to the real one. Over 400 years the rule leaves 97 leap days, so the average calendar year is 365.2425 days. That is only about 26 seconds longer than the solar year.';
+    this.ANS_D = 'Think of the calendar as a clock that runs slightly slow. Adding a day every four years makes it run slightly fast instead. Skipping three of those extra days every 400 years slows it back down, so it stays almost exactly on time.';
+    this.RECALL = { prompt: '', correct: 1, options: ['It stays the same', 'It ends up slightly higher', 'It ends up slightly lower', 'It depends on the starting amount'], explain: 'Each month’s interest starts earning interest too, so the total grows a little faster.' };
+    this.CHECK = [
+      { prompt: 'Why does the calendar need leap years at all?', correct: 1, options: ['Earth’s orbit is slowly getting longer', 'A solar year is about a quarter of a day longer than 365 days', 'The Moon’s cycle does not fit evenly into 12 months', 'To keep February from drifting into spring'], explain: 'A year is about 365.2422 days, so a 365-day calendar falls behind by almost six hours a year.' },
+      { prompt: 'Which of these years was a leap year?', correct: 3, options: ['1700', '1800', '1900', '2000'], explain: '2000 divides evenly by 400. The other three are century years that skipped the leap day.' }
+    ];
+    this.SUBJECTS = ['Math', 'Science', 'Technology', 'History', 'Literature', 'Business', 'Finance', 'Arts', 'Language', 'Health and Wellness', 'Other'];
+    this.state = {
+      screen: 'start', darkSet: null, entering: false, words: 0,
+      recallSel: null, checkIdx: 0, checkSel: [null, null],
+      askText: '', askQ: '', askFull: '', askWords: 0, askStreaming: false,
+      flip: false, picked: [], signed: false
+    };
+    this.setScroll = (el) => { this.scrollEl = el; };
+  }
+
+  componentWillUnmount() { this.stopTimers(); }
+
+  stopTimers() {
+    if (this.writeTimer) { clearInterval(this.writeTimer); this.writeTimer = null; }
+    if (this.askTimer) { clearInterval(this.askTimer); this.askTimer = null; }
+    if (this.flipTimer) { clearTimeout(this.flipTimer); this.flipTimer = null; }
+  }
+
+  reduced() {
+    if (this.props.reduceMotion) return true;
+    try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; }
+  }
+
+  go(screen) {
+    if (this.scrollEl) this.scrollEl.scrollTop = 0;
+    const reduced = this.reduced();
+    this.setState({ screen, entering: !reduced, flip: false });
+    if (!reduced) setTimeout(() => this.setState({ entering: false }), 30);
+    if (screen === 'writing') this.startWriting();
+    if (screen === 'finish') {
+      this.flipTimer = setTimeout(() => this.setState({ flip: true }), reduced ? 0 : 420);
+    }
+  }
+
+  startWriting() {
+    if (this.writeTimer) clearInterval(this.writeTimer);
+    const reduced = this.reduced();
+    const step = reduced ? 14 : 1;
+    const every = reduced ? 380 : 38;
+    this.setState({ words: 0 });
+    this.writeTimer = setInterval(() => {
+      const next = Math.min(this.TOTAL, this.state.words + step);
+      if (next >= this.TOTAL) {
+        clearInterval(this.writeTimer); this.writeTimer = null;
+        this.setState({ words: this.TOTAL, screen: 'lesson' });
+      } else {
+        this.setState({ words: next });
+      }
+    }, every);
+  }
+
+  ask(q, full) {
+    if (this.askTimer) clearInterval(this.askTimer);
+    const total = full.split(' ').length;
+    const reduced = this.reduced();
+    this.setState({ askQ: q, askFull: full, askWords: 0, askStreaming: true, askText: '' });
+    this.askTimer = setInterval(() => {
+      const next = Math.min(total, this.state.askWords + (reduced ? 12 : 1));
+      this.setState({ askWords: next });
+      if (next >= total) { clearInterval(this.askTimer); this.askTimer = null; this.setState({ askStreaming: false }); }
+    }, reduced ? 300 : 32);
+  }
+
+  buildQ(def, sel, pick, t) {
+    const revealed = sel !== null && sel !== undefined;
+    const options = def.options.map((text, i) => {
+      const isRight = revealed && i === def.correct;
+      const isWrong = revealed && i === sel && i !== def.correct;
+      const chosenRight = revealed && i === sel && i === def.correct;
+      let bg = t.raised, border = t.rule, keyBg = 'transparent', keyBorder = t.ink, keyInk = t.ink, textInk = t.ink, tag = '', tagInk = t.muted;
+      if (revealed && !isRight && !isWrong) { textInk = t.muted; keyBorder = t.muted; keyInk = t.muted; }
+      if (isRight) { bg = t.correctWash; border = t.correct; keyBg = t.correct; keyBorder = t.correct; keyInk = t.bg; tag = chosenRight ? 'Your answer · correct' : 'Correct answer'; tagInk = t.correct; }
+      if (isWrong) { bg = t.incorrectWash; border = t.incorrect; keyBg = t.incorrect; keyBorder = t.incorrect; keyInk = t.bg; tag = 'Your answer'; tagInk = t.incorrect; }
+      return {
+        text, letter: 'ABCD'[i], bg, border, keyBg, keyBorder, keyInk, textInk, tag, tagInk,
+        hasTag: !!tag, isRight, isWrong, showLetter: !isRight && !isWrong,
+        checked: revealed && i === sel, locked: revealed,
+        pick: () => pick(i)
+      };
+    });
+    const ok = revealed && sel === def.correct;
+    return {
+      prompt: def.prompt, options, revealed,
+      verdict: ok ? 'Correct.' : 'Not quite.',
+      verdictInk: ok ? t.correct : t.incorrect,
+      explain: def.explain
+    };
+  }
+
+  renderVals() {
+    const s = this.state;
+    const returning = this.props.returning ?? false;
+    const dark = s.darkSet === null ? (this.props.dark ?? false) : s.darkSet;
+    const reduced = this.reduced();
+    const t = dark
+      ? { bg: '#121416', raised: '#1A1D20', sunk: '#24282C', ink: '#E9EAE6', soft: '#C9CCC8', muted: '#A3A8AD', rule: '#3A3F44', accent: '#FF7A50', correct: '#8DB4F0', correctWash: '#1A2638', incorrect: '#F0A35E', incorrectWash: '#2E2216' }
+      : { bg: '#F1F2EE', raised: '#FFFFFF', sunk: '#E2E4DE', ink: '#16181A', soft: '#3B3F43', muted: '#565B60', rule: '#C9CCC6', accent: '#C23A12', correct: '#1F4E8C', correctWash: '#E3EAF4', incorrect: '#8F3F00', incorrectWash: '#F6E7D8' };
+
+    let screen = s.screen;
+    if (screen === 'start') screen = returning ? 'recall' : 'landing';
+    const sessionScreens = ['recall', 'writing', 'lesson', 'check', 'finish'];
+    const inSession = sessionScreens.indexOf(screen) >= 0;
+
+    // progress rail
+    const names = returning ? ['Recall', 'Lesson', 'Check', 'Finish'] : ['Lesson', 'Check', 'Finish'];
+    const map = { recall: 'Recall', writing: 'Lesson', lesson: 'Lesson', check: 'Check', finish: 'Finish' };
+    const curIdx = names.indexOf(map[screen] || 'Lesson');
+    const steps = names.map((n, i) => {
+      const done = i < curIdx, current = i === curIdx;
+      return {
+        label: done ? n : (i + 1) + ' ' + n, done,
+        current: current ? 'step' : undefined,
+        ink: current ? t.ink : t.muted, weight: current ? 500 : 400,
+        padB: current ? '7px' : '10px', under: current ? '3px solid ' + t.accent : '0 solid transparent'
+      };
+    });
+
+    // lesson text
+    const writing = screen === 'writing';
+    const n = writing ? s.words : this.TOTAL;
+    let used = 0;
+    const paras = this.W.map((w, i) => {
+      const shown = Math.max(0, Math.min(w.length, n - used));
+      used += w.length;
+      const started = shown > 0;
+      return {
+        started, waiting: !started, drop: i === 0 && started,
+        text: w.slice(0, shown).join(' '),
+        caret: writing && started && shown < w.length
+      };
+    });
+
+    // questions
+    const recallQ = this.buildQ(this.RECALL, s.recallSel, (i) => this.setState({ recallSel: i }), t);
+    const checkDef = this.CHECK[s.checkIdx];
+    const checkQ = this.buildQ(checkDef, s.checkSel[s.checkIdx], (i) => {
+      const next = s.checkSel.slice(); next[s.checkIdx] = i; this.setState({ checkSel: next });
+    }, t);
+    const correctCount = s.checkSel.filter((v, i) => v === this.CHECK[i].correct).length;
+
+    // ask box
+    const askWordsAll = s.askFull ? s.askFull.split(' ') : [];
+    const askShown = askWordsAll.slice(0, s.askWords).join(' ');
+
+    // streak
+    const streakFrom = returning ? 12 : 0;
+    const streakTo = returning ? 13 : 1;
+    const flipT = reduced ? 'none' : 'transform 640ms cubic-bezier(0.2, 0, 0, 1), opacity 640ms cubic-bezier(0.2, 0, 0, 1)';
+
+    // subjects
+    const subjects = this.SUBJECTS.map((name) => {
+      const on = s.picked.indexOf(name) >= 0;
+      return {
+        name, on, off: !on, bg: on ? t.ink : 'transparent', ink: on ? t.bg : t.ink,
+        toggle: () => this.setState({ picked: on ? s.picked.filter((x) => x !== name) : s.picked.concat([name]) })
+      };
+    });
+    const others = s.picked.filter((x) => x !== 'Science');
+    const tomorrow = returning ? 'History' : (others.length ? others[0] : (s.picked.length ? 'Science' : 'Science'));
+
+    // footer
+    let primaryLabel = '', primary = null, primaryDisabled = false, primaryBusy = false, primaryArrow = true, hasFooter = true, secondaryLabel = '', secondary = null, footNote = '';
+    if (screen === 'landing') { primaryLabel = 'Start today’s lesson'; primary = () => this.go('writing'); footNote = 'Free · no account needed'; }
+    if (screen === 'recall') {
+      if (s.recallSel === null) { primaryLabel = 'Choose an answer'; primaryDisabled = true; primaryArrow = false; }
+      else { primaryLabel = 'Continue to the lesson'; primary = () => this.go('lesson'); }
+    }
+    if (screen === 'writing') { primaryLabel = 'Writing the lesson'; primaryDisabled = true; primaryBusy = true; primaryArrow = false; }
+    if (screen === 'lesson') { primaryLabel = 'Continue to the check'; primary = () => this.go('check'); }
+    if (screen === 'check') {
+      const answered = s.checkSel[s.checkIdx] !== null;
+      if (!answered) { primaryLabel = 'Choose an answer'; primaryDisabled = true; primaryArrow = false; }
+      else if (s.checkIdx === 0) { primaryLabel = 'Next question'; primary = () => { if (this.scrollEl) this.scrollEl.scrollTop = 0; this.setState({ checkIdx: 1 }); }; }
+      else { primaryLabel = 'Finish'; primary = () => this.go('finish'); }
+    }
+    if (screen === 'finish') {
+      if (returning) { primaryLabel = 'Done for today'; primary = () => this.go('done'); primaryArrow = false; }
+      else { primaryLabel = 'Pick your subjects'; primary = () => this.go('interests'); secondaryLabel = 'Stop for today'; secondary = () => this.go('account'); }
+    }
+    if (screen === 'interests') {
+      if (!s.picked.length) { primaryLabel = 'Pick at least one'; primaryDisabled = true; primaryArrow = false; }
+      else { primaryLabel = 'Save subjects'; primary = () => this.go('account'); }
+    }
+    if (screen === 'account') { primaryLabel = 'Not now'; primary = () => this.go('done'); primaryArrow = false; }
+    if (screen === 'done') hasFooter = false;
+    const quietPrimary = screen === 'account';
+
+    const pBg = primaryDisabled || quietPrimary ? 'transparent' : t.ink;
+    const pInk = primaryDisabled ? t.muted : (quietPrimary ? t.ink : t.bg);
+    const pBorder = primaryDisabled ? t.muted : t.ink;
+
+    return {
+      t, dark, isLight: !dark, returning,
+      themeLabel: dark ? 'Switch to light theme' : 'Switch to dark theme',
+      toggleTheme: () => this.setState({ darkSet: !dark }),
+      setScroll: this.setScroll,
+      inSession, outSession: !inSession,
+      showLogin: !returning && !s.signed && screen !== 'done',
+      showGuestKeep: !returning && !s.signed && screen === 'done',
+      showAvatar: returning || s.signed,
+      steps, stepCols: 'repeat(' + names.length + ', minmax(0, 1fr))',
+      fadeOp: s.entering ? 0 : 1, fadeY: s.entering ? 8 : 0,
+      fadeTransition: s.entering || reduced ? 'none' : 'opacity 240ms cubic-bezier(0.2, 0, 0, 1), transform 240ms cubic-bezier(0.2, 0, 0, 1)',
+      isLanding: screen === 'landing', isRecall: screen === 'recall',
+      isLessonStep: writing || screen === 'lesson', isWriting: writing, isWritten: screen === 'lesson',
+      isCheck: screen === 'check', isFinish: screen === 'finish', isInterests: screen === 'interests',
+      isAccount: screen === 'account', isDone: screen === 'done',
+      paras, recallQ, checkQ, checkNum: s.checkIdx + 1,
+      askText: s.askText, askQ: s.askQ, askShown, askHasQ: !!s.askFull,
+      askStreaming: s.askStreaming, askDone: !!s.askFull && !s.askStreaming,
+      askPlaceholder: s.askFull ? 'Ask a follow-up' : 'Why 400 and not 500?',
+      onAskChange: (e) => this.setState({ askText: e.target.value }),
+      onAskKey: (e) => { if (e.key === 'Enter' && s.askText.trim() && !s.askStreaming) this.ask(s.askText.trim(), this.ANS_Q); },
+      askSubmit: () => { if (s.askText.trim()) this.ask(s.askText.trim(), this.ANS_Q); },
+      askDifferently: () => this.ask('Explain this differently', this.ANS_D),
+      streakFrom, streakTo, streakUnit: streakTo === 1 ? 'day in a row' : 'days in a row',
+      oldOp: s.flip ? 0 : 1, oldY: s.flip ? -100 : 0, newOp: s.flip ? 1 : 0, newY: s.flip ? 0 : 100,
+      flipTransition: flipT, ruleW: s.flip ? 100 : 0,
+      ruleTransition: reduced ? 'none' : 'width 640ms cubic-bezier(0.2, 0, 0, 1)',
+      finishHead: returning ? 'Thirteen days running.' : 'That’s day one!',
+      finishBody: 'You got ' + correctCount + ' of 2 on the check. ' + (returning ? 'Recall says you still remember Monday’s lesson, too.' : 'Come back tomorrow and the streak keeps going.'),
+      subjects,
+      subjectNote: s.picked.length ? s.picked.length + ' picked. Tomorrow starts with ' + tomorrow + '.' : 'Today was Science. Pick as many as you like.',
+      tomorrow,
+      doneGreeting: returning || s.signed ? 'Tuesday, November 10 · Duane' : 'Tuesday, November 10',
+      hasFooter, primaryLabel, primary, primaryDisabled, primaryBusy, primaryArrow,
+      pBg, pInk, pBorder, pBorderStyle: primaryDisabled ? 'dashed' : 'solid',
+      hasSecondary: !!secondaryLabel, secondaryLabel, secondary, footNote,
+      goDone: () => { this.stopTimers(); this.setState({ screen: 'start', words: 0, recallSel: null, checkIdx: 0, checkSel: [null, null], askText: '', askQ: '', askFull: '', askWords: 0, askStreaming: false, flip: false }); },
+      goAccount: () => this.go('account'),
+      goDoneSigned: () => { this.setState({ signed: true }); this.go('done'); },
+      restart: () => { this.stopTimers(); this.setState({ screen: 'start', words: 0, recallSel: null, checkIdx: 0, checkSel: [null, null], askText: '', askQ: '', askFull: '', askWords: 0, askStreaming: false, flip: false, picked: [], signed: false }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

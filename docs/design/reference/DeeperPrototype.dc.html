@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Go Deeper · phone prototype</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #E0552B;outline-offset:2px}
+input::placeholder,textarea::placeholder{color:inherit;opacity:.62}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; background: {{t.bg}}; color: {{t.ink}}; font-family: 'Newsreader', Georgia, serif; transition: background 240ms, color 240ms">
+
+  <!-- Top bar -->
+  <header style="flex: none; padding: 6px 8px 0">
+    <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center">
+      <div>
+        <sc-if value="{{hasBack}}" hint-placeholder-val="{{ true }}">
+          <button type="button" onClick="{{onBack}}" aria-label="{{backAria}}" style="display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 8px; background: transparent; border: none; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: {{t.ink}}; cursor: pointer">
+            <sc-if value="{{backIsClose}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></sc-if>
+            <sc-if value="{{backIsArrow}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg></sc-if>
+            {{backLabel}}
+          </button>
+        </sc-if>
+      </div>
+      <p style="margin: 0; font-size: 19px; font-weight: 600; letter-spacing: -0.01em">TopicTutor</p>
+      <div style="display: flex; justify-content: flex-end">
+        <button type="button" aria-label="{{themeLabel}}" onClick="{{toggleTheme}}" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: {{t.ink}}; cursor: pointer">
+          <sc-if value="{{isLight}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></sc-if>
+          <sc-if value="{{dark}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"></path></svg></sc-if>
+        </button>
+      </div>
+    </div>
+    <div style="margin: 2px 16px 0; border-top: 3px solid {{t.ink}}; border-bottom: 1px solid {{t.ink}}; height: 2px"></div>
+  </header>
+
+  <main ref="{{setScroll}}" style="flex: 1 1 auto; min-height: 0; overflow-y: auto">
+    <div style="opacity: {{fadeOp}}; transform: translateY({{fadeY}}px); transition: {{fadeTransition}}">
+
+      <!-- START A SERIES -->
+      <sc-if value="{{isStart}}" hint-placeholder-val="{{ true }}">
+        <section style="padding: 28px 24px 24px">
+          <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.accent}}">Go deeper · new series</p>
+          <h1 style="margin: 12px 0 0; font-size: 38px; line-height: 1.04; font-weight: 500; letter-spacing: -0.02em">What do you want to learn?</h1>
+          <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.5; color: {{t.soft}}">Five short questions find what you already know. Then we write five lessons around what you don’t.</p>
+          <label for="topic" style="display: block; margin-top: 26px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase">Topic</label>
+          <input id="topic" type="text" value="{{topic}}" onChange="{{onTopic}}" placeholder="Basics of Web Development" style="width: 100%; box-sizing: border-box; height: 52px; margin-top: 8px; padding: 0 14px; background: {{t.raised}}; border: 1.5px solid {{t.ink}}; border-radius: 0; font-family: 'Newsreader', Georgia, serif; font-size: 19px; color: {{t.ink}}">
+          <sc-if value="{{topicPrefilled}}" hint-placeholder-val="{{ false }}"><p style="margin: 8px 0 0; font-size: 15px; font-style: italic; color: {{t.muted}}">Filled in from your suggestion. Change it if you like.</p></sc-if>
+          <label for="specific" style="display: block; margin-top: 22px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase">Anything specific? <span style="font-weight: 400; color: {{t.muted}}">· optional</span></label>
+          <textarea id="specific" rows="3" onChange="{{onSpecific}}" value="{{specific}}" placeholder="I never know why my CSS doesn’t apply" style="width: 100%; box-sizing: border-box; margin-top: 8px; padding: 12px 14px; background: {{t.raised}}; border: 1.5px solid {{t.ink}}; border-radius: 0; resize: vertical; font-family: 'Newsreader', Georgia, serif; font-size: 18px; line-height: 1.45; color: {{t.ink}}"></textarea>
+        </section>
+      </sc-if>
+
+      <!-- GENERATING (test, mastery) -->
+      <sc-if value="{{isGenerating}}" hint-placeholder-val="{{ false }}">
+        <section aria-busy="true" style="padding: 28px 24px 24px">
+          <p style="margin: 0; display: flex; align-items: center; gap: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.accent}}"><span aria-hidden="true" style="width: 7px; height: 14px; background: {{t.accent}}"></span>{{genKicker}}</p>
+          <h1 style="margin: 12px 0 0; font-size: 32px; line-height: 1.08; font-weight: 500; letter-spacing: -0.015em">{{genTitle}}</h1>
+          <p style="margin: 10px 0 0; font-size: 16px; font-style: italic; color: {{t.muted}}">Usually a few seconds. You can leave and come back. Nothing is lost.</p>
+          <div aria-hidden="true" style="display: flex; flex-direction: column; gap: 10px; margin-top: 28px">
+            <span style="height: 22px; width: 88%; background: {{t.sunk}}"></span>
+            <span style="height: 52px; background: {{t.sunk}}"></span><span style="height: 52px; background: {{t.sunk}}"></span><span style="height: 52px; background: {{t.sunk}}"></span><span style="height: 52px; background: {{t.sunk}}"></span>
+          </div>
+        </section>
+      </sc-if>
+
+      <!-- TEST / MASTERY TAKING -->
+      <sc-if value="{{isQuiz}}" hint-placeholder-val="{{ false }}">
+        <section style="padding: 20px 24px 24px">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase">
+            <span style="color: {{t.accent}}">{{quizKind}}</span><span style="color: {{t.muted}}">{{quiz.answered}} of 5 answered</span>
+          </div>
+          <nav aria-label="Questions" style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin-top: 12px">
+            <sc-for list="{{quiz.dots}}" as="d" hint-placeholder-count="5">
+              <button type="button" onClick="{{d.go}}" aria-label="{{d.aria}}" aria-current="{{d.current}}" style="height: 40px; display: flex; align-items: center; justify-content: center; gap: 4px; background: {{d.bg}}; color: {{d.ink}}; border: 1.5px {{d.borderStyle}} {{d.border}}; font-family: 'IBM Plex Mono', monospace; font-size: 13px; cursor: pointer">
+                <sc-if value="{{d.answered}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>{{d.n}}
+              </button>
+            </sc-for>
+          </nav>
+          <p style="margin: 22px 0 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: {{t.muted}}">Question {{quiz.num}} · {{quiz.level}}</p>
+          <h1 style="margin: 8px 0 0; font-size: 24px; line-height: 1.22; font-weight: 500">{{quiz.q.prompt}}</h1>
+          <div role="radiogroup" aria-label="{{quiz.q.prompt}}" style="display: flex; flex-direction: column; gap: 8px; margin-top: 18px">
+            <sc-for list="{{quiz.q.options}}" as="o" hint-placeholder-count="5">
+              <button type="button" role="radio" aria-checked="{{o.checked}}" onClick="{{o.pick}}" style="display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 12px; align-items: start; width: 100%; text-align: left; padding: 13px 14px; background: {{o.bg}}; border: 1.5px {{o.borderStyle}} {{o.border}}; color: {{t.ink}}; font-family: 'Newsreader', Georgia, serif; font-size: 17px; font-style: {{o.fontStyle}}; line-height: 1.4; cursor: pointer">
+                <span aria-hidden="true" style="width: 22px; height: 22px; margin-top: 1px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 1.5px solid {{o.keyBorder}}; background: {{o.keyBg}}; color: {{o.keyInk}}; border-radius: 2px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-style: normal">{{o.letter}}</span>
+                <span style="display: flex; flex-direction: column; gap: 3px"><span style="color: {{o.textInk}}">{{o.text}}</span><sc-if value="{{o.checked}}" hint-placeholder-val="{{ false }}"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-style: normal; letter-spacing: 0.06em; text-transform: uppercase; color: {{t.muted}}">Selected</span></sc-if></span>
+              </button>
+            </sc-for>
+          </div>
+          <p style="margin: 16px 0 0; font-size: 15px; font-style: italic; color: {{t.muted}}">You can change answers until you submit. “Not sure” counts as wrong, which is fine: it tells us what to teach.</p>
+        </section>
+      </sc-if>
+
+      <!-- PLACEMENT RESULTS + OUTLINE -->
+      <sc-if value="{{isResults}}" hint-placeholder-val="{{ false }}">
+        <section style="padding: 26px 24px 8px">
+          <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.muted}}">Placement test · {{topicShort}}</p>
+          <div style="display: flex; align-items: flex-end; gap: 10px; margin-top: 12px">
+            <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 56px; line-height: 1; font-weight: 500; letter-spacing: -0.03em">{{testScore}}<span style="color: {{t.muted}}">/5</span></p>
+          </div>
+          <h1 style="margin: 14px 0 0; font-size: 26px; line-height: 1.2; font-weight: 500">{{focusLine}}</h1>
+        </section>
+        <section aria-live="polite" style="margin: 18px 24px 0; padding: 16px 18px; background: {{t.raised}}; border: 1px solid {{t.ink}}">
+          <p style="margin: 0; display: flex; align-items: center; gap: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: {{outlineKickerInk}}">
+            <sc-if value="{{outlineWriting}}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="width: 7px; height: 14px; background: {{t.accent}}"></span></sc-if>
+            <sc-if value="{{outlineDone}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+            {{outlineKicker}}
+          </p>
+          <ol style="list-style: none; margin: 10px 0 0; padding: 0">
+            <sc-for list="{{outlineRows}}" as="r" hint-placeholder-count="5">
+              <li style="display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 8px; padding: 8px 0; border-top: 1px solid {{t.rule}}">
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; line-height: 22px; color: {{t.muted}}">0{{r.n}}</span>
+                <sc-if value="{{r.shown}}" hint-placeholder-val="{{ true }}"><span style="font-size: 17px; line-height: 1.3">{{r.title}}<sc-if value="{{r.focus}}" hint-placeholder-val="{{ false }}"><span style="display: block; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: {{t.accent}}">Focus · you missed question {{r.n}}</span></sc-if></span></sc-if>
+                <sc-if value="{{r.hidden}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="height: 14px; margin-top: 5px; background: {{t.sunk}}"></span></sc-if>
+              </li>
+            </sc-for>
+          </ol>
+        </section>
+        <section style="padding: 26px 24px 24px">
+          <h2 style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.muted}}">Your answers</h2>
+          <ol style="list-style: none; margin: 10px 0 0; padding: 0">
+            <sc-for list="{{testReview}}" as="r" hint-placeholder-count="5">
+              <li style="padding: 14px 0; border-top: 1px solid {{t.rule}}">
+                <p style="margin: 0; display: flex; align-items: center; gap: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: {{r.ink}}">
+                  <sc-if value="{{r.ok}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+                  <sc-if value="{{r.bad}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></sc-if>
+                  {{r.n}} · {{r.verdict}}
+                </p>
+                <p style="margin: 6px 0 0; font-size: 17px; line-height: 1.35">{{r.prompt}}</p>
+                <sc-if value="{{r.bad}}" hint-placeholder-val="{{ false }}"><p style="margin: 6px 0 0; font-size: 15px; color: {{t.muted}}">You said: {{r.chosen}}</p></sc-if>
+                <p style="margin: 4px 0 0; font-size: 15px"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: {{t.correct}}">Answer</span> {{r.answer}}</p>
+                <p style="margin: 4px 0 0; font-size: 15px; font-style: italic; color: {{t.soft}}">{{r.explain}}</p>
+              </li>
+            </sc-for>
+          </ol>
+        </section>
+      </sc-if>
+
+      <!-- SERIES OVERVIEW -->
+      <sc-if value="{{isOverview}}" hint-placeholder-val="{{ false }}">
+        <section style="padding: 24px 24px 8px">
+          <p style="margin: 0; display: flex; align-items: center; gap: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase">
+            <span style="color: {{t.accent}}">Technology</span><span style="color: {{t.muted}}">·</span>
+            <span style="display: inline-flex; align-items: center; gap: 5px; color: {{status.ink}}">
+              <sc-if value="{{status.notStarted}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width: 11px; height: 11px; box-sizing: border-box; border: 1.5px solid currentColor; border-radius: 999px"></span></sc-if>
+              <sc-if value="{{status.inProgress}}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="width: 11px; height: 11px; box-sizing: border-box; border: 1.5px solid currentColor; border-radius: 999px; background: linear-gradient(90deg, currentColor 50%, transparent 50%)"></span></sc-if>
+              <sc-if value="{{status.completed}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+              {{status.label}}
+            </span>
+          </p>
+          <h1 style="margin: 12px 0 0; font-size: 34px; line-height: 1.05; font-weight: 500; letter-spacing: -0.02em">How a Web Page Gets Built: HTML, CSS and the Browser</h1>
+          <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.5; color: {{t.soft}}">From the request your browser sends to the styled page on screen, with extra time on what your placement test showed you missed.</p>
+          <div style="margin-top: 18px">
+            <div style="display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 13px"><span style="color: {{t.muted}}">{{doneCount}} of 5 lessons · Mastery Check</span><span style="font-weight: 500">{{pct}}%</span></div>
+            <div role="img" aria-label="{{meterAria}}" style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 3px; margin-top: 8px">
+              <sc-for list="{{meter}}" as="m" hint-placeholder-count="6"><span style="height: 8px; border: 1px {{m.style}} {{t.ink}}; background: {{m.bg}}"></span></sc-for>
+            </div>
+          </div>
+          <sc-if value="{{passed}}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top: 18px; padding: 14px 16px; background: {{t.correctWash}}; border: 1.5px solid {{t.correct}}">
+              <p style="margin: 0; display: flex; align-items: center; gap: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.correct}}"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Mastery Check passed · best {{best}}/5</p>
+              <button type="button" onClick="{{startMastery}}" style="margin-top: 10px; min-height: 44px; padding: 0 14px; background: transparent; border: 1.5px solid {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: {{t.ink}}; cursor: pointer">Retake the check</button>
+            </div>
+          </sc-if>
+        </section>
+        <ol style="list-style: none; margin: 18px 0 0; padding: 0 24px">
+          <sc-for list="{{lessonRows}}" as="l" hint-placeholder-count="5">
+            <li style="border-top: 1px solid {{t.rule}}">
+              <button type="button" onClick="{{l.open}}" style="display: grid; grid-template-columns: 30px minmax(0, 1fr) 18px; gap: 10px; width: 100%; padding: 16px 0; background: transparent; border: none; text-align: left; color: {{t.ink}}; font-family: 'Newsreader', Georgia, serif; cursor: pointer">
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 24px; color: {{t.muted}}">0{{l.n}}</span>
+                <span>
+                  <span style="display: block; font-size: 19px; line-height: 1.25; font-weight: 500">{{l.title}}</span>
+                  <span style="display: block; margin-top: 3px; font-size: 15px; line-height: 1.4; color: {{t.soft}}">{{l.desc}}</span>
+                  <span style="display: block; margin-top: 6px; font-size: 14px; font-style: italic; color: {{l.whyInk}}">{{l.why}}</span>
+                  <span style="display: inline-flex; align-items: center; gap: 5px; margin-top: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: {{l.statusInk}}">
+                    <sc-if value="{{l.done}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+                    <sc-if value="{{l.todo}}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="width: 10px; height: 10px; box-sizing: border-box; border: 1.5px solid currentColor; border-radius: 999px"></span></sc-if>
+                    {{l.statusLabel}}
+                  </span>
+                </span>
+                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-top: 5px"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+              </button>
+            </li>
+          </sc-for>
+          <li style="border-top: 3px solid {{t.ink}}; padding: 16px 0 6px">
+            <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase">Mastery Check</p>
+            <p style="margin: 6px 0 0; font-size: 16px; line-height: 1.45; color: {{t.soft}}">{{masteryLine}}</p>
+            <sc-if value="{{showShortcut}}" hint-placeholder-val="{{ false }}">
+              <button type="button" onClick="{{shortcut}}" style="margin-top: 12px; min-height: 40px; padding: 0 12px; background: transparent; border: 1px dashed {{t.muted}}; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: {{t.muted}}; cursor: pointer">Prototype only: answer the remaining checks for me</button>
+            </sc-if>
+          </li>
+        </ol>
+        <div style="display: flex; justify-content: space-between; padding: 22px 24px 28px">
+          <button type="button" style="min-height: 44px; padding: 0; background: transparent; border: none; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: {{t.ink}}; text-decoration: underline; text-underline-offset: 4px; cursor: pointer">Back to Library</button>
+          <button type="button" style="display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0; background: transparent; border: none; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: {{t.incorrect}}; cursor: pointer"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"></path></svg>Delete series</button>
+        </div>
+      </sc-if>
+
+      <!-- SERIES LESSON -->
+      <sc-if value="{{isLesson}}" hint-placeholder-val="{{ false }}">
+        <article style="padding: 22px 24px 0">
+          <div style="display: flex; justify-content: space-between; align-items: center; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase">
+            <span style="color: {{t.accent}}">Lesson {{les.n}} of 5</span>
+            <span style="display: inline-flex; align-items: center; gap: 5px; color: {{les.statusInk}}">
+              <sc-if value="{{les.done}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+              <sc-if value="{{les.todo}}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="width: 10px; height: 10px; box-sizing: border-box; border: 1.5px solid currentColor; border-radius: 999px"></span></sc-if>
+              {{les.statusLabel}}
+            </span>
+          </div>
+          <h1 style="margin: 12px 0 0; font-size: 36px; line-height: 1.04; font-weight: 500; letter-spacing: -0.02em">{{les.title}}</h1>
+          <p style="margin: 8px 0 0; font-size: 17px; line-height: 1.45; font-style: italic; color: {{t.soft}}">{{les.desc}}</p>
+          <sc-if value="{{les.writing}}" hint-placeholder-val="{{ false }}"><p style="margin: 12px 0 0; display: flex; align-items: center; gap: 8px; font-size: 15px; font-style: italic; color: {{t.muted}}"><span aria-hidden="true" style="width: 7px; height: 15px; background: {{t.accent}}"></span>Writing this lesson for you now.</p></sc-if>
+          <div aria-busy="{{les.writing}}" style="display: flex; flex-direction: column; gap: 18px; margin-top: 22px; font-size: 18.5px; line-height: 1.55">
+            <sc-for list="{{les.paras}}" as="p" hint-placeholder-count="3">
+              <div>
+                <sc-if value="{{p.started}}" hint-placeholder-val="{{ true }}"><p style="margin: 0">{{p.text}}<sc-if value="{{p.caret}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="display: inline-block; width: 7px; height: 17px; margin-left: 3px; vertical-align: -2px; background: {{t.accent}}"></span></sc-if></p></sc-if>
+                <sc-if value="{{p.waiting}}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="display: flex; flex-direction: column; gap: 10px; padding-top: 6px"><span style="height: 14px; background: {{t.sunk}}"></span><span style="height: 14px; background: {{t.sunk}}"></span><span style="height: 14px; width: 62%; background: {{t.sunk}}"></span></div></sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </article>
+        <sc-if value="{{les.written}}" hint-placeholder-val="{{ false }}">
+          <section style="margin: 28px 24px 0; padding-top: 16px; border-top: 1px solid {{t.rule}}">
+            <label for="ask-s" style="display: block; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.muted}}">Ask the tutor about this lesson</label>
+            <div style="display: flex; gap: 8px; margin-top: 8px">
+              <input id="ask-s" type="text" placeholder="{{les.askHint}}" style="flex: 1 1 auto; min-width: 0; height: 46px; padding: 0 2px; background: transparent; border: none; border-bottom: 1.5px solid {{t.ink}}; border-radius: 0; font-family: 'Newsreader', Georgia, serif; font-size: 18px; color: {{t.ink}}">
+              <button type="button" aria-label="Ask" style="flex: none; width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; background: {{t.ink}}; color: {{t.bg}}; border: none"><svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"></path></svg></button>
+            </div>
+            <button type="button" style="margin-top: 12px; min-height: 44px; padding: 0 14px; background: transparent; border: 1px solid {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: {{t.ink}}">Explain this differently</button>
+          </section>
+          <section style="margin: 28px 24px 0; padding-top: 16px; border-top: 3px solid {{t.ink}}">
+            <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.accent}}">Check</p>
+            <h2 style="margin: 8px 0 0; font-size: 22px; line-height: 1.25; font-weight: 500">{{les.q.prompt}}</h2>
+            <div role="radiogroup" aria-label="{{les.q.prompt}}" style="display: flex; flex-direction: column; gap: 8px; margin-top: 16px">
+              <sc-for list="{{les.q.options}}" as="o" hint-placeholder-count="4">
+                <button type="button" role="radio" aria-checked="{{o.checked}}" disabled="{{o.locked}}" onClick="{{o.pick}}" style="display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 12px; align-items: start; width: 100%; text-align: left; padding: 13px 14px; background: {{o.bg}}; border: 1.5px solid {{o.border}}; color: {{t.ink}}; font-family: 'Newsreader', Georgia, serif; font-size: 17px; line-height: 1.4; cursor: pointer">
+                  <span aria-hidden="true" style="width: 22px; height: 22px; margin-top: 1px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 1.5px solid {{o.keyBorder}}; background: {{o.keyBg}}; color: {{o.keyInk}}; border-radius: 2px; font-family: 'IBM Plex Mono', monospace; font-size: 12px">
+                    <sc-if value="{{o.showLetter}}" hint-placeholder-val="{{ true }}">{{o.letter}}</sc-if>
+                    <sc-if value="{{o.isRight}}" hint-placeholder-val="{{ false }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+                    <sc-if value="{{o.isWrong}}" hint-placeholder-val="{{ false }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></sc-if>
+                  </span>
+                  <span style="display: flex; flex-direction: column; gap: 4px"><span style="color: {{o.textInk}}">{{o.text}}</span><sc-if value="{{o.hasTag}}" hint-placeholder-val="{{ false }}"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: {{o.tagInk}}">{{o.tag}}</span></sc-if></span>
+                </button>
+              </sc-for>
+            </div>
+            <sc-if value="{{les.q.revealed}}" hint-placeholder-val="{{ false }}">
+              <p role="status" style="margin: 14px 0 0; font-size: 17px; line-height: 1.5"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: {{les.q.verdictInk}}">{{les.q.verdict}}</span> {{les.q.explain}}</p>
+            </sc-if>
+          </section>
+          <nav aria-label="Lessons in this series" style="display: flex; justify-content: space-between; gap: 12px; margin: 28px 24px 0; padding: 14px 0 28px; border-top: 1px solid {{t.rule}}">
+            <sc-if value="{{les.hasPrev}}" hint-placeholder-val="{{ false }}">
+              <button type="button" onClick="{{les.prev}}" style="display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0; background: transparent; border: none; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: {{t.ink}}; cursor: pointer"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg>Lesson {{les.prevN}}</button>
+            </sc-if>
+            <span></span>
+            <sc-if value="{{les.isLast}}" hint-placeholder-val="{{ false }}">
+              <p style="margin: 0; max-width: 220px; text-align: right; font-size: 15px; font-style: italic; color: {{t.muted}}">{{les.lastNote}}</p>
+            </sc-if>
+          </nav>
+        </sc-if>
+      </sc-if>
+
+      <!-- MASTERY RESULT -->
+      <sc-if value="{{isMResult}}" hint-placeholder-val="{{ false }}">
+        <section style="padding: 26px 24px 8px">
+          <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.muted}}">Mastery Check · attempt {{attempts}}</p>
+          <div style="display: flex; align-items: center; gap: 14px; margin-top: 14px">
+            <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 64px; line-height: 1; font-weight: 500; letter-spacing: -0.03em; color: {{mr.scoreInk}}">{{mr.score}}<span style="color: {{t.muted}}">/5</span></p>
+            <p style="margin: 0; display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border: 1.5px solid {{mr.badgeInk}}; background: {{mr.badgeBg}}; font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: {{mr.badgeInk}}">
+              <sc-if value="{{mr.pass}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Passed</sc-if>
+              <sc-if value="{{mr.fail}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>Not yet</sc-if>
+            </p>
+          </div>
+          <div aria-hidden="true" style="height: 3px; margin-top: 18px; background: {{t.ink}}; width: {{ruleW}}%; transition: {{ruleTransition}}"></div>
+          <div aria-hidden="true" style="height: 1px; margin-top: 3px; background: {{t.ink}}; width: {{ruleW}}%; transition: {{ruleTransition}}"></div>
+          <h1 style="margin: 18px 0 0; font-size: 34px; line-height: 1.05; font-weight: 500; letter-spacing: -0.02em">{{mr.head}}</h1>
+          <p style="margin: 10px 0 0; font-size: 17px; line-height: 1.5; color: {{t.soft}}">{{mr.body}}</p>
+        </section>
+
+        <sc-if value="{{mr.pass}}" hint-placeholder-val="{{ true }}">
+          <section style="padding: 18px 24px 0">
+            <h2 style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.accent}}">What to learn next</h2>
+            <ul style="list-style: none; margin: 8px 0 0; padding: 0">
+              <sc-for list="{{nextUp}}" as="s" hint-placeholder-count="3">
+                <li style="border-top: 1px solid {{t.rule}}">
+                  <button type="button" onClick="{{s.go}}" style="display: grid; grid-template-columns: minmax(0, 1fr) 18px; gap: 10px; width: 100%; padding: 14px 0; background: transparent; border: none; text-align: left; color: {{t.ink}}; font-family: 'Newsreader', Georgia, serif; cursor: pointer">
+                    <span><span style="display: block; font-size: 19px; line-height: 1.25">{{s.title}}</span><span style="display: block; margin-top: 3px; font-size: 15px; font-style: italic; color: {{t.muted}}">{{s.why}}</span></span>
+                    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-top: 5px"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+                  </button>
+                </li>
+              </sc-for>
+            </ul>
+          </section>
+        </sc-if>
+
+        <sc-if value="{{mr.fail}}" hint-placeholder-val="{{ false }}">
+          <section style="margin: 18px 24px 0; padding: 16px 18px; background: {{t.raised}}; border-top: 3px solid {{t.ink}}">
+            <h2 style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase">Review these first</h2>
+            <ul style="list-style: none; margin: 8px 0 0; padding: 0">
+              <sc-for list="{{mr.reviewLessons}}" as="r" hint-placeholder-count="2">
+                <li style="border-top: 1px solid {{t.rule}}">
+                  <button type="button" onClick="{{r.open}}" style="display: grid; grid-template-columns: 30px minmax(0, 1fr) 18px; gap: 8px; width: 100%; padding: 12px 0; background: transparent; border: none; text-align: left; color: {{t.ink}}; font-family: 'Newsreader', Georgia, serif; font-size: 17px; cursor: pointer">
+                    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; line-height: 22px; color: {{t.muted}}">0{{r.n}}</span><span>{{r.title}}</span>
+                    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-top: 3px"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+                  </button>
+                </li>
+              </sc-for>
+            </ul>
+            <p style="margin: 10px 0 0; font-size: 15px; font-style: italic; color: {{t.muted}}">Your retake leans toward these lessons, and toward the checks you got wrong along the way. You can retake right now if you prefer.</p>
+          </section>
+        </sc-if>
+
+        <section style="padding: 24px 24px 28px">
+          <h2 style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.muted}}">Your answers</h2>
+          <ol style="list-style: none; margin: 10px 0 0; padding: 0">
+            <sc-for list="{{mReview}}" as="r" hint-placeholder-count="5">
+              <li style="padding: 14px 0; border-top: 1px solid {{t.rule}}">
+                <p style="margin: 0; display: flex; align-items: center; gap: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: {{r.ink}}">
+                  <sc-if value="{{r.ok}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+                  <sc-if value="{{r.bad}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></sc-if>
+                  {{r.n}} · {{r.verdict}}
+                </p>
+                <p style="margin: 6px 0 0; font-size: 17px; line-height: 1.35">{{r.prompt}}</p>
+                <sc-if value="{{r.bad}}" hint-placeholder-val="{{ false }}"><p style="margin: 6px 0 0; font-size: 15px; color: {{t.muted}}">You said: {{r.chosen}}</p></sc-if>
+                <p style="margin: 4px 0 0; font-size: 15px"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: {{t.correct}}">Answer</span> {{r.answer}}</p>
+                <p style="margin: 4px 0 0; font-size: 15px; font-style: italic; color: {{t.soft}}">{{r.explain}}</p>
+                <button type="button" onClick="{{r.review}}" style="margin-top: 6px; min-height: 40px; padding: 0; background: transparent; border: none; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: {{t.ink}}; text-decoration: underline; text-underline-offset: 4px; cursor: pointer">Review lesson {{r.lesson}}</button>
+              </li>
+            </sc-for>
+          </ol>
+          <button type="button" onClick="{{restart}}" style="margin-top: 18px; min-height: 44px; padding: 0; background: transparent; border: none; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: {{t.muted}}; text-decoration: underline; text-underline-offset: 4px; cursor: pointer">Restart prototype</button>
+        </section>
+      </sc-if>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <sc-if value="{{hasFooter}}" hint-placeholder-val="{{ true }}">
+    <footer style="flex: none; padding: 12px 24px 20px; border-top: 1px solid {{t.rule}}; background: {{t.bg}}">
+      <div style="display: flex; gap: 8px">
+        <sc-if value="{{hasSecondary}}" hint-placeholder-val="{{ false }}">
+          <button type="button" onClick="{{secondary}}" style="flex: none; min-height: 56px; padding: 0 16px; background: transparent; color: {{t.ink}}; border: 1.5px solid {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 14px; cursor: pointer">{{secondaryLabel}}</button>
+        </sc-if>
+        <button type="button" onClick="{{primary}}" disabled="{{primaryDisabled}}" style="flex: 1 1 auto; min-height: 56px; display: flex; align-items: center; justify-content: center; gap: 10px; background: {{pBg}}; color: {{pInk}}; border: 1.5px {{pBorderStyle}} {{pBorder}}; font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500; cursor: pointer">
+          <sc-if value="{{primaryBusy}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width: 7px; height: 16px; background: {{t.accent}}"></span></sc-if>
+          {{primaryLabel}}
+          <sc-if value="{{primaryArrow}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></sc-if>
+        </button>
+      </div>
+      <sc-if value="{{footNote}}" hint-placeholder-val="{{ false }}"><p style="margin: 8px 0 0; text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: {{t.muted}}">{{footNote}}</p></sc-if>
+    </footer>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"reduceMotion":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.TEST = [
+      { prompt: 'When you type a web address and press Enter, what does your browser send first?', level: 'easy', topic: 'how a page is requested', correct: 0, options: ['An HTTP request to a server', 'A copy of the page’s HTML', 'A CSS file', 'A JavaScript program'], explain: 'The browser asks a server for the page. HTML, CSS and scripts come back in response.' },
+      { prompt: 'What is HTML mainly for?', level: 'easy', topic: 'what HTML is for', correct: 1, options: ['Styling colors and fonts', 'Describing the structure and meaning of content', 'Storing data on the server', 'Making pages interactive'], explain: 'HTML says what each piece of content is. CSS styles it and JavaScript makes it interactive.' },
+      { prompt: 'A paragraph has the id intro and sits inside an element with the class note. One rule targets .note p and makes it blue. Another targets #intro and makes it red. What color is the paragraph?', level: 'hard', topic: 'which CSS rule wins', correct: 1, options: ['Blue, because that rule comes first', 'Red, because an id is more specific than a class and an element', 'Blue, because it names two things', 'Whichever rule is last in the file'], explain: 'An id outweighs any number of classes and element names, so #intro wins wherever it appears.' },
+      { prompt: 'By default, what does an element’s width cover?', level: 'medium', topic: 'the box model', correct: 0, options: ['The content only', 'Content and padding', 'Content, padding and border', 'Content, padding, border and margin'], explain: 'With the default box-sizing, width covers only the content. Padding and border are added on top.' },
+      { prompt: 'What is the DOM?', level: 'hard', topic: 'the DOM', correct: 1, options: ['A file the server sends alongside the HTML', 'The browser’s live tree of objects built from the HTML', 'A JavaScript library for building pages', 'Another name for a page’s CSS rules'], explain: 'The browser builds the DOM as it reads the HTML, and scripts can change it while the page is open.' }
+    ];
+    this.LESSONS = [
+      { title: 'What happens when you type a web address', desc: 'The trip from the address bar to a server and back.', ask: 'What is an IP address, exactly?', p: [
+        'When you press Enter, your browser first needs the server’s address. It asks the Domain Name System, which works like a phone book, to turn a name like example.com into a numeric IP address.',
+        'With that address, the browser sends an HTTP request: a short message saying which page it wants. The server answers with a response, a status code such as 200 for success, and usually a document written in HTML.',
+        'That HTML often points to more files, such as stylesheets, scripts and images. The browser requests each of them the same way, which is why a single page can involve dozens of small round trips.'],
+        q: { prompt: 'What does DNS do?', correct: 0, options: ['Turns a name like example.com into an IP address', 'Stores the page’s HTML', 'Decides how the page is styled', 'Makes images load faster'], explain: 'DNS works like a phone book for the web, matching names to numeric addresses.' } },
+      { title: 'HTML gives a page its structure', desc: 'Elements, nesting, and why the right tag matters.', ask: 'When should I use a div?', p: [
+        'HTML describes what each piece of content is. A heading is marked as a heading, a paragraph as a paragraph, a list as a list. These pieces are called elements, and most have an opening and a closing tag.',
+        'Elements nest inside each other, like a list item inside a list inside a section. This nesting gives the page a shape the browser can reason about, before any styling is applied.',
+        'Choosing meaningful elements, such as nav for site links or button for actions, matters beyond looks. Screen readers, search engines and keyboard users all rely on that meaning to understand the page.'],
+        q: { prompt: 'Why does choosing a nav element over a plain div matter?', correct: 1, options: ['It makes the links blue', 'It tells browsers and assistive technology what the content is', 'It loads faster', 'CSS requires it'], explain: 'The element’s meaning helps screen readers, search engines and keyboard users find their way.' } },
+      { title: 'How the browser decides which CSS rule wins', desc: 'Specificity, order, and the cascade.', ask: 'How do I count specificity?', p: [
+        'CSS rules often disagree. One rule might make a paragraph blue while another makes it red. The browser settles this with the cascade, a set of tie-breakers applied in a fixed order.',
+        'The main tie-breaker is specificity. An id selector outweighs any number of classes, and a class outweighs any number of element names. So a rule aimed at #intro beats one aimed at .note p, wherever each appears.',
+        'Only when two rules are equally specific does order decide, and then the later one wins. Inline styles and the important flag sit above all of this, which is why they are best kept for rare cases.'],
+        q: { prompt: 'Two equally specific rules disagree. Which one wins?', correct: 1, options: ['The first one in the file', 'The later one in the file', 'Neither, so the browser default applies', 'The shorter one'], explain: 'When specificity ties, source order breaks the tie and the later rule wins.' } },
+      { title: 'Boxes, flow and layout', desc: 'The box model and how elements take up space.', ask: 'Why does my box come out wider than I set?', p: [
+        'To the browser, every element is a rectangle. Each box has content in the middle, then padding, then a border, then margin on the outside, which keeps neighbours at a distance.',
+        'By default, the width you set covers only the content, so padding and border make the box wider than you asked. Setting box-sizing to border-box makes width include them, which is easier to reason about.',
+        'Boxes then flow down the page in order. Block elements stack and take the full width, while inline elements sit side by side within a line of text. Layout tools like flexbox and grid change that flow.'],
+        q: { prompt: 'What does box-sizing: border-box change?', correct: 0, options: ['Width includes padding and border', 'Margins are removed', 'Borders become invisible', 'Boxes sit side by side'], explain: 'With border-box, the width you set is the width you get, padding and border included.' } },
+      { title: 'From HTML to pixels: the DOM and rendering', desc: 'How the browser turns code into what you see.', ask: 'What makes a page feel slow?', p: [
+        'As the browser reads HTML, it builds the Document Object Model, or DOM: a live tree of objects, one for each element. Scripts can read and change this tree while the page is open.',
+        'The browser combines the DOM with the CSS rules to work out each element’s style, then calculates where every box goes. This step is called layout. Painting then fills in the actual pixels.',
+        'When JavaScript changes the DOM, the browser updates only what it needs to, sometimes redoing layout and paint. That is why a page can change without reloading, and why heavy changes can make it feel slow.'],
+        q: { prompt: 'In rendering, what is layout?', correct: 0, options: ['Working out where every box goes', 'Downloading the HTML', 'Running the page’s JavaScript', 'Choosing which fonts to load'], explain: 'Layout calculates each box’s size and position. Paint comes after it.' } }
+    ];
+    this.MASTERY = [
+      { prompt: 'What does a server usually send back when a browser requests a page?', lesson: 0, correct: 0, options: ['A response containing HTML', 'The DOM', 'A picture of the page', 'Only the CSS'], explain: 'The response carries a status code and, for a page, an HTML document.' },
+      { prompt: 'Why use a button element for an action instead of a styled div?', lesson: 1, correct: 1, options: ['It looks better by default', 'Keyboards and screen readers know it is an action', 'Divs cannot be clicked', 'It loads faster'], explain: 'A button is focusable and announced as a button, so everyone can use it.' },
+      { prompt: 'Which of these selectors is the most specific?', lesson: 2, correct: 2, options: ['p', '.note p', '#intro', 'div p'], explain: 'An id selector outweighs classes and element names.' },
+      { prompt: 'With box-sizing: border-box, a box set to 200px wide with 20px of padding is how wide on screen?', lesson: 3, correct: 1, options: ['160px', '200px', '240px', '220px'], explain: 'Border-box puts the padding inside the 200px.' },
+      { prompt: 'A script changes the DOM. What happens to the page?', lesson: 4, correct: 1, options: ['Nothing until you reload', 'The browser updates what is shown', 'The HTML file on the server changes', 'The CSS is discarded'], explain: 'The DOM is live. The browser redoes only the layout and paint it needs.' }
+    ];
+    this.NEXT = [
+      { title: 'JavaScript and the DOM, hands on', why: 'Builds on lesson 5.' },
+      { title: 'Responsive layouts with flexbox and grid', why: 'Picks up where lesson 4 stopped.' },
+      { title: 'How browsers keep pages fast', why: 'Goes deeper into rendering.' }
+    ];
+    this.state = {
+      screen: 'start', darkSet: null, entering: false,
+      topic: 'Basics of Web Development', specific: 'I never know why my CSS doesn’t apply', prefilled: false,
+      testSel: [null, null, null, null, null], testIdx: 0, submitted: false, outlineN: 0,
+      lessonSel: [null, null, null, null, null], cur: 0, prepared: [false, false, false, false, false], words: 0, writing: false,
+      mSel: [null, null, null, null, null], mIdx: 0, attempts: 0, best: 0, passed: false, lastScore: 0, flip: false
+    };
+    this.setScroll = (el) => { this.scrollEl = el; };
+  }
+
+  componentWillUnmount() { this.clear(); }
+  clear() {
+    ['t1', 't2', 't3', 't4'].forEach((k) => { if (this[k]) { clearTimeout(this[k]); clearInterval(this[k]); this[k] = null; } });
+  }
+  reduced() {
+    if (this.props.reduceMotion) return true;
+    try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; }
+  }
+  go(screen, extra) {
+    if (this.scrollEl) this.scrollEl.scrollTop = 0;
+    const reduced = this.reduced();
+    this.setState(Object.assign({ screen, entering: !reduced, flip: false }, extra || {}));
+    if (!reduced) setTimeout(() => this.setState({ entering: false }), 30);
+  }
+  startTest() {
+    this.go('genTest');
+    this.t1 = setTimeout(() => this.go('test', { testIdx: 0 }), 2200);
+  }
+  submitTest() {
+    this.go('results', { submitted: true, outlineN: 0 });
+    const every = this.reduced() ? 500 : 750;
+    this.t2 = setInterval(() => {
+      const n = this.state.outlineN + 1;
+      this.setState({ outlineN: n });
+      if (n >= 5) { clearInterval(this.t2); this.t2 = null; }
+    }, every);
+  }
+  openLesson(i) {
+    this.clear();
+    const prepared = this.state.prepared.slice();
+    const instant = prepared[i];
+    prepared[i] = true;
+    if (i + 1 < 5) prepared[i + 1] = true; // the next lesson is written ahead of time
+    this.go('lesson', { cur: i, prepared, words: instant ? 9999 : 0, writing: !instant });
+    if (!instant) {
+      const total = this.LESSONS[i].p.join(' ').split(' ').length;
+      const reduced = this.reduced();
+      this.t3 = setInterval(() => {
+        const n = this.state.words + (reduced ? 14 : 1);
+        if (n >= total) { clearInterval(this.t3); this.t3 = null; this.setState({ words: 9999, writing: false }); }
+        else this.setState({ words: n });
+      }, reduced ? 380 : 36);
+    }
+  }
+  startMastery() {
+    this.go('genMastery', { mSel: [null, null, null, null, null], mIdx: 0 });
+    this.t1 = setTimeout(() => this.go('mastery'), 2000);
+  }
+  submitMastery() {
+    const score = this.state.mSel.filter((v, i) => v === this.MASTERY[i].correct).length;
+    const pass = score >= 4;
+    this.go('mresult', { attempts: this.state.attempts + 1, lastScore: score, best: Math.max(this.state.best, score), passed: this.state.passed || pass });
+    this.t4 = setTimeout(() => this.setState({ flip: true }), this.reduced() ? 0 : 300);
+  }
+
+  quizOptions(def, sel, pick, t) {
+    const opts = def.options.concat(['Not sure']);
+    return opts.map((text, i) => {
+      const on = sel === i, unsure = i === 4;
+      return {
+        text, letter: unsure ? '?' : 'ABCD'[i], checked: on,
+        bg: on ? t.raised : t.raised, border: on ? t.ink : t.rule, borderStyle: unsure ? 'dashed' : 'solid',
+        keyBg: on ? t.ink : 'transparent', keyBorder: t.ink, keyInk: on ? t.bg : t.ink,
+        textInk: unsure ? t.muted : t.ink, fontStyle: unsure ? 'italic' : 'normal',
+        pick: () => pick(i)
+      };
+    });
+  }
+  instantQ(def, sel, pick, t) {
+    const revealed = sel !== null && sel !== undefined;
+    const options = def.options.map((text, i) => {
+      const isRight = revealed && i === def.correct;
+      const isWrong = revealed && i === sel && i !== def.correct;
+      let bg = t.raised, border = t.rule, keyBg = 'transparent', keyBorder = t.ink, keyInk = t.ink, textInk = t.ink, tag = '', tagInk = t.muted;
+      if (revealed && !isRight && !isWrong) { textInk = t.muted; keyBorder = t.muted; keyInk = t.muted; }
+      if (isRight) { bg = t.correctWash; border = t.correct; keyBg = t.correct; keyBorder = t.correct; keyInk = t.bg; tag = i === sel ? 'Your answer · correct' : 'Correct answer'; tagInk = t.correct; }
+      if (isWrong) { bg = t.incorrectWash; border = t.incorrect; keyBg = t.incorrect; keyBorder = t.incorrect; keyInk = t.bg; tag = 'Your answer'; tagInk = t.incorrect; }
+      return { text, letter: 'ABCD'[i], bg, border, keyBg, keyBorder, keyInk, textInk, tag, tagInk, hasTag: !!tag, isRight, isWrong, showLetter: !isRight && !isWrong, checked: revealed && i === sel, locked: revealed, pick: () => pick(i) };
+    });
+    const ok = revealed && sel === def.correct;
+    return { prompt: def.prompt, options, revealed, verdict: ok ? 'Correct.' : 'Not quite.', verdictInk: ok ? t.correct : t.incorrect, explain: def.explain };
+  }
+  review(defs, sels, t, withLesson) {
+    return defs.map((d, i) => {
+      const ok = sels[i] === d.correct;
+      const chosen = sels[i] === 4 ? 'Not sure' : (sels[i] === null ? 'No answer' : d.options[sels[i]]);
+      return {
+        n: i + 1, ok, bad: !ok, verdict: ok ? 'Correct' : (sels[i] === 4 ? 'Not sure' : 'Missed'),
+        ink: ok ? t.correct : t.incorrect, prompt: d.prompt, chosen, answer: d.options[d.correct], explain: d.explain,
+        lesson: withLesson ? d.lesson + 1 : 0, review: withLesson ? () => this.openLesson(d.lesson) : null
+      };
+    });
+  }
+
+  renderVals() {
+    const s = this.state;
+    const dark = s.darkSet === null ? (this.props.dark ?? false) : s.darkSet;
+    const reduced = this.reduced();
+    const t = dark
+      ? { bg: '#121416', raised: '#1A1D20', sunk: '#24282C', ink: '#E9EAE6', soft: '#C9CCC8', muted: '#A3A8AD', rule: '#3A3F44', accent: '#FF7A50', correct: '#8DB4F0', correctWash: '#1A2638', incorrect: '#F0A35E', incorrectWash: '#2E2216' }
+      : { bg: '#F1F2EE', raised: '#FFFFFF', sunk: '#E2E4DE', ink: '#16181A', soft: '#3B3F43', muted: '#565B60', rule: '#C9CCC6', accent: '#C23A12', correct: '#1F4E8C', correctWash: '#E3EAF4', incorrect: '#8F3F00', incorrectWash: '#F6E7D8' };
+    const scr = s.screen;
+
+    // placement analysis
+    const missed = this.TEST.map((q, i) => s.testSel[i] !== q.correct);
+    const testScore = missed.filter((m) => !m).length;
+    const missedIdx = missed.map((m, i) => (m ? i : -1)).filter((i) => i >= 0);
+    const joinNums = (arr) => arr.length === 1 ? String(arr[0]) : arr.slice(0, -1).join(', ') + ' and ' + arr[arr.length - 1];
+    let focusLine;
+    if (!missedIdx.length) focusLine = 'You got all five. Your series skips the basics and goes further on each topic.';
+    else if (missedIdx.length === 5) focusLine = 'A fresh start. Your series begins from the ground up and takes each topic slowly.';
+    else focusLine = 'You missed ' + (missedIdx.length === 1 ? 'question ' : 'questions ') + joinNums(missedIdx.map((i) => i + 1)) + ', so your series spends the most time on ' + joinNums(missedIdx.map((i) => this.TEST[i].topic)) + '.';
+
+    // quiz (test or mastery)
+    const isTest = scr === 'test', isM = scr === 'mastery';
+    let quiz = null;
+    if (isTest || isM) {
+      const defs = isTest ? this.TEST : this.MASTERY;
+      const sels = isTest ? s.testSel : s.mSel;
+      const idx = isTest ? s.testIdx : s.mIdx;
+      const key = isTest ? 'testSel' : 'mSel', idxKey = isTest ? 'testIdx' : 'mIdx';
+      const q = defs[idx];
+      quiz = {
+        num: idx + 1, level: isTest ? q.level : 'from lesson ' + (q.lesson + 1),
+        answered: sels.filter((v) => v !== null).length,
+        q: { prompt: q.prompt, options: this.quizOptions(q, sels[idx], (i) => { const n = sels.slice(); n[idx] = i; this.setState({ [key]: n }); }, t) },
+        dots: sels.map((v, i) => ({
+          n: i + 1, answered: v !== null, current: i === idx ? 'step' : undefined,
+          aria: 'Question ' + (i + 1) + (v !== null ? ', answered' : ', not answered'),
+          bg: i === idx ? t.ink : 'transparent', ink: i === idx ? t.bg : (v !== null ? t.ink : t.muted),
+          border: v !== null || i === idx ? t.ink : t.muted, borderStyle: v !== null || i === idx ? 'solid' : 'dashed',
+          go: () => { if (this.scrollEl) this.scrollEl.scrollTop = 0; this.setState({ [idxKey]: i }); }
+        }))
+      };
+    }
+
+    // outline
+    const outlineRows = this.LESSONS.map((l, i) => ({ n: i + 1, title: l.title, shown: i < s.outlineN, hidden: i >= s.outlineN, focus: i < s.outlineN && missed[i] }));
+    const outlineDone = s.outlineN >= 5;
+
+    // series state
+    const doneCount = s.lessonSel.filter((v) => v !== null).length;
+    const allDone = doneCount === 5;
+    const pct = Math.round(((doneCount + (s.passed ? 1 : 0)) / 6) * 100);
+    const meter = [0, 1, 2, 3, 4].map((i) => ({ bg: s.lessonSel[i] !== null ? t.ink : 'transparent', style: 'solid' })).concat([{ bg: s.passed ? t.ink : 'transparent', style: s.passed ? 'solid' : 'dashed' }]);
+    const status = s.passed ? { label: 'Completed', ink: t.correct, completed: true }
+      : (doneCount ? { label: 'In progress', ink: t.ink, inProgress: true } : { label: 'Not started', ink: t.muted, notStarted: true });
+    const lessonRows = this.LESSONS.map((l, i) => {
+      const done = s.lessonSel[i] !== null;
+      return {
+        n: i + 1, title: l.title, desc: l.desc, done, todo: !done,
+        statusLabel: done ? 'Done' : 'Not started', statusInk: done ? t.correct : t.muted,
+        why: missed[i] ? 'Here because you missed question ' + (i + 1) + ', on ' + this.TEST[i].topic + '.' : 'A quick refresher. You got question ' + (i + 1) + ' right.',
+        whyInk: missed[i] ? t.accent : t.muted,
+        open: () => this.openLesson(i)
+      };
+    });
+    const remaining = s.lessonSel.map((v, i) => (v === null ? i + 1 : -1)).filter((x) => x > 0);
+    const masteryLine = s.passed ? 'Passed. Retake any time to beat your best score.'
+      : (allDone ? 'Every check is answered. Five questions from this series, and 4 of 5 passes.' : 'Unlocks when every lesson’s check is answered. Still to do: lesson ' + joinNums(remaining) + '.');
+
+    // lesson reader
+    let les = null;
+    if (scr === 'lesson') {
+      const L = this.LESSONS[s.cur];
+      const words = L.p.map((p) => p.split(' '));
+      let used = 0;
+      const paras = words.map((w) => {
+        const shown = Math.max(0, Math.min(w.length, s.words - used)); used += w.length;
+        return { started: shown > 0, waiting: shown === 0, text: w.slice(0, shown).join(' '), caret: s.writing && shown > 0 && shown < w.length };
+      });
+      const done = s.lessonSel[s.cur] !== null;
+      const isLast = s.cur === 4;
+      les = {
+        n: s.cur + 1, title: L.title, desc: L.desc, paras, writing: s.writing, written: !s.writing, askHint: L.ask,
+        done, todo: !done, statusLabel: done ? 'Done' : 'Not done yet', statusInk: done ? t.correct : t.muted,
+        q: this.instantQ(L.q, s.lessonSel[s.cur], (i) => { const n = s.lessonSel.slice(); n[s.cur] = i; this.setState({ lessonSel: n }); }, t),
+        hasPrev: s.cur > 0, prevN: s.cur, prev: () => this.openLesson(s.cur - 1),
+        isLast, lastNote: allDone ? 'That was the last lesson.' : 'Still unfinished: lesson ' + joinNums(remaining) + '.'
+      };
+    }
+
+    // mastery result
+    const mPass = s.lastScore >= 4;
+    const mMissedLessons = this.MASTERY.map((q, i) => (s.mSel[i] !== q.correct ? q.lesson : -1)).filter((x) => x >= 0);
+    const mr = {
+      score: s.lastScore, pass: mPass, fail: !mPass,
+      scoreInk: mPass ? t.correct : t.incorrect,
+      badgeInk: mPass ? t.correct : t.incorrect, badgeBg: mPass ? t.correctWash : t.incorrectWash,
+      head: mPass ? 'You know how a web page gets built.' : 'Close. Passing is 4 of 5.',
+      body: mPass ? 'Series complete. Your best score is saved, and you can retake the check whenever you like.' : 'You got ' + s.lastScore + '. The questions you missed point to ' + (mMissedLessons.length === 1 ? 'one lesson' : mMissedLessons.length + ' lessons') + ' worth another look.',
+      reviewLessons: mMissedLessons.map((li) => ({ n: li + 1, title: this.LESSONS[li].title, open: () => this.openLesson(li) }))
+    };
+
+    // footer
+    let primaryLabel = '', primary = null, primaryDisabled = false, primaryBusy = false, primaryArrow = true, hasFooter = true;
+    let secondaryLabel = '', secondary = null, footNote = '';
+    if (scr === 'start') { primaryLabel = 'Take the placement test'; primary = () => this.startTest(); primaryDisabled = !s.topic.trim(); footNote = '5 questions · about 2 minutes'; }
+    if (scr === 'genTest' || scr === 'genMastery') { primaryLabel = 'Writing questions'; primaryBusy = true; primaryDisabled = true; primaryArrow = false; }
+    if (isTest || isM) {
+      const sels = isTest ? s.testSel : s.mSel, idx = isTest ? s.testIdx : s.mIdx, idxKey = isTest ? 'testIdx' : 'mIdx';
+      const left = sels.filter((v) => v === null).length;
+      if (idx > 0) { secondaryLabel = 'Back'; secondary = () => { if (this.scrollEl) this.scrollEl.scrollTop = 0; this.setState({ [idxKey]: idx - 1 }); }; }
+      if (idx < 4) { primaryLabel = 'Next question'; primary = () => { if (this.scrollEl) this.scrollEl.scrollTop = 0; this.setState({ [idxKey]: idx + 1 }); }; }
+      else if (left) { primaryLabel = 'Answer ' + left + ' more to submit'; primaryDisabled = true; primaryArrow = false; }
+      else { primaryLabel = 'Submit answers'; primary = () => (isTest ? this.submitTest() : this.submitMastery()); }
+      footNote = 'Saved as you go. Refreshing keeps your answers.';
+    }
+    if (scr === 'results') {
+      if (outlineDone) { primaryLabel = 'Open your series'; primary = () => this.go('overview'); }
+      else { primaryLabel = 'Writing your outline'; primaryBusy = true; primaryDisabled = true; primaryArrow = false; }
+    }
+    if (scr === 'overview') {
+      if (s.passed) hasFooter = false;
+      else if (allDone) { primaryLabel = 'Take the Mastery Check'; primary = () => this.startMastery(); }
+      else { const next = s.lessonSel.findIndex((v) => v === null); primaryLabel = (doneCount ? 'Continue · Lesson ' : 'Start · Lesson ') + (next + 1); primary = () => this.openLesson(next); }
+    }
+    if (scr === 'lesson') {
+      if (s.writing) { primaryLabel = 'Writing the lesson'; primaryBusy = true; primaryDisabled = true; primaryArrow = false; }
+      else if (s.cur < 4) { primaryLabel = 'Next · Lesson ' + (s.cur + 2); primary = () => this.openLesson(s.cur + 1); footNote = 'Lesson ' + (s.cur + 2) + ' is ready.'; }
+      else if (allDone) { primaryLabel = 'Take the Mastery Check'; primary = () => this.startMastery(); }
+      else { primaryLabel = 'Back to the series'; primary = () => this.go('overview'); primaryArrow = false; }
+    }
+    if (scr === 'mresult') {
+      if (mPass) { primaryLabel = 'Back to the series'; primary = () => this.go('overview'); primaryArrow = false; }
+      else { primaryLabel = 'Retake now'; primary = () => this.startMastery(); secondaryLabel = 'Series'; secondary = () => this.go('overview'); }
+    }
+    const pBg = primaryDisabled ? 'transparent' : t.ink;
+    const pInk = primaryDisabled ? t.muted : t.bg;
+
+    // back button
+    const back = {
+      start: null,
+      genTest: { label: 'Cancel', close: true, go: () => { this.clear(); this.go('start'); } },
+      test: { label: 'Leave', close: true, go: () => this.go('start') },
+      results: null,
+      overview: { label: 'Library', go: () => {} },
+      lesson: { label: 'Series', go: () => { this.clear(); this.go('overview', { writing: false }); } },
+      genMastery: { label: 'Series', go: () => { this.clear(); this.go('overview'); } },
+      mastery: { label: 'Series', go: () => this.go('overview') },
+      mresult: { label: 'Series', go: () => this.go('overview') }
+    }[scr];
+
+    return {
+      t, dark, isLight: !dark,
+      themeLabel: dark ? 'Switch to light theme' : 'Switch to dark theme',
+      toggleTheme: () => this.setState({ darkSet: !dark }),
+      setScroll: this.setScroll,
+      hasBack: !!back, backLabel: back ? back.label : '', backIsClose: !!(back && back.close), backIsArrow: !!(back && !back.close),
+      backAria: back ? (back.close ? back.label : 'Back to ' + back.label) : '', onBack: back ? back.go : null,
+      fadeOp: s.entering ? 0 : 1, fadeY: s.entering ? 8 : 0,
+      fadeTransition: s.entering || reduced ? 'none' : 'opacity 240ms cubic-bezier(0.2, 0, 0, 1), transform 240ms cubic-bezier(0.2, 0, 0, 1)',
+      isStart: scr === 'start', isGenerating: scr === 'genTest' || scr === 'genMastery', isQuiz: isTest || isM,
+      isResults: scr === 'results', isOverview: scr === 'overview', isLesson: scr === 'lesson', isMResult: scr === 'mresult',
+      topic: s.topic, specific: s.specific, topicPrefilled: s.prefilled,
+      onTopic: (e) => this.setState({ topic: e.target.value, prefilled: false }),
+      onSpecific: (e) => this.setState({ specific: e.target.value }),
+      genKicker: scr === 'genTest' ? 'Placement test' : 'Mastery Check',
+      genTitle: scr === 'genTest' ? 'Writing five questions on ' + (s.topic || 'your topic') + '.' : 'Writing five questions from your five lessons.',
+      quiz, quizKind: isTest ? 'Placement test' : 'Mastery Check',
+      topicShort: s.topic, testScore, focusLine,
+      outlineRows, outlineWriting: !outlineDone, outlineDone,
+      outlineKicker: outlineDone ? 'Outline ready' : 'Writing your outline',
+      outlineKickerInk: outlineDone ? t.correct : t.accent,
+      testReview: this.review(this.TEST, s.testSel, t, false),
+      status, doneCount, pct, meter, meterAria: doneCount + ' of 5 lessons done, Mastery Check ' + (s.passed ? 'passed' : 'not passed'),
+      lessonRows, masteryLine, passed: s.passed, best: s.best,
+      showShortcut: !allDone && !s.passed,
+      shortcut: () => this.setState({ lessonSel: s.lessonSel.map((v, i) => (v === null ? this.LESSONS[i].q.correct : v)) }),
+      startMastery: () => this.startMastery(),
+      les, mr, attempts: s.attempts,
+      mReview: this.review(this.MASTERY, s.mSel, t, true),
+      nextUp: this.NEXT.map((n) => ({ title: n.title, why: n.why, go: () => this.go('start', { topic: n.title, specific: '', prefilled: true, testSel: [null, null, null, null, null], testIdx: 0 }) })),
+      ruleW: s.flip && mPass ? 100 : (mPass ? 0 : 100), ruleTransition: reduced ? 'none' : 'width 640ms cubic-bezier(0.2, 0, 0, 1)',
+      hasFooter, primaryLabel, primary, primaryDisabled, primaryBusy, primaryArrow,
+      pBg, pInk, pBorder: primaryDisabled ? t.muted : t.ink, pBorderStyle: primaryDisabled ? 'dashed' : 'solid',
+      hasSecondary: !!secondaryLabel, secondaryLabel, secondary, footNote,
+      restart: () => { this.clear(); this.go('start', { topic: 'Basics of Web Development', specific: 'I never know why my CSS doesn’t apply', prefilled: false, testSel: [null, null, null, null, null], testIdx: 0, submitted: false, outlineN: 0, lessonSel: [null, null, null, null, null], cur: 0, prepared: [false, false, false, false, false], words: 0, writing: false, mSel: [null, null, null, null, null], mIdx: 0, attempts: 0, best: 0, passed: false, lastScore: 0 }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!-- @dsCard group="Tutor" height=640 subtitle="Empty, answering, answered, failed" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-serif); }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 40px; padding: 24px; }
+  .state { margin: 0 0 10px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-muted); }
+  .box { padding-top: 16px; border-top: 1px solid var(--rule); }
+  label { display: block; font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); }
+  .line { display: flex; gap: 8px; margin-top: 8px; }
+  input { flex: 1 1 auto; min-width: 0; height: 48px; padding: 0 2px; background: transparent; border: none; border-bottom: 1.5px solid var(--ink); border-radius: 0; font-family: var(--font-serif); font-size: 19px; color: var(--ink); }
+  .send { flex: none; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: var(--ink); color: var(--on-ink); border: none; }
+  .chip { margin-top: 12px; min-height: 44px; padding: 0 16px; background: transparent; border: 1.5px solid var(--ink); font-family: var(--font-mono); font-size: 13px; color: var(--ink); }
+  .q { margin: 14px 0 0; font-family: var(--font-mono); font-size: 13px; color: var(--ink-muted); }
+  .a { margin: 8px 0 0; padding: 14px 16px; background: var(--paper-raised); border: 1px solid var(--rule); font-size: 17px; line-height: 1.55; }
+  .caret { display: inline-block; width: 7px; height: 17px; margin-left: 2px; vertical-align: -2px; background: var(--accent); }
+  .fail { margin: 8px 0 0; padding: 14px 16px; background: var(--incorrect-wash); border: 1.5px solid var(--incorrect); font-size: 16px; line-height: 1.5; }
+  .fail b { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--incorrect); }
+  .retry { margin-top: 10px; min-height: 44px; padding: 0 14px; background: transparent; border: 1.5px solid var(--ink); font-family: var(--font-mono); font-size: 13px; color: var(--ink); }
+  .note { margin: 10px 0 0; font-style: italic; font-size: 15px; color: var(--ink-muted); }
+</style>
+</head>
+<body>
+<div class="grid">
+  <section>
+    <p class="state">Empty</p>
+    <div class="box">
+      <label for="q1">Ask the tutor about this lesson</label>
+      <div class="line"><input id="q1" placeholder="Why 400 and not 500?"><button class="send" aria-label="Ask"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button></div>
+      <button class="chip">Explain this differently</button>
+      <p class="note">Answers come from this lesson. Nothing is saved when you leave.</p>
+    </div>
+  </section>
+  <section>
+    <p class="state">Answering</p>
+    <div class="box">
+      <p class="q">You asked: Why 400 and not 500?</p>
+      <div class="a" aria-live="off">Because 400 makes the average year come out very close to the real one. Over 400 years the rule leaves 97 leap days, so the average<span class="caret" aria-hidden="true"></span></div>
+    </div>
+  </section>
+  <section>
+    <p class="state">Answered</p>
+    <div class="box">
+      <p class="q">You asked: Why 400 and not 500?</p>
+      <div class="a" role="status">Because 400 makes the average year come out very close to the real one. Over 400 years the rule leaves 97 leap days, so the average year is 365.2425 days, only about 27 seconds longer than the solar year.</div>
+      <div class="line"><input aria-label="Ask a follow-up" placeholder="Ask a follow-up"><button class="send" aria-label="Ask"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button></div>
+    </div>
+  </section>
+  <section>
+    <p class="state">Failed</p>
+    <div class="box">
+      <p class="q">You asked: Why 400 and not 500?</p>
+      <div class="fail" role="alert"><b>No answer.</b> The tutor didn’t finish. Your question is still here.</div>
+      <button class="retry">Try again</button>
+    </div>
+  </section>
+</div>
+</body>
+</html>

@@ -1,6 +1,28 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+// Guests can read today's lesson, start one series and open the sample series.
+const PUBLIC_EXACT = ["/", "/today/lesson", "/login", "/register", "/reset"];
+const PUBLIC_PREFIXES = ["/auth/", "/welcome/", "/series/new", "/series/sample"];
+
+// Signed-in learners never see these.
+const SIGNED_OUT_ONLY = ["/login", "/register", "/auth/login", "/auth/register"];
+
+function isPublicPath(pathname: string) {
+  if (PUBLIC_EXACT.includes(pathname)) return true;
+  if (process.env.NODE_ENV !== "production" && pathname.startsWith("/dev/")) return true;
+  return PUBLIC_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(prefix.endsWith("/") ? prefix : `${prefix}/`)
+  );
+}
+
+// A redirect is a new response, so the refreshed session cookies are copied over.
+function redirectKeepingCookies(url: URL, from: NextResponse) {
+  const response = NextResponse.redirect(url);
+  from.cookies.getAll().forEach((cookie) => response.cookies.set(cookie));
+  return response;
+}
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -38,11 +60,20 @@ export async function updateSession(request: NextRequest) {
 
   const user = data?.claims;
 
-  if (!user && !request.nextUrl.pathname.startsWith("/auth") && request.nextUrl.pathname !== "/") {
+  const { pathname } = request.nextUrl;
+
+  if (!user && !isPublicPath(pathname)) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";
-    return NextResponse.redirect(url);
+    return redirectKeepingCookies(url, supabaseResponse);
+  }
+
+  if (user && SIGNED_OUT_ONLY.some((path) => pathname === path)) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/today";
+    url.search = "";
+    return redirectKeepingCookies(url, supabaseResponse);
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Series lesson · writing · desktop dark</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#E9EAE6}a:hover{color:#FF7A50}
+</style>
+</helmet>
+<div style="min-height: 1000px; background: #121416; color: #E9EAE6; font-family: 'Newsreader', Georgia, serif; box-sizing: border-box; padding: 0 clamp(20px, 5vw, 72px) 72px">
+  <div style="max-width: 1296px; margin: 0 auto">
+    <header style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; padding: 20px 0 16px">
+      <a href="#" style="font-size: 28px; font-weight: 600; letter-spacing: -0.015em; text-decoration: none">TopicTutor</a>
+      <nav aria-label="Main" style="display: flex; align-items: center; gap: 2px; font-family: 'IBM Plex Mono', monospace; font-size: 14px">
+        <a href="#" style="padding: 12px; text-decoration: none">Today</a>
+        <a href="#" aria-current="page" style="padding: 12px; text-decoration: underline; text-decoration-color: #FF7A50; text-decoration-thickness: 2px; text-underline-offset: 6px">Library</a>
+        <a href="#" style="padding: 12px; text-decoration: none">Stats</a>
+        <button type="button" aria-label="Switch to light theme" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: #E9EAE6"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"></path></svg></button>
+        <button type="button" aria-label="Account: Duane" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none"><span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 999px; background: #E9EAE6; color: #121416; display: flex; align-items: center; justify-content: center; font-family: 'Newsreader', Georgia, serif; font-size: 17px; font-weight: 500">D</span></button>
+      </nav>
+    </header>
+    <hr style="margin: 0; border: none; border-top: 3px solid #E9EAE6; border-bottom: 1px solid #E9EAE6; height: 3px">
+
+    <div style="max-width: 680px; margin: 0 auto">
+      <a href="#" style="display: inline-flex; align-items: center; gap: 6px; margin-top: 20px; min-height: 44px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; text-decoration: none"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg>How a Web Page Gets Built</a>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 28px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase">
+        <span style="color: #FF7A50">Lesson 3 of 5</span>
+        <span style="display: inline-flex; align-items: center; gap: 6px; color: #A3A8AD"><span aria-hidden="true" style="width: 11px; height: 11px; box-sizing: border-box; border: 1.5px solid currentColor; border-radius: 999px"></span>Not done yet</span>
+      </div>
+      <h1 style="margin: 14px 0 0; font-size: clamp(40px, 4.6vw, 58px); line-height: 1.02; font-weight: 500; letter-spacing: -0.025em">How the browser decides which CSS rule wins</h1>
+      <p style="margin: 12px 0 0; font-size: 20px; font-style: italic; color: #C9CCC8">Specificity, order, and the cascade.</p>
+      <p style="margin: 18px 0 0; display: flex; align-items: center; gap: 8px; font-size: 16px; font-style: italic; color: #A3A8AD"><span aria-hidden="true" style="width: 7px; height: 16px; background: #FF7A50"></span>Writing this lesson for you now. The first time is the only wait.</p>
+
+      <div aria-busy="true" style="display: flex; flex-direction: column; gap: 22px; margin-top: 30px; font-size: 21px; line-height: 1.6">
+        <p style="margin: 0">CSS rules often disagree. One rule might make a paragraph blue while another makes it red. The browser settles this with the cascade, a set of tie-breakers applied in a fixed order.</p>
+        <p style="margin: 0">The main tie-breaker is specificity. An id selector outweighs any number of classes, and a class outweighs any number of element names. So a rule aimed at<span aria-hidden="true" style="display: inline-block; width: 8px; height: 19px; margin-left: 4px; vertical-align: -3px; background: #FF7A50"></span></p>
+        <div aria-hidden="true" style="display: flex; flex-direction: column; gap: 12px; padding-top: 6px">
+          <span style="height: 16px; background: #24282C"></span><span style="height: 16px; background: #24282C"></span><span style="height: 16px; background: #24282C"></span><span style="height: 16px; width: 58%; background: #24282C"></span>
+        </div>
+      </div>
+
+      <div aria-hidden="true" style="margin-top: 44px; padding-top: 18px; border-top: 1px solid #3A3F44">
+        <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #A3A8AD">Ask the tutor and the check appear when the lesson is written</p>
+        <span style="display: block; height: 48px; margin-top: 12px; background: #1A1D20"></span>
+      </div>
+
+      <nav aria-label="Lessons in this series" style="display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 44px; padding-top: 18px; border-top: 3px solid #E9EAE6">
+        <a href="#" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; text-decoration: none"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg>Lesson 2</a>
+        <a href="#" style="display: inline-flex; align-items: center; gap: 12px; min-height: 52px; padding: 0 22px; border: 1.5px solid #E9EAE6; font-family: 'IBM Plex Mono', monospace; font-size: 14px; text-decoration: none"><span><span style="display: block; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: #A3A8AD">Ready</span>Lesson 4 · Boxes, flow and layout</span><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+      </nav>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

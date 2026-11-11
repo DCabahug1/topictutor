@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Today</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="min-height: {{z.minH}}; background: {{t.bg}}; color: {{t.ink}}; font-family: 'Newsreader', Georgia, serif; box-sizing: border-box; padding: 0 {{z.gutter}} {{z.bottomPad}}">
+  <div style="max-width: 1296px; margin: 0 auto">
+    <!-- masthead -->
+    <header style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: {{z.headPad}}">
+      <a href="#" style="font-size: {{z.brand}}; font-weight: 600; letter-spacing: -0.015em; color: {{t.ink}}; text-decoration: none">TopicTutor</a>
+      <nav aria-label="Main" style="display: flex; align-items: center; gap: 2px; font-family: 'IBM Plex Mono', monospace; font-size: 14px">
+        <sc-if value="{{desk}}" hint-placeholder-val="{{ true }}">
+          <a href="#" aria-current="page" style="padding: 12px; color: {{t.ink}}; text-decoration: underline; text-decoration-color: {{t.accent}}; text-decoration-thickness: 2px; text-underline-offset: 6px">Today</a>
+          <a href="#" style="padding: 12px; color: {{t.ink}}; text-decoration: none">Library</a>
+          <a href="#" style="padding: 12px; color: {{t.ink}}; text-decoration: none">Stats</a>
+        </sc-if>
+        <button type="button" aria-label="{{themeLabel}}" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: {{t.ink}}">
+          <sc-if value="{{isLight}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></sc-if>
+          <sc-if value="{{dark}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"></path></svg></sc-if>
+        </button>
+        <button type="button" aria-label="Account: Duane Cabahug" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none"><span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 999px; background: {{t.ink}}; color: {{t.bg}}; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 500">D</span></button>
+      </nav>
+    </header>
+    <div style="border-top: 3px solid {{t.ink}}; border-bottom: 1px solid {{t.ink}}; height: 3px"></div>
+    <p style="margin: 10px 0 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.muted}}">Tuesday, November 10 · Day 314 of 365</p>
+
+    <h1 style="margin: {{z.h1Margin}}; font-size: {{z.h1}}; line-height: 1; font-weight: 500; letter-spacing: -0.025em">{{v.greeting}}</h1>
+
+    <div style="display: flex; flex-wrap: wrap; gap: {{z.colGap}}; margin-top: {{z.sectionGap}}; align-items: flex-start">
+      <!-- today's lesson -->
+      <section aria-labelledby="today-h" style="flex: 999 1 520px; min-width: 0">
+        <h2 id="today-h" style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.accent}}">Today’s lesson</h2>
+        <div style="margin-top: 12px; padding: {{z.cardPad}}; background: {{t.raised}}; border: 1px solid {{v.cardBorder}}">
+          <p style="margin: 0; display: flex; align-items: center; gap: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: {{v.lessonStatusInk}}">
+            <sc-if value="{{v.done}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+            <sc-if value="{{v.notDone}}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="width: 11px; height: 11px; box-sizing: border-box; border: 1.5px solid currentColor; border-radius: 999px"></span></sc-if>
+            {{v.lessonStatus}} · Science
+          </p>
+          <p style="margin: 10px 0 0; font-size: {{z.cardTitle}}; line-height: 1.05; font-weight: 500; letter-spacing: -0.02em">Why leap years exist</p>
+          <p style="margin: 10px 0 0; font-size: {{z.body}}; line-height: 1.5; color: {{t.soft}}">{{v.lessonLine}}</p>
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 20px">
+            <sc-if value="{{v.notDone}}" hint-placeholder-val="{{ true }}">
+              <a href="#" style="display: inline-flex; align-items: center; gap: 12px; min-height: 54px; padding: 0 24px; background: {{t.ink}}; color: {{t.bg}}; font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500; text-decoration: none">{{v.startLabel}}<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+            </sc-if>
+            <sc-if value="{{v.done}}" hint-placeholder-val="{{ false }}">
+              <a href="#" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 18px; border: 1.5px solid {{t.ink}}; color: {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 14px; text-decoration: none">Read it again</a>
+              <a href="#" style="display: inline-flex; align-items: center; min-height: 48px; color: {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 14px; text-underline-offset: 4px">Go deeper on calendars</a>
+            </sc-if>
+          </div>
+        </div>
+        <sc-if value="{{v.done}}" hint-placeholder-val="{{ false }}">
+          <p style="margin: 14px 0 0; font-size: 17px; font-style: italic; color: {{t.soft}}">Tomorrow’s lesson is in <strong style="font-style: normal; font-weight: 600; color: {{t.ink}}">History</strong>. It arrives at midnight, your time.</p>
+        </sc-if>
+      </section>
+
+      <!-- streak -->
+      <section aria-labelledby="streak-h" style="flex: 1 1 300px; min-width: 0">
+        <h2 id="streak-h" style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.muted}}">Streak</h2>
+        <div style="display: flex; align-items: flex-end; gap: 12px; margin-top: 10px">
+          <p style="margin: 0; font-size: {{z.streak}}; line-height: 0.85; font-weight: 500; letter-spacing: -0.04em; color: {{v.streakInk}}">{{v.streak}}</p>
+          <p style="margin: 0 0 6px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: {{t.muted}}">{{v.streakUnit}}</p>
+        </div>
+        <sc-if value="{{v.hasWeek}}" hint-placeholder-val="{{ true }}">
+          <div role="img" aria-label="{{v.weekAria}}" style="display: grid; grid-template-columns: repeat(7, 32px); gap: 4px; margin-top: 16px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: {{t.muted}}; text-align: center">
+            <sc-for list="{{v.week}}" as="d" hint-placeholder-count="7">
+              <div style="color: {{d.ink}}"><div style="width: 14px; height: 14px; margin: 0 auto 5px; box-sizing: border-box; border-radius: 999px; background: {{d.fill}}; border: 1.5px {{d.style}} {{d.border}}"></div>{{d.l}}</div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <p style="margin: 12px 0 0; font-size: 16px; font-style: italic; color: {{t.muted}}">{{v.streakNote}}</p>
+        <sc-if value="{{v.hasStats}}" hint-placeholder-val="{{ false }}">
+          <dl style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 18px 0 0; padding-top: 14px; border-top: 1px solid {{t.rule}}">
+            <div><dt style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: {{t.muted}}">Lessons</dt><dd style="margin: 4px 0 0; font-family: 'IBM Plex Mono', monospace; font-size: 22px; font-weight: 500">168</dd></div>
+            <div><dt style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: {{t.muted}}">Recall</dt><dd style="margin: 4px 0 0; font-family: 'IBM Plex Mono', monospace; font-size: 22px; font-weight: 500">86%</dd></div>
+          </dl>
+          <a href="#" style="display: inline-block; margin-top: 10px; padding: 8px 0; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: {{t.ink}}; text-underline-offset: 4px">All your stats</a>
+        </sc-if>
+      </section>
+    </div>
+
+    <!-- series -->
+    <section aria-labelledby="series-h" style="margin-top: {{z.sectionGap}}; border-top: 3px solid {{t.ink}}">
+      <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-top: 16px">
+        <h2 id="series-h" style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase">Continue your series</h2>
+        <sc-if value="{{v.hasSeries}}" hint-placeholder-val="{{ true }}"><a href="#" style="padding: 8px 0; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: {{t.ink}}; text-underline-offset: 4px">Library</a></sc-if>
+      </div>
+      <sc-if value="{{v.hasSeries}}" hint-placeholder-val="{{ true }}">
+        <ul style="list-style: none; margin: 8px 0 0; padding: 0; display: grid; grid-template-columns: {{z.seriesCols}}; gap: 0 32px">
+          <sc-for list="{{v.series}}" as="s" hint-placeholder-count="2">
+            <li style="border-bottom: 1px solid {{t.rule}}">
+              <a href="#" style="display: grid; grid-template-columns: minmax(0, 1fr) 20px; gap: 12px; padding: 16px 0; color: {{t.ink}}; text-decoration: none">
+                <span>
+                  <span style="display: block; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.accent}}">Lesson {{s.next}} of 5 · {{s.cat}}</span>
+                  <span style="display: block; margin-top: 6px; font-size: {{z.seriesTitle}}; line-height: 1.2; font-weight: 500">{{s.lesson}}</span>
+                  <span style="display: block; margin-top: 4px; font-size: 15px; font-style: italic; color: {{t.muted}}">{{s.series}} · {{s.pct}}%</span>
+                </span>
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-top: 22px"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+              </a>
+            </li>
+          </sc-for>
+        </ul>
+      </sc-if>
+      <sc-if value="{{v.noSeries}}" hint-placeholder-val="{{ false }}">
+        <div style="padding: 16px 0 4px">
+          <p style="margin: 0; max-width: 560px; font-size: {{z.body}}; line-height: 1.5; color: {{t.soft}}">No series yet. When a lesson grabs you, Go Deeper turns its subject into five lessons built around what you don’t know yet.</p>
+          <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px">
+            <a href="#" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 18px; border: 1.5px solid {{t.ink}}; color: {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 14px; text-decoration: none">Start a series</a>
+            <a href="#" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 4px; color: {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 14px; text-underline-offset: 4px">Look at a sample series</a>
+          </div>
+        </div>
+      </sc-if>
+    </section>
+
+    <!-- phone tab bar -->
+    <sc-if value="{{phone}}" hint-placeholder-val="{{ false }}">
+      <nav aria-label="Main" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 32px -24px 0; border-top: 1px solid {{t.ink}}; background: {{t.bg}}; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase">
+        <a href="#" aria-current="page" style="display: flex; align-items: center; justify-content: center; min-height: 56px; color: {{t.ink}}; font-weight: 500; text-decoration: none; border-top: 3px solid {{t.accent}}">Today</a>
+        <a href="#" style="display: flex; align-items: center; justify-content: center; min-height: 56px; color: {{t.muted}}; text-decoration: none; border-top: 3px solid transparent">Library</a>
+        <a href="#" style="display: flex; align-items: center; justify-content: center; min-height: 56px; color: {{t.muted}}; text-decoration: none; border-top: 3px solid transparent">Stats</a>
+      </nav>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"variant":{"editor":"enum","options":["established","notStarted","done","noSeries","newUser"],"default":"established"},"dark":{"editor":"boolean","default":false},"phone":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const dark = this.props.dark ?? false;
+    const phone = this.props.phone ?? false;
+    const variant = this.props.variant ?? 'established';
+    const t = dark
+      ? { bg: '#121416', raised: '#1A1D20', sunk: '#24282C', ink: '#E9EAE6', soft: '#C9CCC8', muted: '#A3A8AD', rule: '#3A3F44', accent: '#FF7A50', correct: '#8DB4F0' }
+      : { bg: '#F1F2EE', raised: '#FFFFFF', sunk: '#E2E4DE', ink: '#16181A', soft: '#3B3F43', muted: '#565B60', rule: '#C9CCC6', accent: '#C23A12', correct: '#1F4E8C' };
+    const z = phone
+      ? { minH: '844px', gutter: '24px', bottomPad: '0', headPad: '6px 0 8px', brand: '24px', h1: '40px', h1Margin: '22px 0 0', colGap: '32px', sectionGap: '28px', cardPad: '20px', cardTitle: '30px', body: '17px', streak: '72px', seriesCols: 'minmax(0, 1fr)', seriesTitle: '19px' }
+      : { minH: '1000px', gutter: '72px', bottomPad: '72px', headPad: '18px 0 14px', brand: '28px', h1: '64px', h1Margin: '36px 0 0', colGap: '40px 80px', sectionGap: '48px', cardPad: '30px 32px', cardTitle: '44px', body: '19px', streak: '120px', seriesCols: 'repeat(2, minmax(0, 1fr))', seriesTitle: '22px' };
+    const L = 'WTFSSMT'.split('');
+    const week = (doneDays, todayDone) => L.map((l, i) => {
+      const isToday = i === 6;
+      const on = isToday ? todayDone : i >= 7 - 1 - doneDays;
+      return { l, fill: on ? (isToday ? t.accent : t.ink) : 'transparent', border: on ? (isToday ? t.accent : t.ink) : (isToday ? t.ink : t.muted), style: !on && isToday ? 'dashed' : 'solid', ink: isToday ? t.ink : t.muted };
+    });
+    const webdev = { cat: 'Technology', next: 3, lesson: 'How the browser decides which CSS rule wins', series: 'How a Web Page Gets Built', pct: 33 };
+    const rome = { cat: 'History', next: 4, lesson: 'Why the Gracchi brothers frightened the Senate', series: 'The Roman Republic, from Kings to Caesar', pct: 50 };
+    const V = {
+      established: { greeting: 'Good evening, Duane.', done: false, streak: 47, streakDays: 6, todayDone: false, streakNote: 'Today still counts until midnight. Longest streak: 52 days.', series: [webdev, rome], hasStats: true, lessonLine: 'Recall from Monday, a short lesson, then a quick check. About three minutes.' },
+      notStarted: { greeting: 'Good evening, Duane.', done: false, streak: 12, streakDays: 6, todayDone: false, streakNote: 'Today still counts until midnight.', series: [webdev], hasStats: false, lessonLine: 'Recall from Monday, a short lesson, then a quick check. About three minutes.' },
+      done: { greeting: 'Done for today, Duane.', done: true, streak: 13, streakDays: 6, todayDone: true, streakNote: 'Thirteen days running. See you tomorrow.', series: [webdev], hasStats: false, lessonLine: 'You got 1 of 2 on the check. Finished at 8:12 pm.' },
+      noSeries: { greeting: 'Good evening, Duane.', done: false, streak: 4, streakDays: 4, todayDone: false, streakNote: 'Today still counts until midnight.', series: [], hasStats: false, lessonLine: 'Recall from Monday, a short lesson, then a quick check. About three minutes.' },
+      newUser: { greeting: 'Welcome, Duane.', done: false, streak: 0, streakDays: 0, todayDone: false, streakNote: 'Finish one lesson to start a streak. It takes about three minutes.', series: [], hasStats: false, lessonLine: 'Your first lesson. A short read, then a quick check. About three minutes.', isNew: true }
+    }[variant];
+    const v = Object.assign({}, V, {
+      notDone: !V.done,
+      lessonStatus: V.done ? 'Done' : 'Not started',
+      lessonStatusInk: V.done ? t.correct : t.muted,
+      cardBorder: V.done ? t.rule : t.ink,
+      startLabel: V.isNew ? 'Start your first lesson' : 'Start today’s lesson',
+      streakInk: V.streak ? t.accent : t.muted,
+      streakUnit: V.streak === 1 ? 'day in a row' : 'days in a row',
+      hasWeek: !V.isNew,
+      week: week(V.streakDays, V.todayDone),
+      weekAria: V.streakDays + ' days done before today, today ' + (V.todayDone ? 'done' : 'not done yet'),
+      hasSeries: V.series.length > 0, noSeries: V.series.length === 0
+    });
+    return { t, z, v, dark, isLight: !dark, phone, desk: !phone, themeLabel: dark ? 'Switch to light theme' : 'Switch to dark theme' };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Auth · phone states</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 2270px; height: 2340px; box-sizing: border-box; padding: 40px; background: #DCDDD8; display: flex; flex-wrap: wrap; gap: 60px; align-content: flex-start; align-items: flex-start; font-family: 'IBM Plex Mono', monospace">
+  <figure style="margin: 0; width: 390px; flex: none">
+    <figcaption style="margin: 0 0 12px; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #3B3F43">Log in</figcaption>
+    <div style="width: 390px; min-height: 1000px; overflow: hidden; outline: 1px solid #16181A; background: #F1F2EE">
+      <dc-import name="Auth" variant="login" phone="{{ true }}" hint-size="390px,1000px"></dc-import>
+    </div>
+  </figure>
+  <figure style="margin: 0; width: 390px; flex: none">
+    <figcaption style="margin: 0 0 12px; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #3B3F43">Log in · error in context</figcaption>
+    <div style="width: 390px; min-height: 1000px; overflow: hidden; outline: 1px solid #16181A; background: #F1F2EE">
+      <dc-import name="Auth" variant="loginError" phone="{{ true }}" hint-size="390px,1000px"></dc-import>
+    </div>
+  </figure>
+  <figure style="margin: 0; width: 390px; flex: none">
+    <figcaption style="margin: 0 0 12px; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #3B3F43">Register</figcaption>
+    <div style="width: 390px; min-height: 1000px; overflow: hidden; outline: 1px solid #16181A; background: #F1F2EE">
+      <dc-import name="Auth" variant="register" phone="{{ true }}" hint-size="390px,1000px"></dc-import>
+    </div>
+  </figure>
+  <figure style="margin: 0; width: 390px; flex: none">
+    <figcaption style="margin: 0 0 12px; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #3B3F43">Register · errors · dark</figcaption>
+    <div style="width: 390px; min-height: 1000px; overflow: hidden; outline: 1px solid #16181A; background: #F1F2EE">
+      <dc-import name="Auth" variant="registerError" dark="{{ true }}" phone="{{ true }}" hint-size="390px,1000px"></dc-import>
+    </div>
+  </figure>
+  <figure style="margin: 0; width: 390px; flex: none">
+    <figcaption style="margin: 0 0 12px; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #3B3F43">Register · check your email</figcaption>
+    <div style="width: 390px; min-height: 1000px; overflow: hidden; outline: 1px solid #16181A; background: #F1F2EE">
+      <dc-import name="Auth" variant="checkEmail" phone="{{ true }}" hint-size="390px,1000px"></dc-import>
+    </div>
+  </figure>
+  <figure style="margin: 0; width: 390px; flex: none">
+    <figcaption style="margin: 0 0 12px; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #3B3F43">Reset · request link</figcaption>
+    <div style="width: 390px; min-height: 1000px; overflow: hidden; outline: 1px solid #16181A; background: #F1F2EE">
+      <dc-import name="Auth" variant="resetRequest" phone="{{ true }}" hint-size="390px,1000px"></dc-import>
+    </div>
+  </figure>
+  <figure style="margin: 0; width: 390px; flex: none">
+    <figcaption style="margin: 0 0 12px; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #3B3F43">Reset · check your email</figcaption>
+    <div style="width: 390px; min-height: 1000px; overflow: hidden; outline: 1px solid #16181A; background: #F1F2EE">
+      <dc-import name="Auth" variant="resetSent" phone="{{ true }}" hint-size="390px,1000px"></dc-import>
+    </div>
+  </figure>
+  <figure style="margin: 0; width: 390px; flex: none">
+    <figcaption style="margin: 0 0 12px; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #3B3F43">Reset · set new password</figcaption>
+    <div style="width: 390px; min-height: 1000px; overflow: hidden; outline: 1px solid #16181A; background: #F1F2EE">
+      <dc-import name="Auth" variant="resetNew" phone="{{ true }}" hint-size="390px,1000px"></dc-import>
+    </div>
+  </figure>
+  <figure style="margin: 0; width: 390px; flex: none">
+    <figcaption style="margin: 0 0 12px; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #3B3F43">Reset · success</figcaption>
+    <div style="width: 390px; min-height: 1000px; overflow: hidden; outline: 1px solid #16181A; background: #F1F2EE">
+      <dc-import name="Auth" variant="resetDone" phone="{{ true }}" hint-size="390px,1000px"></dc-import>
+    </div>
+  </figure>
+  <figure style="margin: 0; width: 390px; flex: none">
+    <figcaption style="margin: 0 0 12px; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #3B3F43">Link failed or expired · dark</figcaption>
+    <div style="width: 390px; min-height: 1000px; overflow: hidden; outline: 1px solid #16181A; background: #F1F2EE">
+      <dc-import name="Auth" variant="linkExpired" dark="{{ true }}" phone="{{ true }}" hint-size="390px,1000px"></dc-import>
+    </div>
+  </figure>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2270,"height":2340}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

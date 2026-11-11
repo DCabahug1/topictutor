@@ -1,0 +1,43 @@
+<!-- @dsCard group="Feedback" height=360 subtitle="Generation failed, limit reached, not found" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-serif); }
+  .wrap { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; padding: 24px; }
+  .n { padding: 20px; border-top: 3px solid var(--ink); background: var(--paper-raised); }
+  .n.err { background: var(--incorrect-wash); border-top-color: var(--incorrect); }
+  .k { margin: 0; display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; }
+  .err .k { color: var(--incorrect); }
+  h3 { margin: 10px 0 0; font-size: 24px; line-height: 1.15; font-weight: 500; }
+  p.b { margin: 8px 0 0; font-size: 16px; line-height: 1.5; color: var(--ink-muted); }
+  .acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .p { min-height: 44px; padding: 0 16px; background: var(--ink); color: var(--on-ink); border: 1.5px solid var(--ink); font-family: var(--font-mono); font-size: 13px; }
+  .s { min-height: 44px; padding: 0 16px; background: transparent; color: var(--ink); border: 1.5px solid var(--ink); font-family: var(--font-mono); font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="n err" role="alert">
+    <p class="k"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>Didn’t finish writing</p>
+    <h3>Your placement test didn’t come through.</h3>
+    <p class="b">Nothing was lost. Try again, or come back to it from your Library.</p>
+    <div class="acts"><button class="p">Try again</button><button class="s">Back to Library</button></div>
+  </div>
+  <div class="n" role="status">
+    <p class="k">Daily limit reached</p>
+    <h3>New series are paused for guests today.</h3>
+    <p class="b">Open the sample series to see how one works, or create a free account to make your own.</p>
+    <div class="acts"><button class="p">Open the sample series</button><button class="s">Create account</button></div>
+  </div>
+  <div class="n">
+    <p class="k">Not found</p>
+    <h3>This series isn’t here.</h3>
+    <p class="b">It may have been deleted, or the link is from another account.</p>
+    <div class="acts"><button class="p">Go to Library</button></div>
+  </div>
+</div>
+</body>
+</html>

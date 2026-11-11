@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Library · phone states</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 2270px; height: 2120px; box-sizing: border-box; padding: 40px; background: #DCDDD8; display: flex; flex-wrap: wrap; gap: 60px; align-content: flex-start; align-items: flex-start; font-family: 'IBM Plex Mono', monospace">
+  <figure style="margin: 0; width: 390px; flex: none">
+    <figcaption style="margin: 0 0 12px; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #3B3F43">Full library · dark</figcaption>
+    <div style="width: 390px; min-height: 1900px; overflow: hidden; outline: 1px solid #16181A; background: #F1F2EE">
+      <dc-import name="Library" variant="full" dark="{{ true }}" phone="{{ true }}" hint-size="390px,1900px"></dc-import>
+    </div>
+  </figure>
+  <figure style="margin: 0; width: 390px; flex: none">
+    <figcaption style="margin: 0 0 12px; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #3B3F43">Loading</figcaption>
+    <div style="width: 390px; min-height: 1900px; overflow: hidden; outline: 1px solid #16181A; background: #F1F2EE">
+      <dc-import name="Library" variant="loading" phone="{{ true }}" hint-size="390px,1900px"></dc-import>
+    </div>
+  </figure>
+  <figure style="margin: 0; width: 390px; flex: none">
+    <figcaption style="margin: 0 0 12px; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #3B3F43">Nothing yet</figcaption>
+    <div style="width: 390px; min-height: 1900px; overflow: hidden; outline: 1px solid #16181A; background: #F1F2EE">
+      <dc-import name="Library" variant="empty" phone="{{ true }}" hint-size="390px,1900px"></dc-import>
+    </div>
+  </figure>
+  <figure style="margin: 0; width: 390px; flex: none">
+    <figcaption style="margin: 0 0 12px; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #3B3F43">No results</figcaption>
+    <div style="width: 390px; min-height: 1900px; overflow: hidden; outline: 1px solid #16181A; background: #F1F2EE">
+      <dc-import name="Library" variant="full" query="quantum" phone="{{ true }}" hint-size="390px,1900px"></dc-import>
+    </div>
+  </figure>
+  <figure style="margin: 0; width: 390px; flex: none">
+    <figcaption style="margin: 0 0 12px; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #3B3F43">Delete confirmation</figcaption>
+    <div style="width: 390px; min-height: 1900px; overflow: hidden; outline: 1px solid #16181A; background: #F1F2EE">
+      <dc-import name="Library" variant="full" confirmOpen="{{ true }}" phone="{{ true }}" hint-size="390px,1900px"></dc-import>
+    </div>
+  </figure>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2270,"height":2120}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

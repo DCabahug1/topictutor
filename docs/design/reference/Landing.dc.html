@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Landing · full page</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="background: {{t.bg}}; color: {{t.ink}}; font-family: 'Newsreader', Georgia, serif; box-sizing: border-box; padding: 0 {{z.gutter}}">
+  <div style="max-width: 1296px; margin: 0 auto">
+    <!-- masthead -->
+    <header style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; padding: {{z.headPad}}">
+      <a href="#" style="font-size: {{z.brand}}; font-weight: 600; letter-spacing: -0.015em; color: {{t.ink}}; text-decoration: none">TopicTutor</a>
+      <sc-if value="{{desk}}" hint-placeholder-val="{{ true }}"><p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.muted}}">Tuesday, November 10 · Day 314 of 365</p></sc-if>
+      <nav aria-label="Account" style="display: flex; align-items: center; gap: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 14px">
+        <sc-if value="{{signedOut}}" hint-placeholder-val="{{ true }}">
+          <a href="#" style="padding: 12px 10px; color: {{t.ink}}; text-decoration: none">Log in</a>
+          <a href="#" style="padding: 10px 14px; border: 1.5px solid {{t.ink}}; color: {{t.ink}}; text-decoration: none">Register</a>
+        </sc-if>
+        <sc-if value="{{signedIn}}" hint-placeholder-val="{{ false }}">
+          <a href="#" style="padding: 10px 14px; border: 1.5px solid {{t.ink}}; color: {{t.ink}}; text-decoration: none">Go to Today</a>
+        </sc-if>
+        <button type="button" aria-label="{{themeLabel}}" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: {{t.ink}}">
+          <sc-if value="{{isLight}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></sc-if>
+          <sc-if value="{{dark}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"></path></svg></sc-if>
+        </button>
+      </nav>
+    </header>
+    <div style="border-top: 3px solid {{t.ink}}; border-bottom: 1px solid {{t.ink}}; height: 3px"></div>
+
+    <!-- HERO -->
+    <section style="display: flex; flex-wrap: wrap; gap: 48px 80px; padding: {{z.heroPad}}; align-items: flex-start">
+      <div style="flex: 999 1 520px; min-width: 0">
+        <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.accent}}">A new lesson every day · about three minutes</p>
+        <h1 style="margin: 24px 0 0; font-size: {{z.h1}}; line-height: 0.96; font-weight: 500; letter-spacing: -0.025em">Learn one thing <em style="font-weight: 400">well</em>, every day.</h1>
+        <p style="margin: 28px 0 0; max-width: 600px; font-size: {{z.lead}}; line-height: 1.5; color: {{t.soft}}">A short lesson from the subjects you choose. A recall question keeps yesterday from fading. When something grabs you, Go Deeper writes a five-lesson series around what you got wrong.</p>
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; margin-top: 36px">
+          <a href="#" style="display: inline-flex; align-items: center; gap: 14px; min-height: 58px; padding: 0 28px; background: {{t.ink}}; color: {{t.bg}}; font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500; text-decoration: none">{{heroCta}}<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+          <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: {{t.muted}}">{{heroMeta}}</p>
+        </div>
+        <form style="margin-top: 44px; max-width: 600px; padding-top: 18px; border-top: 1px solid {{t.rule}}">
+          <label for="topic-l" style="display: block; font-size: 18px; font-style: italic; color: {{t.soft}}">Or name something you want to learn, and we’ll build a series.</label>
+          <div style="display: flex; gap: 10px; margin-top: 10px">
+            <input id="topic-l" type="text" placeholder="Basics of Web Development" style="flex: 1 1 auto; min-width: 0; height: 48px; padding: 0 2px; background: transparent; border: none; border-bottom: 1.5px solid {{t.ink}}; border-radius: 0; font-family: 'Newsreader', Georgia, serif; font-size: 20px; color: {{t.ink}}">
+            <button type="submit" style="flex: none; height: 48px; padding: 0 16px; background: transparent; border: 1.5px solid {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: {{t.ink}}">Build series</button>
+          </div>
+        </form>
+      </div>
+      <aside aria-label="Today’s lesson" style="flex: 1 1 320px; min-width: 0; background: {{t.raised}}; border: 1px solid {{t.ink}}; padding: 26px; box-sizing: border-box">
+        <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.accent}}">Today in Science</p>
+        <h2 style="margin: 12px 0 0; font-size: 36px; line-height: 1.05; font-weight: 500; letter-spacing: -0.015em">Why leap years exist</h2>
+        <p style="margin: 14px 0 0; font-size: 18px; line-height: 1.55; color: {{t.soft}}"><span style="float: left; font-size: 56px; line-height: 0.82; font-weight: 500; padding: 5px 7px 0 0; color: {{t.ink}}">E</span>arth takes about 365.2422 days to circle the Sun, not a neat 365. A calendar of exactly 365 days slips behind the seasons by almost six hours a year.</p>
+        <a href="#" style="display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; min-height: 44px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: {{t.ink}}">Keep reading<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+      </aside>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section aria-labelledby="how-h" style="margin-top: {{z.sectionGap}}; border-top: 3px solid {{t.ink}}">
+      <h2 id="how-h" style="margin: 18px 0 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.muted}}">How it works</h2>
+      <ol style="list-style: none; margin: 8px 0 0; padding: 0; display: grid; grid-template-columns: {{z.threeCols}}; gap: 0 48px">
+        <li style="padding: 22px 0; border-bottom: 1px solid {{t.rule}}">
+          <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 40px; font-weight: 500; color: {{t.accent}}">01</p>
+          <h3 style="margin: 12px 0 0; font-size: 28px; line-height: 1.12; font-weight: 500">A new lesson every day</h3>
+          <p style="margin: 8px 0 0; font-size: 18px; line-height: 1.5; color: {{t.soft}}">Three short paragraphs and a quick check. About three minutes, then you’re done for the day.</p>
+        </li>
+        <li style="padding: 22px 0; border-bottom: 1px solid {{t.rule}}">
+          <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 40px; font-weight: 500; color: {{t.accent}}">02</p>
+          <h3 style="margin: 12px 0 0; font-size: 28px; line-height: 1.12; font-weight: 500">Recall, so it sticks</h3>
+          <p style="margin: 8px 0 0; font-size: 18px; line-height: 1.5; color: {{t.soft}}">Each session opens with one question from an earlier lesson. Remembering is how learning lasts.</p>
+        </li>
+        <li style="padding: 22px 0; border-bottom: 1px solid {{t.rule}}">
+          <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 40px; font-weight: 500; color: {{t.accent}}">03</p>
+          <h3 style="margin: 12px 0 0; font-size: 28px; line-height: 1.12; font-weight: 500">Go deeper, on your gaps</h3>
+          <p style="margin: 8px 0 0; font-size: 18px; line-height: 1.5; color: {{t.soft}}">A five-question test finds what you don’t know. Your five-lesson series is written around exactly that.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- FEATURES -->
+    <section aria-labelledby="feat-h" style="margin-top: {{z.sectionGap}}; border-top: 3px solid {{t.ink}}">
+      <h2 id="feat-h" style="margin: 18px 0 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.muted}}">What’s inside</h2>
+      <dl style="margin: 8px 0 0; display: grid; grid-template-columns: {{z.twoCols}}; gap: 0 48px">
+        <div style="display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 16px; padding: 22px 0; border-bottom: 1px solid {{t.rule}}">
+          <dt style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; line-height: 1.6">Daily lessons</dt>
+          <dd style="margin: 0; font-size: 18px; line-height: 1.5">From the subjects you pick: Math, Science, History, Literature, Finance and more. One a day, rotating.</dd>
+        </div>
+        <div style="display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 16px; padding: 22px 0; border-bottom: 1px solid {{t.rule}}">
+          <dt style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; line-height: 1.6">A tutor inside</dt>
+          <dd style="margin: 0; font-size: 18px; line-height: 1.5">Ask about what you’re reading, or ask for it explained differently. Answers come from that lesson.</dd>
+        </div>
+        <div style="display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 16px; padding: 22px 0; border-bottom: 1px solid {{t.rule}}">
+          <dt style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; line-height: 1.6">Your own series</dt>
+          <dd style="margin: 0; font-size: 18px; line-height: 1.5">Five lessons on anything, shaped by a short test, and finished with a Mastery Check. <a href="#" style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: {{t.ink}}">See a sample</a></dd>
+        </div>
+        <div style="display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 16px; padding: 22px 0; border-bottom: 1px solid {{t.rule}}">
+          <dt style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; line-height: 1.6">Streak and stats</dt>
+          <dd style="margin: 0; font-size: 18px; line-height: 1.5">A streak that counts real learning, plus how much you still remember from earlier lessons.</dd>
+        </div>
+      </dl>
+    </section>
+
+    <!-- CLOSING CTA -->
+    <section style="margin-top: {{z.sectionGap}}; padding: {{z.closePad}}; background: {{t.ink}}; color: {{t.bg}}">
+      <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.closeMuted}}">Free · no credit card · no account to start</p>
+      <h2 style="margin: 16px 0 0; max-width: 900px; font-size: {{z.closeH}}; line-height: 1; font-weight: 500; letter-spacing: -0.025em">Today’s lesson is ready. It takes about three minutes.</h2>
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; margin-top: 30px">
+        <a href="#" style="display: inline-flex; align-items: center; gap: 14px; min-height: 58px; padding: 0 28px; background: {{t.bg}}; color: {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500; text-decoration: none">{{heroCta}}<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+        <a href="#" style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: {{t.bg}}; text-underline-offset: 4px">Look around a sample series</a>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 24px; padding: 28px 0 40px">
+      <p style="margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.015em">TopicTutor</p>
+      <p style="margin: 0; font-size: 17px; font-style: italic; color: {{t.muted}}">A small daily paper for learning one thing well.</p>
+    </footer>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"signedIn":{"editor":"boolean","default":false},"dark":{"editor":"boolean","default":false},"phone":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":2400}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const dark = this.props.dark ?? false;
+    const phone = this.props.phone ?? false;
+    const signedIn = this.props.signedIn ?? false;
+    const t = dark
+      ? { bg: '#121416', raised: '#1A1D20', ink: '#E9EAE6', soft: '#C9CCC8', muted: '#A3A8AD', rule: '#3A3F44', accent: '#FF7A50', closeMuted: '#565B60' }
+      : { bg: '#F1F2EE', raised: '#FFFFFF', ink: '#16181A', soft: '#3B3F43', muted: '#565B60', rule: '#C9CCC6', accent: '#C23A12', closeMuted: '#A3A8AD' };
+    const z = phone
+      ? { gutter: '24px', headPad: '8px 0 10px', brand: '24px', heroPad: '32px 0 0', h1: '52px', lead: '19px', sectionGap: '56px', threeCols: 'minmax(0, 1fr)', twoCols: 'minmax(0, 1fr)', closePad: '32px 24px', closeH: '36px' }
+      : { gutter: '72px', headPad: '20px 0 16px', brand: '30px', heroPad: '72px 0 0', h1: '100px', lead: '22px', sectionGap: '96px', threeCols: 'repeat(3, minmax(0, 1fr))', twoCols: 'repeat(2, minmax(0, 1fr))', closePad: '64px 56px', closeH: '64px' };
+    return {
+      t, z, dark, isLight: !dark, phone, desk: !phone, signedIn, signedOut: !signedIn,
+      themeLabel: dark ? 'Switch to light theme' : 'Switch to dark theme',
+      heroCta: signedIn ? 'Go to Today' : 'Start today’s lesson',
+      heroMeta: signedIn ? 'Day 47 of your streak' : 'Free · no account needed'
+    };
+  }
+}
+</script>
+</body>
+</html>

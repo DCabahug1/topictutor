@@ -1,0 +1,45 @@
+<!-- @dsCard group="Status" height=260 subtitle="Series and lesson status, percent complete" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-serif); }
+  .wrap { display: flex; flex-direction: column; gap: 28px; padding: 24px; }
+  .row { display: flex; flex-wrap: wrap; gap: 12px 28px; }
+  .s { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; }
+  .ring { width: 12px; height: 12px; border: 1.5px solid currentColor; border-radius: 999px; box-sizing: border-box; }
+  .half { width: 12px; height: 12px; border: 1.5px solid currentColor; border-radius: 999px; box-sizing: border-box; background: linear-gradient(90deg, currentColor 50%, transparent 50%); }
+  .notstarted { color: var(--ink-muted); }
+  .inprogress { color: var(--ink); }
+  .done { color: var(--correct); }
+  .meter { max-width: 420px; }
+  .bar { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 3px; margin-top: 8px; }
+  .bar span { height: 8px; border: 1px solid var(--ink); }
+  .bar .on { background: var(--ink); }
+  .bar .mc { border-style: dashed; }
+  .cap { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted); margin-top: 6px; }
+  .pct { font-family: var(--font-mono); font-size: 14px; font-weight: 500; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="row">
+    <span class="s notstarted"><span class="ring" aria-hidden="true"></span>Not started</span>
+    <span class="s inprogress"><span class="half" aria-hidden="true"></span>In progress</span>
+    <span class="s done"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Completed</span>
+    <span class="s done"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Lesson done</span>
+  </div>
+  <div class="meter">
+    <div style="display:flex; justify-content: space-between; align-items: baseline"><span style="font-size: 17px">Basics of Web Development</span><span class="pct">33%</span></div>
+    <div class="bar" role="img" aria-label="2 of 5 lessons done, Mastery Check not passed"><span class="on"></span><span class="on"></span><span></span><span></span><span></span><span class="mc"></span></div>
+    <div class="cap"><span>2 of 5 lessons</span><span>Mastery Check</span></div>
+  </div>
+  <div class="meter">
+    <div style="display:flex; justify-content: space-between; align-items: baseline"><span style="font-size: 17px">All lessons done, check not passed</span><span class="pct">83%</span></div>
+    <div class="bar" role="img" aria-label="5 of 5 lessons done, Mastery Check not passed"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="mc"></span></div>
+  </div>
+</div>
+</body>
+</html>

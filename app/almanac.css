@@ -1,0 +1,105 @@
+/* TopicTutor Almanac tokens. Source: docs/design/tokens.css.
+   The only place hex values are allowed. Components use the roles below. */
+
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+  --paper: #F1F2EE;
+  --paper-raised: #FFFFFF;
+  --paper-sunk: #E2E4DE;
+  --ink: #16181A;
+  --ink-muted: #565B60;
+  --ink-soft: #3B3F43;
+  --on-ink: #F1F2EE;
+  --rule: #C9CCC6;
+  --accent: #C23A12;
+  --correct: #1F4E8C;
+  --correct-wash: #E3EAF4;
+  --incorrect: #8F3F00;
+  --incorrect-wash: #F6E7D8;
+  --focus: var(--accent);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #121416;
+  --paper-raised: #1A1D20;
+  --paper-sunk: #24282C;
+  --ink: #E9EAE6;
+  --ink-muted: #A3A8AD;
+  --ink-soft: #C9CCC8;
+  --on-ink: #121416;
+  --rule: #3A3F44;
+  --accent: #FF7A50;
+  --correct: #8DB4F0;
+  --correct-wash: #1A2638;
+  --incorrect: #F0A35E;
+  --incorrect-wash: #2E2216;
+  --focus: var(--accent);
+}
+
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 72px;
+  --radius-0: 0px;
+  --radius-hairline: 2px;
+  --radius-full: 999px;
+  --border-hair: 1px;
+  --border-control: 1.5px;
+  --border-masthead: 3px;
+  --duration-instant: 120ms;
+  --duration-step: 240ms;
+  --duration-moment: 640ms;
+  --ease-enter: cubic-bezier(0.2, 0, 0, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  /* --font-newsreader and --font-plex-mono come from next/font in app/layout.tsx */
+  --font-serif: var(--font-newsreader), Georgia, "Times New Roman", serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, Menlo, monospace;
+}
+
+/* Text styles */
+.t-display-xl { font-family: var(--font-serif); font-size: 96px; line-height: 0.96; font-weight: 500; letter-spacing: -0.025em; }
+.t-display { font-family: var(--font-serif); font-size: 64px; line-height: 1; font-weight: 500; letter-spacing: -0.02em; }
+.t-title-lg { font-family: var(--font-serif); font-size: 42px; line-height: 1.04; font-weight: 500; letter-spacing: -0.02em; }
+.t-title { font-family: var(--font-serif); font-size: 30px; line-height: 1.12; font-weight: 500; letter-spacing: -0.015em; }
+.t-title-sm { font-family: var(--font-serif); font-size: 22px; line-height: 1.25; font-weight: 600; }
+.t-body-lg { font-family: var(--font-serif); font-size: 20px; line-height: 1.6; font-weight: 400; }
+.t-body { font-family: var(--font-serif); font-size: 18px; line-height: 1.55; font-weight: 400; }
+.t-body-sm { font-family: var(--font-serif); font-size: 16px; line-height: 1.5; font-weight: 400; }
+.t-note { font-family: var(--font-serif); font-size: 15px; line-height: 1.45; font-weight: 400; font-style: italic; }
+.t-label { font-family: var(--font-mono); font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; }
+.t-button { font-family: var(--font-mono); font-size: 15px; line-height: 20px; font-weight: 500; }
+.t-numeral { font-family: var(--font-mono); font-size: 48px; line-height: 1; font-weight: 500; letter-spacing: -0.02em; }
+
+/* Base */
+html { background: var(--paper); color: var(--ink); }
+body { margin: 0; font-family: var(--font-serif); background: var(--paper); color: var(--ink); }
+:where(a, button, input, textarea, select, [tabindex]):focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* Motion */
+@keyframes almanac-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+/* A session step or a piece of feedback arriving: fade in, rising 8px. */
+.almanac-rise { animation: almanac-rise var(--duration-step) var(--ease-enter) both; }
+
+@keyframes almanac-draw {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+/* The double rule drawing across, left to right, on the finish and a Mastery Check pass. */
+.almanac-draw { transform-origin: left; animation: almanac-draw var(--duration-moment) var(--ease-enter) both; }
+
+input::placeholder, textarea::placeholder { color: inherit; opacity: 0.62; }
+
+@media (prefers-reduced-motion: reduce) {
+  .almanac-text-caret { display: none; }
+  *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; scroll-behavior: auto !important; }
+}

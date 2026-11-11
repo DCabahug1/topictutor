@@ -1,0 +1,52 @@
+<!-- @dsCard group="Questions" height=520 subtitle="Default, selected, correct, incorrect, revealed answer, Not sure" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-serif); }
+  .wrap { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; padding: 24px; }
+  h3 { margin: 0 0 12px; font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); }
+  .opts { display: flex; flex-direction: column; gap: 8px; }
+  .opt { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; align-items: start; gap: 12px; padding: 14px 16px; background: var(--paper-raised); border: 1.5px solid var(--rule); font-size: 17px; line-height: 1.4; }
+  .key { width: 22px; height: 22px; margin-top: 1px; display: flex; align-items: center; justify-content: center; border: 1.5px solid var(--ink); border-radius: 2px; font-family: var(--font-mono); font-size: 12px; }
+  .sel { border-color: var(--ink); }
+  .sel .key { background: var(--ink); color: var(--on-ink); }
+  .ok { background: var(--correct-wash); border-color: var(--correct); }
+  .ok .key { background: var(--correct); border-color: var(--correct); color: var(--paper); }
+  .no { background: var(--incorrect-wash); border-color: var(--incorrect); }
+  .no .key { background: var(--incorrect); border-color: var(--incorrect); color: var(--paper); }
+  .tag { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+  .ok .tag { color: var(--correct); } .no .tag { color: var(--incorrect); }
+  .muted { color: var(--ink-muted); }
+  .unsure { border-style: dashed; font-style: italic; }
+  .explain { margin: 4px 0 0; padding: 12px 0 0; border-top: 1px solid var(--rule); font-size: 16px; line-height: 1.5; }
+  .explain b { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div>
+    <h3>Before submitting</h3>
+    <div class="opts" role="radiogroup" aria-label="Which of these years was a leap year?">
+      <div class="opt" role="radio" aria-checked="false" tabindex="-1"><span class="key">A</span><span>1700</span><span></span></div>
+      <div class="opt sel" role="radio" aria-checked="true" tabindex="0"><span class="key">B</span><span>1900</span><span class="tag muted">Selected</span></div>
+      <div class="opt" role="radio" aria-checked="false" tabindex="-1"><span class="key">C</span><span>2000</span><span></span></div>
+      <div class="opt" role="radio" aria-checked="false" tabindex="-1"><span class="key">D</span><span>2100</span><span></span></div>
+      <div class="opt unsure" role="radio" aria-checked="false" tabindex="-1"><span class="key">?</span><span class="muted">Not sure</span><span></span></div>
+    </div>
+  </div>
+  <div>
+    <h3>After submitting</h3>
+    <div class="opts">
+      <div class="opt"><span class="key">A</span><span class="muted">1700</span><span></span></div>
+      <div class="opt no"><span class="key"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></span><span>1900</span><span class="tag">Your answer</span></div>
+      <div class="opt ok"><span class="key"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span>2000</span><span class="tag">Correct answer</span></div>
+      <div class="opt"><span class="key">D</span><span class="muted">2100</span><span></span></div>
+      <p class="explain" role="status"><b style="color: var(--incorrect)">Not quite.</b> 1900 divides by 100 but not by 400, so it skipped its leap day. 2000 divides by 400.</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Log in, register and password reset</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="min-height: {{z.minH}}; background: {{t.bg}}; color: {{t.ink}}; font-family: 'Newsreader', Georgia, serif; box-sizing: border-box; padding: 0 {{z.gutter}} 48px">
+  <div style="max-width: 1296px; margin: 0 auto">
+    <header style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: {{z.headPad}}">
+      <a href="#" style="font-size: {{z.brand}}; font-weight: 600; letter-spacing: -0.015em; color: {{t.ink}}; text-decoration: none">TopicTutor</a>
+      <nav aria-label="Account" style="display: flex; align-items: center; gap: 2px; font-family: 'IBM Plex Mono', monospace; font-size: 14px">
+        <a href="#" style="padding: 12px 10px; color: {{t.ink}}; text-decoration: none">{{otherLink}}</a>
+        <button type="button" aria-label="{{themeLabel}}" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: {{t.ink}}">
+          <sc-if value="{{isLight}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></sc-if>
+          <sc-if value="{{dark}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"></path></svg></sc-if>
+        </button>
+      </nav>
+    </header>
+    <div style="border-top: 3px solid {{t.ink}}; border-bottom: 1px solid {{t.ink}}; height: 3px"></div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 48px 96px; justify-content: center; align-items: flex-start; margin-top: {{z.topGap}}">
+      <sc-if value="{{desk}}" hint-placeholder-val="{{ true }}">
+        <aside aria-hidden="true" style="flex: 1 1 420px; max-width: 520px; padding-top: 12px">
+          <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.accent}}">Tuesday, November 10 · Day 314</p>
+          <p style="margin: 16px 0 0; font-size: 56px; line-height: 0.98; font-weight: 500; letter-spacing: -0.025em">One thing, learned well, every day.</p>
+          <p style="margin: 20px 0 0; font-size: 19px; line-height: 1.55; color: {{t.soft}}">Your streak, your series and your past lessons live in your account, on every device. Free, and it stays free.</p>
+          <div style="margin-top: 28px; padding-top: 16px; border-top: 1px solid {{t.rule}}; font-size: 17px; font-style: italic; color: {{t.muted}}">Today in Science: Why leap years exist</div>
+        </aside>
+      </sc-if>
+
+      <main style="flex: 1 1 340px; max-width: 440px; min-width: 0">
+        <!-- notice -->
+        <sc-if value="{{hasNotice}}" hint-placeholder-val="{{ false }}">
+          <div role="alert" style="margin-bottom: 22px; padding: 14px 16px; background: {{t.incorrectWash}}; border-top: 3px solid {{t.incorrect}}">
+            <p style="margin: 0; display: flex; align-items: center; gap: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.incorrect}}"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>{{noticeKicker}}</p>
+            <p style="margin: 6px 0 0; font-size: 17px; line-height: 1.45">{{noticeText}}</p>
+          </div>
+        </sc-if>
+
+        <!-- ICON STATES (sent, done, expired) -->
+        <sc-if value="{{isMessage}}" hint-placeholder-val="{{ false }}">
+          <div>
+            <div aria-hidden="true" style="width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; border: 1.5px solid {{msg.ink}}; color: {{msg.ink}}">
+              <sc-if value="{{msg.mail}}" hint-placeholder-val="{{ true }}"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M3 6h18v12H3z"></path><path d="M3 7l9 7 9-7"></path></svg></sc-if>
+              <sc-if value="{{msg.check}}" hint-placeholder-val="{{ false }}"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+              <sc-if value="{{msg.clock}}" hint-placeholder-val="{{ false }}"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg></sc-if>
+            </div>
+            <p style="margin: 20px 0 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: {{msg.ink}}">{{msg.kicker}}</p>
+            <h1 style="margin: 10px 0 0; font-size: {{z.h1}}; line-height: 1.04; font-weight: 500; letter-spacing: -0.02em">{{msg.title}}</h1>
+            <p style="margin: 12px 0 0; font-size: 18px; line-height: 1.5; color: {{t.soft}}">{{msg.body}}</p>
+            <a href="#" style="margin-top: 24px; min-height: 54px; display: flex; align-items: center; justify-content: center; gap: 10px; background: {{t.ink}}; color: {{t.bg}}; font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500; text-decoration: none">{{msg.cta}}</a>
+            <sc-if value="{{msg.hasSecondary}}" hint-placeholder-val="{{ false }}"><p style="margin: 16px 0 0; font-size: 16px; color: {{t.muted}}">{{msg.secondaryLead}} <a href="#" style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: {{t.ink}}">{{msg.secondary}}</a></p></sc-if>
+          </div>
+        </sc-if>
+
+        <!-- FORMS -->
+        <sc-if value="{{isForm}}" hint-placeholder-val="{{ true }}">
+          <form>
+            <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.accent}}">{{f.kicker}}</p>
+            <h1 style="margin: 10px 0 0; font-size: {{z.h1}}; line-height: 1.04; font-weight: 500; letter-spacing: -0.02em">{{f.title}}</h1>
+            <sc-if value="{{f.hasLead}}" hint-placeholder-val="{{ false }}"><p style="margin: 10px 0 0; font-size: 17px; line-height: 1.5; color: {{t.soft}}">{{f.lead}}</p></sc-if>
+
+            <sc-if value="{{f.google}}" hint-placeholder-val="{{ true }}">
+              <button type="button" style="width: 100%; margin-top: 24px; min-height: 54px; display: flex; align-items: center; justify-content: center; gap: 12px; background: transparent; color: {{t.ink}}; border: 1.5px solid {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500; cursor: pointer">
+                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 12.2c0-.6 0-1.2-.2-1.7H12v3.3h4.5a3.9 3.9 0 0 1-1.7 2.5v2.1h2.7c1.6-1.5 2.5-3.7 2.5-6.2zM12 20.5c2.3 0 4.2-.8 5.5-2.1l-2.7-2.1c-.7.5-1.7.8-2.8.8a4.9 4.9 0 0 1-4.6-3.4H4.6v2.2A8.5 8.5 0 0 0 12 20.5zM7.4 13.7a5 5 0 0 1 0-3.4V8.1H4.6a8.5 8.5 0 0 0 0 7.8zM12 6.9c1.2 0 2.3.4 3.2 1.2l2.4-2.4A8.5 8.5 0 0 0 4.6 8.1l2.8 2.2A4.9 4.9 0 0 1 12 6.9z"></path></svg>
+                Continue with Google
+              </button>
+              <div aria-hidden="true" style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; margin-top: 20px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.muted}}"><span style="height: 1px; background: {{t.rule}}"></span>or with email<span style="height: 1px; background: {{t.rule}}"></span></div>
+            </sc-if>
+
+            <div style="display: flex; flex-direction: column; gap: 18px; margin-top: 20px">
+              <sc-for list="{{f.fields}}" as="x" hint-placeholder-count="2">
+                <div>
+                  <div style="display: flex; justify-content: space-between; align-items: baseline">
+                    <label for="{{x.id}}" style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase">{{x.label}}</label>
+                    <sc-if value="{{x.hasForgot}}" hint-placeholder-val="{{ false }}"><a href="#" style="padding: 4px 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: {{t.ink}}">Forgot password?</a></sc-if>
+                  </div>
+                  <div style="display: flex; margin-top: 8px; background: {{t.raised}}; border: {{x.border}}">
+                    <input id="{{x.id}}" type="{{x.type}}" value="{{x.value}}" placeholder="{{x.placeholder}}" aria-invalid="{{x.invalid}}" aria-describedby="{{x.msgId}}" readonly style="flex: 1 1 auto; min-width: 0; height: 50px; padding: 0 14px; background: transparent; border: none; font-family: 'Newsreader', Georgia, serif; font-size: 18px; color: {{t.ink}}">
+                    <sc-if value="{{x.isPassword}}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{x.toggle}}" aria-pressed="{{x.shown}}" style="flex: none; min-width: 64px; padding: 0 14px; background: transparent; border: none; border-left: 1px solid {{t.rule}}; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: {{t.ink}}; cursor: pointer">{{x.toggleLabel}}</button></sc-if>
+                  </div>
+                  <sc-if value="{{x.hasMsg}}" hint-placeholder-val="{{ false }}"><p id="{{x.msgId}}" style="display: flex; align-items: flex-start; gap: 6px; margin: 8px 0 0; font-size: 15px; line-height: 1.4; color: {{x.msgInk}}"><sc-if value="{{x.invalid}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" style="margin-top: 3px; flex: none"><path d="M6 6l12 12M18 6L6 18"></path></svg></sc-if>{{x.msg}}</p></sc-if>
+                </div>
+              </sc-for>
+            </div>
+
+            <button type="button" style="width: 100%; margin-top: 24px; min-height: 56px; display: flex; align-items: center; justify-content: center; gap: 10px; background: {{t.ink}}; color: {{t.bg}}; border: none; font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500; cursor: pointer">{{f.submit}}</button>
+            <p style="margin: 18px 0 0; font-size: 16px; color: {{t.muted}}">{{f.footLead}} <a href="#" style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: {{t.ink}}">{{f.footLink}}</a></p>
+          </form>
+        </sc-if>
+      </main>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"variant":{"editor":"enum","options":["login","loginError","register","registerError","checkEmail","resetRequest","resetSent","resetNew","resetDone","linkExpired"],"default":"login"},"dark":{"editor":"boolean","default":false},"phone":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { show: {} }; }
+  renderVals() {
+    const dark = this.props.dark ?? false;
+    const phone = this.props.phone ?? false;
+    const v = this.props.variant ?? 'login';
+    const t = dark
+      ? { bg: '#121416', raised: '#1A1D20', ink: '#E9EAE6', soft: '#C9CCC8', muted: '#A3A8AD', rule: '#3A3F44', accent: '#FF7A50', correct: '#8DB4F0', incorrect: '#F0A35E', incorrectWash: '#2E2216' }
+      : { bg: '#F1F2EE', raised: '#FFFFFF', ink: '#16181A', soft: '#3B3F43', muted: '#565B60', rule: '#C9CCC6', accent: '#C23A12', correct: '#1F4E8C', incorrect: '#8F3F00', incorrectWash: '#F6E7D8' };
+    const z = phone
+      ? { minH: '844px', gutter: '24px', headPad: '6px 0 8px', brand: '24px', h1: '38px', topGap: '32px' }
+      : { minH: '900px', gutter: '72px', headPad: '18px 0 14px', brand: '28px', h1: '46px', topGap: '80px' };
+    const show = this.state.show;
+    const field = (id, label, type, value, placeholder, opts) => {
+      const o = opts || {};
+      const isPassword = type === 'password';
+      const shown = !!show[id];
+      return {
+        id, label, value, placeholder, isPassword, shown,
+        type: isPassword && shown ? 'text' : type,
+        toggleLabel: shown ? 'Hide' : 'Show',
+        toggle: () => this.setState({ show: Object.assign({}, show, { [id]: !shown }) }),
+        invalid: !!o.error, hasMsg: !!(o.error || o.help), msg: o.error || o.help || '', msgId: id + '-msg',
+        msgInk: o.error ? t.incorrect : t.muted,
+        border: o.error ? '2px solid ' + t.incorrect : '1.5px solid ' + t.ink,
+        hasForgot: !!o.forgot
+      };
+    };
+    const F = {
+      login: { kicker: 'Welcome back', title: 'Log in', google: true, fields: [field('em', 'Email', 'email', '', 'you@example.com'), field('pw', 'Password', 'password', '', '', { forgot: true })], submit: 'Log in', footLead: 'New here?', footLink: 'Create an account' },
+      loginError: { kicker: 'Welcome back', title: 'Log in', google: true, fields: [field('em', 'Email', 'email', 'duane@example.com', ''), field('pw', 'Password', 'password', 'hunter22', '', { forgot: true, error: 'That password doesn’t match this email. Check it, or reset it.' })], submit: 'Log in', footLead: 'New here?', footLink: 'Create an account' },
+      register: { kicker: 'Free · no credit card', title: 'Create your account', lead: 'If you started as a guest, your streak and lessons come with you.', google: true, fields: [field('nm', 'Name', 'text', '', 'What should we call you?', { help: 'Up to 25 characters.' }), field('em', 'Email', 'email', '', 'you@example.com'), field('pw', 'Password', 'password', '', '', { help: 'At least 8 characters.' }), field('pw2', 'Confirm password', 'password', '', '')], submit: 'Create account', footLead: 'Already have one?', footLink: 'Log in' },
+      registerError: { kicker: 'Free · no credit card', title: 'Create your account', google: true, fields: [field('nm', 'Name', 'text', 'Duane', ''), field('em', 'Email', 'email', 'duane@example', '', { error: 'This email is missing its ending, like .com.' }), field('pw', 'Password', 'password', 'sundial-orbit', ''), field('pw2', 'Confirm password', 'password', 'sundial-orbits', '', { error: 'These two passwords don’t match.' })], submit: 'Create account', footLead: 'Already have one?', footLink: 'Log in' },
+      resetRequest: { kicker: 'Password reset', title: 'Forgot your password?', lead: 'Enter your email and we’ll send a link to set a new one.', google: false, fields: [field('em', 'Email', 'email', 'duane@example.com', '')], submit: 'Send reset link', footLead: 'Remembered it?', footLink: 'Log in' },
+      resetNew: { kicker: 'Password reset', title: 'Set a new password', lead: 'For duane@example.com.', google: false, fields: [field('pw', 'New password', 'password', '', '', { help: 'At least 8 characters.' }), field('pw2', 'Confirm new password', 'password', '', '')], submit: 'Save new password', footLead: 'Changed your mind?', footLink: 'Log in' }
+    }[v];
+    if (F) { F.hasLead = !!F.lead; }
+    const M = {
+      checkEmail: { mail: true, ink: t.ink, kicker: 'One more step', title: 'Check your email.', body: 'We sent a confirmation link to duane@example.com. Open it on this device and you’re in. It can take a minute to arrive.', cta: 'Open your email app', hasSecondary: true, secondaryLead: 'Nothing yet?', secondary: 'Send it again' },
+      resetSent: { mail: true, ink: t.ink, kicker: 'Password reset', title: 'Check your email.', body: 'If an account uses duane@example.com, a reset link is on its way. It works for one hour.', cta: 'Back to log in', hasSecondary: true, secondaryLead: 'Wrong address?', secondary: 'Try another email' },
+      resetDone: { check: true, ink: t.correct, kicker: 'Password changed', title: 'You’re all set.', body: 'Your new password works now. You’ve been signed out on other devices.', cta: 'Log in', hasSecondary: false },
+      linkExpired: { clock: true, ink: t.incorrect, kicker: 'Link expired', title: 'That link has stopped working.', body: 'Links in our emails work for one hour and only once. This one is used up or out of date. Nothing about your account changed.', cta: 'Send a new link', hasSecondary: true, secondaryLead: 'Or', secondary: 'go to log in' }
+    }[v];
+    const notice = v === 'loginError' ? { k: 'Couldn’t log in', x: 'The email and password don’t match. Your progress is safe.' } : null;
+    return {
+      t, z, dark, isLight: !dark, phone, desk: !phone, themeLabel: dark ? 'Switch to light theme' : 'Switch to dark theme',
+      otherLink: (v === 'register' || v === 'registerError') ? 'Log in' : 'Register',
+      isForm: !!F, isMessage: !!M, f: F || { fields: [] }, msg: M || {},
+      hasNotice: !!notice, noticeKicker: notice ? notice.k : '', noticeText: notice ? notice.x : ''
+    };
+  }
+}
+</script>
+</body>
+</html>

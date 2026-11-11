@@ -1,0 +1,49 @@
+<!-- @dsCard group="Status" height=260 subtitle="Active streak, done today, zero state" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-serif); }
+  .wrap { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; padding: 24px; }
+  .k { margin: 0; font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); }
+  .n { margin: 6px 0 0; font-size: 64px; line-height: 1; font-weight: 500; letter-spacing: -0.02em; color: var(--accent); }
+  .zero { color: var(--ink-muted); }
+  .u { margin: 4px 0 0; font-size: 17px; }
+  .week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; margin-top: 14px; font-family: var(--font-mono); font-size: 11px; color: var(--ink-muted); text-align: center; }
+  .dot { width: 14px; height: 14px; margin: 0 auto 4px; border-radius: 999px; border: 1.5px solid var(--ink-muted); box-sizing: border-box; }
+  .dot.on { background: var(--ink); border-color: var(--ink); }
+  .dot.today { border: 1.5px dashed var(--ink); }
+  .note { margin: 10px 0 0; font-style: italic; font-size: 15px; color: var(--ink-muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div>
+    <p class="k">Streak · not yet today</p>
+    <p class="n">12</p>
+    <p class="u">days in a row</p>
+    <div class="week" role="img" aria-label="Done Wednesday through Monday, today not done yet">
+      <div><div class="dot on"></div>W</div><div><div class="dot on"></div>T</div><div><div class="dot on"></div>F</div><div><div class="dot on"></div>S</div><div><div class="dot on"></div>S</div><div><div class="dot on"></div>M</div><div><div class="dot today"></div>T</div>
+    </div>
+    <p class="note">Today still counts until midnight.</p>
+  </div>
+  <div>
+    <p class="k">Streak · done today</p>
+    <p class="n">13</p>
+    <p class="u">days in a row</p>
+    <div class="week" role="img" aria-label="Done every day this week including today">
+      <div><div class="dot on"></div>W</div><div><div class="dot on"></div>T</div><div><div class="dot on"></div>F</div><div><div class="dot on"></div>S</div><div><div class="dot on"></div>S</div><div><div class="dot on"></div>M</div><div><div class="dot on"></div>T</div>
+    </div>
+    <p class="note">Tomorrow: History.</p>
+  </div>
+  <div>
+    <p class="k">Streak</p>
+    <p class="n zero">0</p>
+    <p class="u">Finish one lesson to start a streak.</p>
+    <p class="note">It takes about three minutes.</p>
+  </div>
+</div>
+</body>
+</html>

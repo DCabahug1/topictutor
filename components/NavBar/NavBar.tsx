@@ -16,7 +16,7 @@ function NavBar({
   explicitPath?: string | null;
 }) {
   const pathname = usePathname();
-  const isHome = pathname === "/";
+  const isAuthPage = pathname.startsWith("/auth/");
   const showBackButton =
     pathname.startsWith("/topic/") || pathname.startsWith("/placement-test") || pathname.startsWith("/profile");
 
@@ -28,7 +28,7 @@ function NavBar({
           <span className="text-primary">Topic</span>Tutor
         </h1>
       </Link>
-      {isHome && !profile ? (
+      {isAuthPage && !profile ? (
         <>
           <div className="flex gap-2">
             <Link href="/auth/login">

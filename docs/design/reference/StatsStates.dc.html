@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Stats and profile · phone states</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 2720px; height: 2420px; box-sizing: border-box; padding: 40px; background: #DCDDD8; display: flex; flex-wrap: wrap; gap: 60px; align-content: flex-start; align-items: flex-start; font-family: 'IBM Plex Mono', monospace">
+  <figure style="margin: 0; width: 390px; flex: none">
+    <figcaption style="margin: 0 0 12px; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #3B3F43">Rich history · dark</figcaption>
+    <div style="width: 390px; min-height: 2200px; overflow: hidden; outline: 1px solid #16181A; background: #F1F2EE">
+      <dc-import name="Stats" variant="rich" dark="{{ true }}" phone="{{ true }}" hint-size="390px,2200px"></dc-import>
+    </div>
+  </figure>
+  <figure style="margin: 0; width: 390px; flex: none">
+    <figcaption style="margin: 0 0 12px; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #3B3F43">Brand-new learner</figcaption>
+    <div style="width: 390px; min-height: 2200px; overflow: hidden; outline: 1px solid #16181A; background: #F1F2EE">
+      <dc-import name="Stats" variant="zero" phone="{{ true }}" hint-size="390px,2200px"></dc-import>
+    </div>
+  </figure>
+  <figure style="margin: 0; width: 390px; flex: none">
+    <figcaption style="margin: 0 0 12px; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #3B3F43">Profile · photo preview</figcaption>
+    <div style="width: 390px; min-height: 2200px; overflow: hidden; outline: 1px solid #16181A; background: #F1F2EE">
+      <dc-import name="Stats" view="profile" demoPhoto="{{ true }}" phone="{{ true }}" hint-size="390px,2200px"></dc-import>
+    </div>
+  </figure>
+  <figure style="margin: 0; width: 390px; flex: none">
+    <figcaption style="margin: 0 0 12px; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #3B3F43">Profile · saving</figcaption>
+    <div style="width: 390px; min-height: 2200px; overflow: hidden; outline: 1px solid #16181A; background: #F1F2EE">
+      <dc-import name="Stats" view="profile" demoPhoto="{{ true }}" saveState="saving" phone="{{ true }}" hint-size="390px,2200px"></dc-import>
+    </div>
+  </figure>
+  <figure style="margin: 0; width: 390px; flex: none">
+    <figcaption style="margin: 0 0 12px; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #3B3F43">Profile · saved</figcaption>
+    <div style="width: 390px; min-height: 2200px; overflow: hidden; outline: 1px solid #16181A; background: #F1F2EE">
+      <dc-import name="Stats" view="profile" demoPhoto="{{ true }}" saveState="success" phone="{{ true }}" hint-size="390px,2200px"></dc-import>
+    </div>
+  </figure>
+  <figure style="margin: 0; width: 390px; flex: none">
+    <figcaption style="margin: 0 0 12px; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #3B3F43">Profile · save failed · dark</figcaption>
+    <div style="width: 390px; min-height: 2200px; overflow: hidden; outline: 1px solid #16181A; background: #F1F2EE">
+      <dc-import name="Stats" view="profile" saveState="error" dark="{{ true }}" phone="{{ true }}" hint-size="390px,2200px"></dc-import>
+    </div>
+  </figure>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2720,"height":2420}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

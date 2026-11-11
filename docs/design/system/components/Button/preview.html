@@ -1,0 +1,34 @@
+<!-- @dsCard group="Actions" height=200 subtitle="Primary, secondary, quiet, disabled, working" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-serif); }
+  .row { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; padding: 24px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 52px; padding: 0 24px; font-family: var(--font-mono); font-size: 15px; font-weight: 500; border-radius: 0; cursor: pointer; transition: background 120ms, color 120ms; }
+  .btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .primary { background: var(--ink); color: var(--on-ink); border: 1.5px solid var(--ink); }
+  .primary:hover { background: var(--accent); border-color: var(--accent); color: var(--on-ink); }
+  .secondary { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
+  .secondary:hover { background: var(--paper-sunk); }
+  .quiet { background: transparent; color: var(--ink); border: none; padding: 0 8px; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+  .btn[disabled] { background: transparent; color: var(--ink-muted); border: 1.5px dashed var(--ink-muted); cursor: not-allowed; }
+  .caret { width: 8px; height: 16px; background: var(--accent); }
+  .note { width: 100%; margin: 0; font-style: italic; font-size: 15px; color: var(--ink-muted); }
+</style>
+</head>
+<body>
+<div class="row">
+  <button class="btn primary" type="button">Start today’s lesson
+    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+  </button>
+  <button class="btn secondary" type="button">Go deeper</button>
+  <button class="btn quiet" type="button">Stop for today</button>
+  <button class="btn primary" type="button" disabled>Submit · 3 of 5 answered</button>
+  <button class="btn secondary" type="button" aria-busy="true"><span class="caret" aria-hidden="true"></span>Writing your outline</button>
+  <p class="note">Disabled buttons say why in their label. Working buttons show the writing caret.</p>
+</div>
+</body>
+</html>

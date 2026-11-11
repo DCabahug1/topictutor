@@ -1,0 +1,43 @@
+<!-- @dsCard group="Forms" height=360 subtitle="Default, error, password with show/hide, read-only, character count" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-serif); }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 40px; padding: 24px; }
+  label { display: block; font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; }
+  .field { display: flex; align-items: center; margin-top: 8px; background: var(--paper-raised); border: 1.5px solid var(--ink); }
+  input { flex: 1 1 auto; min-width: 0; height: 50px; padding: 0 14px; background: transparent; border: none; font-family: var(--font-serif); font-size: 18px; color: var(--ink); }
+  .err .field { border-color: var(--incorrect); border-width: 2px; }
+  .msg { display: flex; gap: 6px; align-items: center; margin: 8px 0 0; font-size: 15px; color: var(--incorrect); }
+  .help { margin: 8px 0 0; font-size: 15px; font-style: italic; color: var(--ink-muted); }
+  .toggle { flex: none; height: 50px; padding: 0 14px; background: transparent; border: none; border-left: 1px solid var(--rule); font-family: var(--font-mono); font-size: 13px; color: var(--ink); }
+  .ro .field { background: transparent; border-style: dashed; border-color: var(--ink-muted); }
+  .count { margin: 8px 0 0; display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted); }
+</style>
+</head>
+<body>
+<div class="grid">
+  <div>
+    <label for="e">Email</label>
+    <div class="field"><input id="e" type="email" value="duane@example.com"></div>
+  </div>
+  <div class="err">
+    <label for="p">Password</label>
+    <div class="field"><input id="p" type="password" value="hunter22" aria-invalid="true" aria-describedby="pm"><button class="toggle" type="button" aria-pressed="false">Show</button></div>
+    <p class="msg" id="pm"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>That password doesn’t match this email.</p>
+  </div>
+  <div class="ro">
+    <label for="r">Email · can’t be changed</label>
+    <div class="field"><input id="r" value="duane@example.com" readonly></div>
+  </div>
+  <div>
+    <label for="n">Name</label>
+    <div class="field"><input id="n" value="Duane" maxlength="25" aria-describedby="nc"></div>
+    <p class="count" id="nc"><span>Shown on your profile</span><span>5 / 25</span></p>
+  </div>
+</div>
+</body>
+</html>
