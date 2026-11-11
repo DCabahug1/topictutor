@@ -175,6 +175,18 @@ export type SeriesRequest = {
   focus?: string;
 };
 
+/** What the topic check made of a typed topic, before any test is written. */
+export type TopicCheck = {
+  /** clear: start now. suggest: probably meant something else. unclear: can't tell. refused: won't teach it. */
+  verdict: "clear" | "suggest" | "unclear" | "refused";
+  /** The topic to use: typos fixed, tidied into a natural title. Empty for unclear and refused. */
+  topic: string;
+  /** One short sentence for the learner. Empty for clear. */
+  note: string;
+  /** Up to three topics to pick instead: other readings, or safe angles on a refused topic. */
+  suggestions: string[];
+};
+
 export type Placement = {
   id: string;
   topic: string;
@@ -280,6 +292,9 @@ export const FORCE_FLAGS = [
   "loadFail",
   "guestUsed",
   "guestDaily",
+  "topicSuggest",
+  "topicUnclear",
+  "topicRefused",
 ] as const;
 
 export type ForceFlag = (typeof FORCE_FLAGS)[number];

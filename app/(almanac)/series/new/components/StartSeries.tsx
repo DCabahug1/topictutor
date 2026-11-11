@@ -7,9 +7,10 @@ import { LeadActions, LeadBlock } from "@/components/almanac/LeadBlock";
 import { Notice } from "@/components/almanac/Notice";
 import { PaperPage } from "@/components/almanac/Page";
 import { useSession } from "@/components/almanac/SessionProvider";
-import { AlmanacError, almanac, useAlmanac } from "@/lib/almanac";
+import { AlmanacError, almanac, useAlmanac, type TopicCheck } from "@/lib/almanac";
 import { BackLink } from "../../[id]/components/SeriesStates";
 import { InlineAlert, LoadingLines } from "./parts";
+import { TopicReview } from "./TopicReview";
 
 type Limit = "used" | "daily";
 
@@ -56,9 +57,13 @@ function StartSeriesInner() {
   const [typedTopic, setTypedTopic] = useState<string | null>(null);
   const [typedFocus, setTypedFocus] = useState<string | null>(null);
   const [focusOpen, setFocusOpen] = useState(false);
-  const [starting, setStarting] = useState(false);
+  const [checking, setChecking] = useState(false);
+  // The topic whose test is being started, or null.
+  const [starting, setStarting] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
   const [refused, setRefused] = useState<Limit | null>(null);
+  // A topic that needs a second look, and what was typed when it was checked.
+  const [review, setReview] = useState<{ check: TopicCheck; typed: string } | null>(null);
 
   const pending = context?.pending ?? null;
   const topic = typedTopic ?? (fromUrl || pending?.topic || "");
@@ -71,23 +76,51 @@ function StartSeriesInner() {
 
   const limit: Limit | null = context?.guest?.dailyLimitReached ? "daily" : context?.guest?.seriesUsed ? "used" : refused;
 
-  const start = async (event: FormEvent) => {
-    event.preventDefault();
-    const wanted = topic.trim();
-    if (!wanted || starting) return;
-    setStarting(true);
+  /** Starts the test on `chosen`. Only this charges a guest's series. */
+  const begin = async (chosen: string) => {
+    setStarting(chosen);
     setFailed(false);
+    setTypedTopic(chosen);
     try {
-      // The same request as the unfinished test picks that test up, answers included.
-      const resume = pending !== null && pending.topic === wanted && pending.focus === focus.trim();
-      if (!resume) await almanac.startPlacement({ topic: wanted, focus: focus.trim() || undefined });
+      await almanac.startPlacement({ topic: chosen, focus: focus.trim() || undefined });
       router.push("/series/new/placement");
     } catch (cause) {
-      setStarting(false);
+      setStarting(null);
       if (cause instanceof AlmanacError && cause.kind === "guestDailyLimit") setRefused("daily");
       else if (cause instanceof AlmanacError && cause.kind === "guestSeriesUsed") setRefused("used");
       else setFailed(true);
     }
+  };
+
+  const start = async (event: FormEvent) => {
+    event.preventDefault();
+    const wanted = topic.trim();
+    if (!wanted || starting !== null || checking) return;
+    setFailed(false);
+
+    // The same request as the unfinished test picks that test up, answers included.
+    if (pending !== null && pending.topic === wanted && pending.focus === focus.trim()) {
+      setStarting(wanted);
+      router.push("/series/new/placement");
+      return;
+    }
+
+    setChecking(true);
+    // If the check itself fails, the topic goes through as typed.
+    const check = await almanac.checkTopic({ topic: wanted, focus: focus.trim() || undefined }).catch(() => null);
+    setChecking(false);
+    if (check && check.verdict !== "clear") {
+      setReview({ check, typed: wanted });
+      return;
+    }
+    await begin(check?.topic || wanted);
+  };
+
+  const editTopic = () => {
+    setReview(null);
+    const field = document.getElementById("series-topic") as HTMLInputElement | null;
+    field?.focus();
+    field?.select();
   };
 
   if (loading && !context) {
@@ -151,7 +184,10 @@ function StartSeriesInner() {
             id="series-topic"
             type="text"
             value={topic}
-            onChange={(event) => setTypedTopic(event.target.value)}
+            onChange={(event) => {
+              setTypedTopic(event.target.value);
+              setReview(null);
+            }}
             placeholder="Basics of web development"
             autoComplete="off"
             maxLength={120}
@@ -190,20 +226,24 @@ function StartSeriesInner() {
 
           {failed && <InlineAlert className="mt-4">The test didn’t start. Check your connection and try again.</InlineAlert>}
 
-          <LeadActions
-            primary={
-              topic.trim() ? (
-                <Button type="submit" icon busy={starting}>
-                  {starting ? "Starting your test" : "Take the placement test"}
-                </Button>
-              ) : (
-                <Button type="submit" disabled>
-                  Name a topic to start
-                </Button>
-              )
-            }
-            quiet={<span className="text-[18px] italic text-(--ink-muted)">5 questions · about 2 minutes</span>}
-          />
+          {review ? (
+            <TopicReview check={review.check} typed={review.typed} starting={starting} onUse={begin} onEdit={editTopic} />
+          ) : (
+            <LeadActions
+              primary={
+                topic.trim() ? (
+                  <Button type="submit" icon busy={checking || starting !== null}>
+                    {checking ? "Checking the topic" : starting !== null ? "Starting your test" : "Take the placement test"}
+                  </Button>
+                ) : (
+                  <Button type="submit" disabled>
+                    Name a topic to start
+                  </Button>
+                )
+              }
+              quiet={<span className="text-[18px] italic text-(--ink-muted)">5 questions · about 2 minutes</span>}
+            />
+          )}
         </div>
       </form>
 

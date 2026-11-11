@@ -12,6 +12,9 @@ export const CAPS = {
   guestQuestionsPerDay: 30,
   /** Tutor questions per signed-in learner, per day. */
   memberQuestionsPerDay: 200,
+  /** Topic checks before a series starts, per guest and per learner, per day. Past these, topics go through unchecked. */
+  guestTopicChecksPerDay: 20,
+  memberTopicChecksPerDay: 100,
 };
 
 export const LIMITS = {

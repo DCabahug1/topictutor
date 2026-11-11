@@ -140,6 +140,7 @@ export const remoteSource: AlmanacSource = {
   streamSeriesLesson: (id, number) => text("streamSeriesLesson", [id, number], { session: true }),
   answerSeriesCheck: (id, number, answer) => retried(() => rpc("answerSeriesCheck", [id, number, answer], { session: true })),
 
+  checkTopic: (request) => rpc("checkTopic", [request], { session: true }),
   startPlacement: (request) => rpc("startPlacement", [request], { session: true }),
   getPlacement: () => rpc("getPlacement"),
   writePlacementTest: () => rpc("writePlacementTest", [], { session: true }),

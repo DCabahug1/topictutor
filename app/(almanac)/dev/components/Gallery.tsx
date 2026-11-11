@@ -30,10 +30,12 @@ import {
   shiftDate,
   type ForceFlag,
   type SeriesSummary,
+  type TopicCheck,
 } from "@/lib/almanac";
 import { getForced, resetFixture, setForced, subscribeForced } from "@/lib/almanac/fixture-source";
 import { DAILY } from "@/lib/almanac/fixtures/content";
 import { QUESTION_HEADING } from "../../series/new/components/parts";
+import { TopicReview } from "../../series/new/components/TopicReview";
 
 const WEB_SERIES: SeriesSummary = {
   id: "web",
@@ -49,6 +51,30 @@ const WEB_SERIES: SeriesSummary = {
   isSample: false,
   nextLesson: { number: 3, title: "How the browser decides which CSS rule wins" },
 };
+
+/** The three ways the topic check can stop a learner, as the server returns them. */
+const TOPIC_REVIEWS: Array<{ name: string; typed: string; check: TopicCheck }> = [
+  {
+    name: "Suggest · a likely typo",
+    typed: "photosinthesis",
+    check: { verdict: "suggest", topic: "Photosynthesis", note: "That looks like a typo.", suggestions: ["How plants make food from light"] },
+  },
+  {
+    name: "Unclear · nothing to teach",
+    typed: "asdkj qwe zz",
+    check: { verdict: "unclear", topic: "", note: "We couldn’t find a subject in that.", suggestions: [] },
+  },
+  {
+    name: "Refused · with safe angles",
+    typed: "how to hack my ex’s email",
+    check: {
+      verdict: "refused",
+      topic: "",
+      note: "We can’t help with getting into someone else’s account.",
+      suggestions: ["How email security works", "Protecting your own accounts"],
+    },
+  },
+];
 
 /** A question about code, written the way the prompts now ask for it. */
 const CODE_QUESTION = {
@@ -639,6 +665,16 @@ export function Gallery() {
       <Section title="SubjectToggle">
         <Both>
           <Subjects />
+        </Both>
+      </Section>
+
+      <Section title="TopicReview" note="Shown under the topic field at /series/new when the topic needs a second look.">
+        <Both>
+          {TOPIC_REVIEWS.map(({ name, typed, check }) => (
+            <State key={name} name={name}>
+              <TopicReview check={check} typed={typed} starting={null} onUse={() => {}} onEdit={() => {}} autoFocus={false} />
+            </State>
+          ))}
         </Both>
       </Section>
 

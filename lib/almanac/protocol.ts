@@ -23,6 +23,7 @@ export const RPC_METHODS = [
   "deleteSeries",
   "getSeriesLesson",
   "answerSeriesCheck",
+  "checkTopic",
   "startPlacement",
   "getPlacement",
   "writePlacementTest",

@@ -14,6 +14,7 @@ import type {
   SeriesSummary,
   Stats,
   Subject,
+  TopicCheck,
   TutorChunk,
 } from "./types";
 
@@ -61,6 +62,12 @@ export interface AlmanacSource {
   answerSeriesCheck(id: string, number: number, answer: number): Promise<SeriesLesson>;
 
   // Placement test (one in progress at a time)
+  /**
+   * Reads a typed topic before anything is written: a likely typo, something it
+   * can't make sense of, or something it won't teach. Charges nothing, and
+   * answers "clear" whenever it can't tell, so it never stands in the way.
+   */
+  checkTopic(request: SeriesRequest): Promise<TopicCheck>;
   /** Rejects with guestSeriesUsed or guestDailyLimit for guests who are out of room. */
   startPlacement(request: SeriesRequest): Promise<Placement>;
   getPlacement(): Promise<Placement | null>;

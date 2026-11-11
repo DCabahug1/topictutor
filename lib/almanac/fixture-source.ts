@@ -59,6 +59,7 @@ import {
   type SeriesRequest,
   type SeriesSummary,
   type Stats,
+  type TopicCheck,
   type Streak,
   type Subject,
 } from "./types";
@@ -756,6 +757,36 @@ export const fixtureSource: AlmanacSource = {
       save(store);
     }
     return toSeriesLesson(series, number);
+  },
+
+  async checkTopic(request: SeriesRequest): Promise<TopicCheck> {
+    await wait(500);
+    const topic = request.topic.trim();
+    if (forced("topicSuggest")) {
+      return {
+        verdict: "suggest",
+        topic: "Photosynthesis",
+        note: "That looks like a typo.",
+        suggestions: ["How plants make food from light"],
+      };
+    }
+    if (forced("topicUnclear") || topic.replace(/[^a-z]/gi, "").length < 3 || !/[aeiouy]/i.test(topic)) {
+      return {
+        verdict: "unclear",
+        topic: "",
+        note: "We couldn’t find a subject in that.",
+        suggestions: forced("topicUnclear") ? ["Basics of web development", "How vaccines work"] : [],
+      };
+    }
+    if (forced("topicRefused")) {
+      return {
+        verdict: "refused",
+        topic: "",
+        note: "We can’t help with getting into someone else’s account.",
+        suggestions: ["How email security works", "Protecting your own accounts"],
+      };
+    }
+    return { verdict: "clear", topic, note: "", suggestions: [] };
   },
 
   async startPlacement(request: SeriesRequest) {

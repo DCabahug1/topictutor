@@ -8,6 +8,7 @@ import * as mastery from "./mastery";
 import * as placement from "./placement";
 import * as series from "./series";
 import * as stats from "./stats";
+import { checkTopic } from "./topic";
 import { askTutor } from "./tutor";
 
 // Every argument the browser sends is checked here before it reaches a query.
@@ -30,6 +31,7 @@ const option = z.number().int().min(0).max(7);
 const answer = z.union([option, z.literal("unsure")]);
 const index = z.number().int().min(0).max(4);
 const none = z.tuple([]);
+const seriesRequest = z.object({ topic: z.string().min(1).max(200), focus: z.string().max(500).optional() });
 
 const RPC: Record<RpcMethod, Entry<Promise<unknown>>> = {
   getDailySession: def(none, (l) => daily.getDailySession(l)),
@@ -45,7 +47,8 @@ const RPC: Record<RpcMethod, Entry<Promise<unknown>>> = {
   deleteSeries: def(z.tuple([id]), (l, [s]) => series.deleteSeries(l, s)),
   getSeriesLesson: def(z.tuple([id, lessonNumber]), (l, [s, n]) => series.getSeriesLesson(l, s, n)),
   answerSeriesCheck: def(z.tuple([id, lessonNumber, option]), (l, [s, n, a]) => series.answerSeriesCheck(l, s, n, a)),
-  startPlacement: def(z.tuple([z.object({ topic: z.string().min(1).max(200), focus: z.string().max(500).optional() })]), (l, [r]) =>
+  checkTopic: def(z.tuple([seriesRequest]), (l, [r]) => checkTopic(l, r)),
+  startPlacement: def(z.tuple([seriesRequest]), (l, [r]) =>
     placement.startPlacement(l, r)
   ),
   getPlacement: def(none, (l) => placement.getPlacement(l)),
