@@ -24,7 +24,8 @@ type ButtonProps = {
    * outline: "Continue with Google", inside dialogs, and a section's own action
    *   when the screen's primary is something else (Today's "Start a series").
    * quiet: the italic "or …" link for every other action.
-   * danger: red, for the one action that deletes something. Only in a confirm step.
+   * danger: red outline, for the one action that deletes something. Only in a confirm step,
+   *   next to a filled safe choice.
    * secondary is the old name for outline.
    */
   variant?: "primary" | "outline" | "quiet" | "secondary" | "danger";
@@ -56,7 +57,7 @@ const variants = {
   primary: "border-[1.5px] border-(--ink) bg-(--ink) text-(--on-ink) hover:border-(--accent) hover:bg-(--accent)",
   outline: "border-[1.5px] border-(--ink) bg-transparent text-(--ink) hover:bg-(--paper-sunk)",
   danger:
-    "border-[1.5px] border-(--danger) bg-(--danger) text-(--on-danger) hover:border-(--danger-hover) hover:bg-(--danger-hover)",
+    "border-[1.5px] border-(--danger) bg-transparent text-(--danger) hover:border-(--danger-hover) hover:bg-(--paper-sunk) hover:text-(--danger-hover)",
 };
 
 const quietLook =

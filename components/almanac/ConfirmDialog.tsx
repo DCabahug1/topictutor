@@ -71,8 +71,8 @@ export function ConfirmDialog({
           </p>
         )}
         <div className="mt-6 flex flex-wrap gap-2">
-          {/* Focus starts on the safe choice; the red one is what deletes. */}
-          <Button ref={keep} variant="outline" onClick={onCancel}>
+          {/* The safe choice is filled and has focus; the red outline is what deletes. */}
+          <Button ref={keep} onClick={onCancel}>
             {cancelLabel}
           </Button>
           <Button variant="danger" onClick={onConfirm} busy={busy}>
