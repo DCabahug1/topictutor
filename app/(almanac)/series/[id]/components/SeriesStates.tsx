@@ -20,20 +20,6 @@ export function BackLink({ href, children }: { href: string; children: ReactNode
   );
 }
 
-/**
- * The main action of a series page on phones, pinned to the bottom of the
- * screen. The last button takes the room that is left. From 768px the page
- * places the same action itself. Give the page pb-28 on phones.
- */
-export function PhoneActions({ note, children }: { note?: ReactNode; children: ReactNode }) {
-  return (
-    <div className="fixed inset-x-0 bottom-0 z-10 border-0 border-t border-solid border-(--rule) bg-(--paper) px-6 pb-5 pt-3 md:hidden">
-      <div className="flex gap-2 [&>*:last-child]:min-w-0 [&>*:last-child]:flex-auto">{children}</div>
-      {note && <p className="m-0 mt-2 text-center font-mono text-[12px] text-(--ink-muted)">{note}</p>}
-    </div>
-  );
-}
-
 export function SeriesLoading({ label }: { label: string }) {
   return (
     <PaperPage current="library">

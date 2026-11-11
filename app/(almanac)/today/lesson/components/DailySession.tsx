@@ -191,7 +191,15 @@ function DailySessionInner() {
   if (arrivedDone) {
     if (!rereading) return <DoneForToday session={session} />;
     return (
-      <SessionPage leaveHref={user ? "/today" : "/today/lesson"} leaveLabel="Close lesson">
+      <SessionPage
+        leaveHref={user ? "/today" : "/today/lesson"}
+        leaveLabel="Close lesson"
+        footer={
+          <Button icon href={user ? "/today" : "/today/lesson"}>
+            {user ? "Back to Today" : "Done reading"}
+          </Button>
+        }
+      >
         <LessonHeader daily={daily} />
         <LessonBody dropCap paragraphs={daily.paragraphs ?? []} className="mt-7 md:mt-9" />
         {tutor}

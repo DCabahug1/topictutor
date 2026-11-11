@@ -6,20 +6,17 @@ import { Button } from "@/components/almanac/Button";
 import { ConfirmDialog } from "@/components/almanac/ConfirmDialog";
 import { FilterTabs } from "@/components/almanac/FilterTabs";
 import { LeadBlock } from "@/components/almanac/LeadBlock";
-import { ProgressMeter as SegmentMeter } from "@/components/almanac/ProgressMeter";
+import { ProgressMeter } from "@/components/almanac/ProgressMeter";
 import { StepMeter } from "@/components/almanac/StepMeter";
 import { LessonBody } from "@/components/almanac/LessonBody";
 import { LessonRow } from "@/components/almanac/LessonRow";
 import { BottomTabs, Masthead } from "@/components/almanac/Masthead";
 import { Notice } from "@/components/almanac/Notice";
 import { Question, type Answer } from "@/components/almanac/Question";
-import { QuestionNav } from "@/components/almanac/QuestionNav";
 import { SessionBar } from "@/components/almanac/SessionBar";
 import { SeriesRow } from "@/components/almanac/SeriesRow";
-import { SessionProgress } from "@/components/almanac/SessionProgress";
 import type { SessionUser } from "@/components/almanac/SessionProvider";
 import { StatBars } from "@/components/almanac/StatBars";
-import { ProgressMeter, StatusLabel } from "@/components/almanac/StatusLabel";
 import { StreakMark } from "@/components/almanac/StreakMark";
 import { SubjectGrid, SubjectToggle } from "@/components/almanac/SubjectToggle";
 import { TextField } from "@/components/almanac/TextField";
@@ -215,29 +212,6 @@ function Filters() {
   );
 }
 
-function QuestionNavs() {
-  const [current, setCurrent] = useState(2);
-  const answered = [true, true, false, false, false];
-  return (
-    <>
-      <State name="Row · phones">
-        <QuestionNav count={5} current={current} answered={answered} onJump={setCurrent} className="max-w-[340px]" />
-      </State>
-      <State name="List · desktop, with difficulty">
-        <QuestionNav
-          variant="list"
-          count={5}
-          current={current}
-          answered={answered}
-          onJump={setCurrent}
-          meta={["Easy", "Easy", "Hard", "Medium", "Hard"]}
-          className="max-w-[380px]"
-        />
-      </State>
-    </>
-  );
-}
-
 function Dialogs() {
   const [open, setOpen] = useState(false);
   return (
@@ -373,7 +347,7 @@ export function Gallery() {
                 </Button>
               }
             >
-              <SegmentMeter lessonsDone={2} />
+              <ProgressMeter lessonsDone={2} />
             </LeadBlock>
           </State>
         </Both>
@@ -408,10 +382,10 @@ export function Gallery() {
       <Section title="ProgressMeter" note="Five segments plus text. The Mastery Check is its own row, not a sixth cell.">
         <Both>
           <div className="flex flex-col gap-5">
-            <SegmentMeter lessonsDone={0} />
-            <SegmentMeter lessonsDone={2} />
-            <SegmentMeter lessonsDone={5} />
-            <SegmentMeter size="sm" lessonsDone={3} label="Lesson 4 of 5" />
+            <ProgressMeter lessonsDone={0} />
+            <ProgressMeter lessonsDone={2} />
+            <ProgressMeter lessonsDone={5} />
+            <ProgressMeter size="sm" lessonsDone={3} label="Lesson 4 of 5" />
           </div>
         </Both>
       </Section>
@@ -425,26 +399,6 @@ export function Gallery() {
       <Section title="Question and AnswerOption">
         <Both>
           <Questions />
-        </Both>
-      </Section>
-
-      <Section title="QuestionNav" note="Tests only.">
-        <Both>
-          <QuestionNavs />
-        </Both>
-      </Section>
-
-      <Section title="SessionProgress">
-        <Both>
-          <State name="Returning learner, on the lesson">
-            <SessionProgress current="lesson" hasRecall />
-          </State>
-          <State name="First visit, no history to recall">
-            <SessionProgress current="lesson" hasRecall={false} />
-          </State>
-          <State name="Finish">
-            <SessionProgress current="finish" hasRecall />
-          </State>
         </Both>
       </Section>
 
@@ -473,23 +427,6 @@ export function Gallery() {
       <Section title="TextField">
         <Both>
           <Fields />
-        </Both>
-      </Section>
-
-      <Section title="StatusLabel and ProgressMeter">
-        <Both>
-          <div className="flex flex-wrap gap-x-7 gap-y-3">
-            <StatusLabel status="notStarted" />
-            <StatusLabel status="inProgress" />
-            <StatusLabel status="completed" />
-            <StatusLabel status="done" label="Lesson done" />
-          </div>
-          <div className="mt-7 flex max-w-[420px] flex-col gap-5">
-            <ProgressMeter lessonsDone={0} passed={false} caption />
-            <ProgressMeter lessonsDone={2} passed={false} caption />
-            <ProgressMeter lessonsDone={5} passed={false} caption />
-            <ProgressMeter lessonsDone={5} passed caption />
-          </div>
         </Both>
       </Section>
 

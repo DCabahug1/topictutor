@@ -40,20 +40,6 @@ export function PaperPage({ current, dateline, tabs = true, after, children }: P
   );
 }
 
-/**
- * The actions that close a page. On phones they are pinned to the bottom of the
- * screen; from 768px they sit in the page under a 3px rule, with a note beside them.
- * Give the page enough bottom padding (pb-40 on phones) so nothing hides behind the bar.
- */
-export function PinnedActions({ note, children }: { note?: ReactNode; children: ReactNode }) {
-  return (
-    <div className="fixed inset-x-0 bottom-0 z-10 border-0 border-t border-solid border-(--rule) bg-(--paper) px-6 pb-[22px] pt-[14px] md:static md:mt-8 md:flex md:flex-wrap md:items-center md:justify-between md:gap-[14px] md:border-t-[3px] md:border-(--ink) md:bg-transparent md:px-0 md:pb-0 md:pt-[18px]">
-      {note && <div className="t-note mb-2 text-(--ink-muted) md:mb-0 md:text-[17px]">{note}</div>}
-      <div className="flex flex-col-reverse gap-[6px] md:flex-row md:flex-wrap md:gap-[10px] max-md:[&>*]:w-full">{children}</div>
-    </div>
-  );
-}
-
 type SessionPageProps = {
   leaveHref?: string;
   onLeave?: () => void;
