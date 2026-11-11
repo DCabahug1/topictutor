@@ -61,6 +61,46 @@ export const generateStructured = async <Schema extends z.ZodType>({
 };
 
 /**
+ * Streams structured output as raw JSON text while it is written, then returns
+ * the parsed, schema-checked result. Lets a caller show each finished piece of
+ * a list as soon as it closes.
+ */
+export async function* streamStructured<Schema extends z.ZodType>({
+  system,
+  user,
+  schema,
+  effort = "medium",
+  maxTokens = 16_000,
+}: {
+  system: string;
+  user: string;
+  schema: Schema;
+  effort?: Effort;
+  maxTokens?: number;
+}): AsyncGenerator<string, z.infer<Schema>> {
+  const stream = client.beta.messages.stream({
+    model: MODEL,
+    max_tokens: maxTokens,
+    betas: ["server-side-fallback-2026-07-01"],
+    fallbacks: "default",
+    output_config: { effort, format: betaZodOutputFormat(schema) },
+    system,
+    messages: [{ role: "user", content: user }],
+  });
+
+  for await (const event of stream) {
+    if (event.type === "content_block_delta" && event.delta.type === "text_delta") yield event.delta.text;
+  }
+
+  const message = await stream.finalMessage();
+  if (message.stop_reason === "refusal") throw new GenerationError("The model declined to generate this content");
+  if (message.parsed_output === null) {
+    throw new GenerationError(`The model returned no structured output (stop reason: ${message.stop_reason})`);
+  }
+  return message.parsed_output as z.infer<Schema>;
+}
+
+/**
  * Streams plain prose as it is written: lessons and tutor answers. Thinking is
  * off between tool calls, so the first words arrive without a silent pause.
  * Throws GenerationError if the model declines or stops early.
