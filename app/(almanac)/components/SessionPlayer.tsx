@@ -185,7 +185,6 @@ export function SessionPlayer() {
                   days={demoMonth()}
                   count={flipped ? 13 : 12}
                   todayDone={flipped}
-                  celebrate
                   className="hidden shrink-0 [--cell:clamp(16px,calc(12cqi-46px),48px)] [--gap:calc(var(--cell)*0.18)] [--meta:clamp(11px,1.6cqi,13px)] md:block @max-[34rem]:hidden!"
                 />
               </div>

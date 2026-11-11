@@ -158,7 +158,6 @@ export function Finish({ session, headingRef }: { session: DailySession; heading
         days={streak.month}
         count={flipped ? to : from}
         todayDone={flipped}
-        celebrate
         className="hidden shrink-0 [--cell:28px] [--gap:6px] [--meta:12px] md:block lg:[--cell:44px] lg:[--gap:8px] lg:[--meta:13px]"
       />
     </div>

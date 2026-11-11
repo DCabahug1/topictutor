@@ -114,7 +114,7 @@ export default function TodayPage() {
     <PaperPage current="today">
       <section
         aria-labelledby="today-heading"
-        className="mt-(--lead-top) flex flex-wrap items-end justify-between gap-x-20 gap-y-14"
+        className="@container/today mt-(--lead-top) flex flex-wrap items-start justify-between gap-x-20 gap-y-10"
       >
         <LeadBlock
           headingId="today-heading"
@@ -146,7 +146,10 @@ export default function TodayPage() {
             days={streak.month}
             todayDone={streak.todayDone}
             longest={streak.longest}
-            className="min-w-0 flex-[1_1_100%] md:flex-[0_1_300px]"
+            // Beside the lesson it is the 300px card, top right. The lesson (620px) + gap (80px)
+            // + card (300px) fit from 1000px; below that the card moves above the lesson, and the
+            // max-width lifts so it fills the row and lays itself out wide.
+            className="min-w-0 flex-[1_1_300px] max-w-[max(300px,calc((1000px_-_100%)_*_999))] @max-[1000px]/today:order-first"
           />
         )}
       </section>
