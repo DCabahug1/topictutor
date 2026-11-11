@@ -3,6 +3,7 @@
 import { Button } from "@/components/almanac/Button";
 import { LeadBlock } from "@/components/almanac/LeadBlock";
 import { Notice } from "@/components/almanac/Notice";
+import { RevealRule } from "@/components/almanac/Reveal";
 import { StatBars } from "@/components/almanac/StatBars";
 import {
   almanac,
@@ -22,6 +23,13 @@ import {
 const MASTERY_QUESTIONS = 5;
 const LABEL = "m-0 font-label text-[12px] uppercase tracking-[0.08em] text-(--ink-muted)";
 const BIG = "after-eyebrow big-numeral m-0 font-serif text-[80px] font-medium leading-[0.9] tracking-[-0.04em] md:text-[112px]";
+
+// Sections after a divider split the usual gap around a hairline.
+const AFTER_RULE = "mt-[calc(var(--section-gap)/2)]";
+
+function Divider() {
+  return <RevealRule className={`${AFTER_RULE} h-px bg-(--rule)`} />;
+}
 
 const lessons = (n: number) => `${n} ${n === 1 ? "lesson" : "lessons"}`;
 
@@ -114,7 +122,8 @@ export function StatsView() {
         />
       </section>
 
-      <section aria-labelledby="st-week" className="mt-(--section-gap)">
+      <Divider />
+      <section aria-labelledby="st-week" className={AFTER_RULE}>
         <h2 id="st-week" className="t-section m-0">
           {week === 0 ? "No lessons this week yet" : `${lessons(week)} this week`}
         </h2>
@@ -133,8 +142,9 @@ export function StatsView() {
         />
       </section>
 
-      <div className="mt-(--section-gap) grid grid-cols-1 gap-x-[72px] gap-y-16 md:grid-cols-2">
-        <section aria-labelledby="st-recall" className="min-w-0">
+      <Divider />
+      <div className={`${AFTER_RULE} grid grid-cols-1 gap-y-16 md:grid-cols-2`}>
+        <section aria-labelledby="st-recall" className="min-w-0 md:pr-9">
           <h2 id="st-recall" className={LABEL}>
             Recall accuracy
           </h2>
@@ -164,7 +174,10 @@ export function StatsView() {
           )}
         </section>
 
-        <section aria-labelledby="st-series" className="min-w-0">
+        <section
+          aria-labelledby="st-series"
+          className="min-w-0 border-0 md:border-l md:border-solid md:border-(--rule) md:pl-9"
+        >
           <h2 id="st-series" className={LABEL}>
             Series completed
           </h2>
@@ -209,6 +222,7 @@ export function StatsView() {
         </section>
       </div>
 
+      <Divider />
       <SubjectSection stats={stats} picked={subjects ? subjectNames(subjects) : []} />
     </>
   );
@@ -216,7 +230,7 @@ export function StatsView() {
 
 function SubjectSection({ stats, picked }: { stats: Stats; picked: string[] }) {
   return (
-    <section aria-labelledby="st-cat" className="mt-(--section-gap)">
+    <section aria-labelledby="st-cat" className={AFTER_RULE}>
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <h2 id="st-cat" className="t-section m-0">
           By subject
