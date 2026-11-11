@@ -81,6 +81,8 @@
 html { background: var(--paper); color: var(--ink); }
 body { margin: 0; font-family: var(--font-serif); background: var(--paper); color: var(--ink); }
 :where(a, button, input, textarea, select, [tabindex]):focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+/* Headings that take focus when a step changes are not controls, so they show no ring. */
+:is(h1, h2, h3)[tabindex="-1"]:focus-visible { outline: none; }
 
 /* Motion */
 @keyframes almanac-rise {

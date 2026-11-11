@@ -46,7 +46,7 @@ export const AnswerOption = forwardRef<HTMLButtonElement, AnswerOptionProps>(fun
       tabIndex={tabIndex}
       onClick={locked ? undefined : onSelect}
       className={cx(
-        "grid w-full grid-cols-[26px_minmax(0,1fr)] items-start gap-3 border-[1.5px] p-[14px] text-left font-serif text-[17px] leading-[1.4] text-(--ink) transition-colors duration-(--duration-instant) ease-out",
+        "grid w-full grid-cols-[26px_minmax(0,1fr)] items-start gap-3 border-[1.5px] p-[14px] text-left font-serif text-[17px] leading-[1.4] text-(--ink) md:p-[18px] md:text-[19px] transition-colors duration-(--duration-instant) ease-out",
         unsure ? "border-dashed italic" : "border-solid",
         locked ? "cursor-default" : "cursor-pointer",
         correct && "border-(--correct) bg-(--correct-wash)",
@@ -77,7 +77,7 @@ export const AnswerOption = forwardRef<HTMLButtonElement, AnswerOptionProps>(fun
           letter
         )}
       </span>
-      <span className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+      <span className="flex flex-col gap-1">
         <span className={cx((dimmed || (unsure && !selected)) && "text-(--ink-muted)")}>{text}</span>
         {tag && (
           <span

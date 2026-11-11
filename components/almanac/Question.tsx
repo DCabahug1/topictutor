@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type KeyboardEvent } from "react";
+import { useEffect, useRef, type KeyboardEvent } from "react";
 import { AnswerOption, type AnswerResult } from "./AnswerOption";
 import { cx } from "./cx";
 
@@ -26,6 +26,13 @@ type QuestionProps = {
   explanation?: string;
   /** Adds the Not sure option (tests only). */
   allowUnsure?: boolean;
+  /** 2 lays the options out in two columns from 768px, as the daily check does on desktop. */
+  columns?: 1 | 2;
+  /**
+   * A to D (and N) answer from anywhere on the page, not only while the options have focus.
+   * Turn it off when more than one unanswered question is on screen.
+   */
+  pageShortcuts?: boolean;
   className?: string;
 };
 
@@ -45,6 +52,8 @@ export function Question({
   correctIndex,
   explanation,
   allowUnsure = false,
+  columns = 1,
+  pageShortcuts = true,
   className,
 }: QuestionProps) {
   const refs = useRef<Array<HTMLButtonElement | null>>([]);
@@ -54,6 +63,40 @@ export function Question({
   const select = (answer: Answer) => {
     if (!revealed) onChange(answer);
   };
+
+  /** A to D pick an option and N picks Not sure. Returns true if the key was used. */
+  const pickByLetter = (pressed: string): boolean => {
+    if (revealed) return false;
+    const key = pressed.toLowerCase();
+    const letterIndex = key.length === 1 ? LETTERS.toLowerCase().indexOf(key) : -1;
+    if (letterIndex >= 0 && letterIndex < options.length) {
+      select(letterIndex);
+      refs.current[letterIndex]?.focus();
+      return true;
+    }
+    if (key === "n" && allowUnsure) {
+      select("unsure");
+      refs.current[answers.length - 1]?.focus();
+      return true;
+    }
+    return false;
+  };
+
+  const pick = useRef(pickByLetter);
+  useEffect(() => {
+    pick.current = pickByLetter;
+  });
+  useEffect(() => {
+    if (!pageShortcuts) return;
+    const onKey = (event: globalThis.KeyboardEvent) => {
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      const target = event.target as HTMLElement;
+      if (target.closest("input, textarea, select, [contenteditable]")) return;
+      if (pick.current(event.key)) event.preventDefault();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [pageShortcuts]);
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.metaKey || event.ctrlKey || event.altKey) return;
@@ -68,18 +111,7 @@ export function Question({
       return;
     }
 
-    if (revealed) return;
-    const key = event.key.toLowerCase();
-    const letterIndex = LETTERS.toLowerCase().indexOf(key);
-    if (key.length === 1 && letterIndex >= 0 && letterIndex < options.length) {
-      event.preventDefault();
-      select(letterIndex);
-      refs.current[letterIndex]?.focus();
-    } else if (key === "n" && allowUnsure) {
-      event.preventDefault();
-      select("unsure");
-      refs.current[answers.length - 1]?.focus();
-    }
+    if (!pageShortcuts && pickByLetter(event.key)) event.preventDefault();
   };
 
   const resultFor = (answer: Answer): AnswerResult => {
@@ -95,7 +127,12 @@ export function Question({
 
   return (
     <div className={className}>
-      <div role="radiogroup" aria-label={label} onKeyDown={onKeyDown} className="flex flex-col gap-2">
+      <div
+        role="radiogroup"
+        aria-label={label}
+        onKeyDown={onKeyDown}
+        className={cx("flex flex-col gap-2", columns === 2 && "md:grid md:grid-cols-2 md:gap-[10px]")}
+      >
         {answers.map((answer, i) => (
           <AnswerOption
             key={String(answer)}
@@ -116,7 +153,7 @@ export function Question({
       {revealed && correctIndex !== undefined && (
         <p
           role="status"
-          className="almanac-rise mt-4 border-t border-(--rule) pt-[14px] text-[17px] leading-normal"
+          className="almanac-rise mt-4 border-0 border-t border-solid border-(--rule) pt-[14px] text-[17px] leading-normal md:mt-6 md:pt-[18px] md:text-[20px]"
         >
           <span
             className={cx(

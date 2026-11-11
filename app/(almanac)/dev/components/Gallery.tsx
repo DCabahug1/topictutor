@@ -74,6 +74,7 @@ function Questions() {
           value={instant}
           onChange={setInstant}
           mode="instant"
+          pageShortcuts={false}
           correctIndex={leap.correctIndex}
           explanation={leap.explanation}
         />
@@ -88,6 +89,7 @@ function Questions() {
           value={deferred}
           onChange={setDeferred}
           mode="deferred"
+          pageShortcuts={false}
           allowUnsure
         />
       </State>
@@ -98,6 +100,7 @@ function Questions() {
           value={2}
           onChange={() => {}}
           mode="deferred"
+          pageShortcuts={false}
           revealed
           correctIndex={leap.correctIndex}
           explanation={leap.explanation}
@@ -111,6 +114,7 @@ function Questions() {
           value={3}
           onChange={() => {}}
           mode="deferred"
+          pageShortcuts={false}
           revealed
           correctIndex={leap.correctIndex}
           explanation={leap.explanation}

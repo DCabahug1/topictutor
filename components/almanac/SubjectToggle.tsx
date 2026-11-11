@@ -15,7 +15,7 @@ export function SubjectToggle({ name, on, onToggle }: SubjectToggleProps) {
       aria-pressed={on}
       onClick={onToggle}
       className={cx(
-        "flex min-h-[52px] cursor-pointer items-center justify-between gap-2 border-[1.5px] border-solid border-(--ink) px-[14px] text-left font-serif text-[17px] leading-[1.2] transition-colors duration-(--duration-instant) ease-out",
+        "flex min-h-[52px] cursor-pointer items-center justify-between gap-2 border-[1.5px] border-solid border-(--ink) px-[14px] text-left font-serif text-[17px] leading-[1.2] md:min-h-[60px] md:px-[18px] md:text-[20px] transition-colors duration-(--duration-instant) ease-out",
         on ? "bg-(--ink) text-(--on-ink)" : "bg-transparent text-(--ink) hover:bg-(--paper-sunk)"
       )}
     >
