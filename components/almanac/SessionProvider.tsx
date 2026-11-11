@@ -2,6 +2,8 @@
 
 import { createContext, useContext, type ReactNode } from "react";
 import { setFixtureScope } from "@/lib/almanac/fixture-source";
+import { setExpectedAccount } from "@/lib/almanac/remote-source";
+import { AuthSync } from "./AuthSync";
 
 export type SessionUser = {
   id: string;
@@ -19,7 +21,14 @@ const SessionContext = createContext<SessionUser | null>(null);
 export function SessionProvider({ user, children }: { user: SessionUser | null; children: ReactNode }) {
   // Guests and each signed-in learner keep separate sample progress.
   setFixtureScope(user?.id ?? null);
-  return <SessionContext.Provider value={user}>{children}</SessionContext.Provider>;
+  // A page drawn for an account never starts a guest session behind it.
+  setExpectedAccount(user?.id ?? null);
+  return (
+    <SessionContext.Provider value={user}>
+      <AuthSync userId={user?.id ?? null} />
+      {children}
+    </SessionContext.Provider>
+  );
 }
 
 /** The signed-in learner, or null for a guest. */
