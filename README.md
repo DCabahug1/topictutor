@@ -27,8 +27,8 @@ An AI-powered personalized learning platform that creates custom courses based o
 
 ### Prerequisites
 
-- Node.js 18+ 
-- npm, yarn, or pnpm
+- Node.js 22+
+- pnpm 11 (`corepack enable` picks up the pinned version)
 - Supabase account
 - Anthropic API account
 
@@ -55,10 +55,6 @@ cd topictutor
 
 2. Install dependencies:
 ```bash
-npm install
-# or
-yarn install
-# or
 pnpm install
 ```
 
@@ -66,10 +62,6 @@ pnpm install
 
 4. Run the development server:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
 pnpm dev
 ```
 
