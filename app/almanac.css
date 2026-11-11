@@ -20,21 +20,22 @@
   --focus: var(--accent);
 }
 
+/* Graphite, the dark tone from the v2 hierarchy pass (softer than black). */
 [data-theme="dark"] {
   color-scheme: dark;
-  --paper: #121416;
-  --paper-raised: #1A1D20;
-  --paper-sunk: #24282C;
-  --ink: #E9EAE6;
-  --ink-muted: #A3A8AD;
-  --ink-soft: #C9CCC8;
-  --on-ink: #121416;
-  --rule: #3A3F44;
+  --paper: #1E2124;
+  --paper-raised: #272B2F;
+  --paper-sunk: #31363B;
+  --ink: #E6E7E3;
+  --ink-muted: #A0A5AA;
+  --ink-soft: #C4C7C3;
+  --on-ink: #1E2124;
+  --rule: #3E444A;
   --accent: #FF7A50;
   --correct: #8DB4F0;
-  --correct-wash: #1A2638;
+  --correct-wash: #24324A;
   --incorrect: #F0A35E;
-  --incorrect-wash: #2E2216;
+  --incorrect-wash: #3A2C1E;
   --focus: var(--accent);
 }
 
@@ -61,6 +62,19 @@
   /* --font-newsreader and --font-plex-mono come from next/font in app/layout.tsx */
   --font-serif: var(--font-newsreader), Georgia, "Times New Roman", serif;
   --font-mono: var(--font-plex-mono), ui-monospace, Menlo, monospace;
+
+  /* Layout rhythm. Phone values in the media query below. */
+  --gutter: 72px;
+  --lead-top: 112px;      /* masthead to the lead block */
+  --section-gap: 152px;   /* between the lead block and anything after it */
+  --action-gap: 40px;     /* lead sentence to the primary button */
+  --button-h: 58px;       /* the one primary button per screen */
+  --reading-col: 720px;   /* lessons, checks, tests */
+  --content-max: 1200px;
+}
+
+@media (max-width: 767px) {
+  :root { --gutter: 24px; --lead-top: 56px; --section-gap: 88px; --action-gap: 32px; }
 }
 
 /* Text styles */
@@ -76,6 +90,15 @@
 .t-label { font-family: var(--font-mono); font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; }
 .t-button { font-family: var(--font-mono); font-size: 15px; line-height: 20px; font-weight: 500; }
 .t-numeral { font-family: var(--font-mono); font-size: 48px; line-height: 1; font-weight: 500; letter-spacing: -0.02em; }
+
+/* Lead block styles: every screen opens with eyebrow, heading, one sentence, one button. */
+.t-lead-h1 { font-family: var(--font-serif); font-size: clamp(46px, 6vw, 84px); line-height: 0.98; font-weight: 500; letter-spacing: -0.03em; }
+.t-lead-h1-sm { font-family: var(--font-serif); font-size: clamp(38px, 4.6vw, 64px); line-height: 1; font-weight: 500; letter-spacing: -0.025em; }
+.t-lead { font-family: var(--font-serif); font-size: clamp(19px, 1.6vw, 23px); line-height: 1.45; font-weight: 400; color: var(--ink-soft); }
+.t-section { font-family: var(--font-serif); font-size: clamp(28px, 2.5vw, 36px); line-height: 1.1; font-weight: 500; letter-spacing: -0.015em; }
+.t-eyebrow { font-family: var(--font-mono); font-size: 12px; line-height: 16px; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+.t-quiet-link { font-family: var(--font-serif); font-size: 18px; font-style: italic; color: var(--ink-soft); text-decoration: underline; text-underline-offset: 5px; }
+.t-quiet-link:hover { color: var(--ink); }
 
 /* Base */
 html { background: var(--paper); color: var(--ink); }

@@ -14,254 +14,169 @@
 body{margin:0}
 </style>
 </helmet>
-<div style="position: relative; min-height: {{z.minH}}; background: {{t.bg}}; color: {{t.ink}}; font-family: 'Newsreader', Georgia, serif; box-sizing: border-box; padding: 0 {{z.gutter}} {{z.bottomPad}}">
-  <div style="max-width: 1296px; margin: 0 auto">
+<div style="position: relative">
+<div style="min-height: {{z.minH}}; background: {{t.bg}}; color: {{t.ink}}; font-family: 'Newsreader', Georgia, serif; box-sizing: border-box; padding: 0 {{z.gutter}} {{z.bottom}}; overflow: hidden; display: flex; flex-direction: column">
+  <div style="width: 100%; max-width: 1200px; margin: 0 auto; flex: 1 0 auto; display: flex; flex-direction: column">
     <header style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: {{z.headPad}}">
       <a href="#" style="font-size: {{z.brand}}; font-weight: 600; letter-spacing: -0.015em; color: {{t.ink}}; text-decoration: none">TopicTutor</a>
-      <nav aria-label="Main" style="display: flex; align-items: center; gap: 2px; font-family: 'IBM Plex Mono', monospace; font-size: 14px">
-        <sc-if value="{{desk}}" hint-placeholder-val="{{ true }}">
-          <a href="#" style="padding: 12px; color: {{t.ink}}; text-decoration: none">Today</a>
-          <a href="#" aria-current="page" style="padding: 12px; color: {{t.ink}}; text-decoration: underline; text-decoration-color: {{t.accent}}; text-decoration-thickness: 2px; text-underline-offset: 6px">Library</a>
-          <a href="#" style="padding: 12px; color: {{t.ink}}; text-decoration: none">Stats</a>
-        </sc-if>
-        <button type="button" aria-label="{{themeLabel}}" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: {{t.ink}}">
-          <sc-if value="{{isLight}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></sc-if>
-          <sc-if value="{{dark}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"></path></svg></sc-if>
-        </button>
-        <button type="button" aria-label="Account: Duane Cabahug" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none"><span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 999px; background: {{t.ink}}; color: {{t.bg}}; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 500">D</span></button>
-      </nav>
+      <nav aria-label="Main" style="display: flex; align-items: center; gap: 2px; font-family: 'IBM Plex Mono', monospace; font-size: 14px"><sc-if value="{{desk}}" hint-placeholder-val="{{ true }}"><a href="#" style="padding: 12px; color: {{t.ink}}; text-decoration: none">Today</a><a href="#" aria-current="page" style="padding: 12px; color: {{t.ink}}; text-decoration: underline; text-decoration-color: {{t.accent}}; text-decoration-thickness: 2px; text-underline-offset: 6px">Library</a><a href="#" style="padding: 12px; color: {{t.ink}}; text-decoration: none">Stats</a></sc-if><button type="button" aria-label="{{themeLabel}}" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: {{t.ink}}"><sc-if value="{{isLight}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></sc-if><sc-if value="{{dark}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"></path></svg></sc-if></button><button type="button" aria-label="Account: Duane Cabahug" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none"><span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 999px; background: {{t.ink}}; color: {{t.bg}}; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 500">D</span></button></nav>
     </header>
     <div style="border-top: 3px solid {{t.ink}}; border-bottom: 1px solid {{t.ink}}; height: 3px"></div>
 
-    <div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; margin-top: {{z.titleGap}}">
-      <h1 style="margin: 0; font-size: {{z.h1}}; line-height: 1; font-weight: 500; letter-spacing: -0.025em">Library</h1>
-      <a href="#" style="display: inline-flex; align-items: center; gap: 10px; min-height: 50px; padding: 0 20px; background: {{t.ink}}; color: {{t.bg}}; font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 500; text-decoration: none"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Start a new series</a>
-    </div>
+    <!-- LEAD -->
+    <sc-if value="{{hasLead}}" hint-placeholder-val="{{ true }}">
+    <section style="margin-top: {{z.leadTop}}; max-width: 860px">
+      <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: {{t.accent}}; ">Pick up where you left off · {{lead.cat}}</p>
+      <h1 style="margin: 18px 0 0; font-size: {{z.h1Sm}}; line-height: 1; font-weight: 500; letter-spacing: -0.025em">{{lead.title}}</h1>
+      <p style="margin: 22px 0 0; max-width: 560px; font-size: {{z.lead}}; line-height: 1.45; color: {{t.soft}}">{{lead.line}}</p>
+      <div style="display: flex; align-items: center; gap: 14px; margin-top: 28px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: {{t.muted}}"><div aria-hidden="true" style="display: grid; grid-template-columns: repeat(5, {{z.segW}}); gap: 4px"><sc-for list="{{lead.segs}}" as="g" hint-placeholder-count="5"><span style="height: 6px; background: {{g.c}}; outline: 1px solid {{g.o}}; outline-offset: -1px"></span></sc-for></div>{{lead.prog}}</div>
+      <div style="display: flex; flex-direction: {{z.actDir}}; align-items: {{z.actAlign}}; gap: 14px 28px; margin-top: {{z.actTop}}"><a href="#" style="display: inline-flex; align-items: center; justify-content: center; gap: 14px; width: {{z.btnW}}; box-sizing: border-box; min-height: 58px; padding: 0 30px; background: {{t.ink}}; color: {{t.bg}}; font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500; text-decoration: none; ">{{lead.cta}}<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a><a href="#" style="display: inline-block; padding: 8px 0; font-size: 18px; font-style: italic; color: {{t.soft}}; text-underline-offset: 5px; ">or start a new series</a></div>
+    </section>
 
-    <div style="display: flex; flex-wrap: wrap; gap: {{z.colGap}}; margin-top: {{z.sectionGap}}; align-items: flex-start">
-      <!-- YOUR SERIES -->
-      <section aria-labelledby="series-h" style="flex: 999 1 560px; min-width: 0; border-top: 3px solid {{t.ink}}">
-        <div style="display: flex; justify-content: space-between; align-items: baseline; padding-top: 14px">
-          <h2 id="series-h" style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase">Your series</h2>
-          <sc-if value="{{isFull}}" hint-placeholder-val="{{ true }}"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: {{t.muted}}">Most recent first</span></sc-if>
-        </div>
-
-        <sc-if value="{{showControls}}" hint-placeholder-val="{{ true }}">
-          <div style="margin-top: 14px">
-            <label for="lib-search" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Search your series</label>
-            <div style="display: flex; align-items: center; gap: 10px; padding: 0 12px; background: {{t.raised}}; border: 1.5px solid {{t.ink}}">
-              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"></circle><path d="M16 16l4.5 4.5"></path></svg>
-              <input id="lib-search" type="search" value="{{q}}" onChange="{{onQ}}" placeholder="Search titles, subjects and descriptions" style="flex: 1 1 auto; min-width: 0; height: 48px; background: transparent; border: none; font-family: 'Newsreader', Georgia, serif; font-size: 18px; color: {{t.ink}}">
-              <sc-if value="{{hasQ}}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{clearQ}}" aria-label="Clear search" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: {{t.ink}}; cursor: pointer"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></sc-if>
-            </div>
-            <div role="group" aria-label="Filter by status" style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px">
-              <sc-for list="{{filters}}" as="f" hint-placeholder-count="4">
-                <button type="button" aria-pressed="{{f.on}}" onClick="{{f.pick}}" style="min-height: 40px; padding: 0 12px; background: {{f.bg}}; color: {{f.ink}}; border: 1.5px solid {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 13px; cursor: pointer">{{f.label}} <span style="color: {{f.countInk}}">{{f.count}}</span></button>
-              </sc-for>
-            </div>
-            <p role="status" style="margin: 10px 0 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: {{t.muted}}">{{resultLine}}</p>
-          </div>
-        </sc-if>
-
-        <!-- loading -->
-        <sc-if value="{{isLoading}}" hint-placeholder-val="{{ false }}">
-          <div aria-busy="true" aria-label="Loading your series" style="margin-top: 14px">
-            <sc-for list="{{skeleton}}" as="k" hint-placeholder-count="4">
-              <div aria-hidden="true" style="padding: 18px 0; border-top: 1px solid {{t.rule}}; display: flex; flex-direction: column; gap: 10px">
-                <span style="height: 12px; width: 30%; background: {{t.sunk}}"></span>
-                <span style="height: 20px; width: 82%; background: {{t.sunk}}"></span>
-                <span style="height: 14px; width: 64%; background: {{t.sunk}}"></span>
-              </div>
-            </sc-for>
-          </div>
-        </sc-if>
-
-        <!-- empty -->
-        <sc-if value="{{isEmpty}}" hint-placeholder-val="{{ false }}">
-          <div style="padding: 24px 0 8px">
-            <p style="margin: 0; font-size: {{z.emptyTitle}}; line-height: 1.15; font-weight: 500">Nothing here yet.</p>
-            <p style="margin: 10px 0 0; max-width: 520px; font-size: 17px; line-height: 1.5; color: {{t.soft}}">A series is five lessons written around what you don’t know yet. Start one on anything, or look around the sample first.</p>
-            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px">
-              <a href="#" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 18px; border: 1.5px solid {{t.ink}}; color: {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 14px; text-decoration: none">Start a series</a>
-              <a href="#" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 4px; color: {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 14px; text-underline-offset: 4px">Open the sample series</a>
-            </div>
-          </div>
-        </sc-if>
-
-        <!-- no results -->
-        <sc-if value="{{noResults}}" hint-placeholder-val="{{ false }}">
-          <div style="padding: 24px 0 8px; border-top: 1px solid {{t.rule}}">
-            <p style="margin: 0; font-size: 24px; line-height: 1.2; font-weight: 500">{{noResultsLine}}</p>
-            <p style="margin: 8px 0 0; font-size: 17px; color: {{t.soft}}">Try a broader word, or start a series on it.</p>
-            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px">
-              <button type="button" onClick="{{clearAll}}" style="min-height: 46px; padding: 0 16px; background: transparent; border: 1.5px solid {{t.ink}}; color: {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 13px; cursor: pointer">Clear search and filters</button>
-              <a href="#" style="display: inline-flex; align-items: center; min-height: 46px; padding: 0 4px; color: {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 13px; text-underline-offset: 4px">Start a series on “{{q}}”</a>
-            </div>
-          </div>
-        </sc-if>
-
-        <!-- list -->
-        <sc-if value="{{hasRows}}" hint-placeholder-val="{{ true }}">
-          <ul style="list-style: none; margin: 14px 0 0; padding: 0">
-            <sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
-              <li style="display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; padding: 18px 0; border-top: 1px solid {{t.rule}}">
-                <a href="#" style="color: {{t.ink}}; text-decoration: none; min-width: 0">
-                  <span style="display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase">
-                    <span style="color: {{t.accent}}">{{r.cat}}</span>
-                    <span style="display: inline-flex; align-items: center; gap: 5px; color: {{r.statusInk}}">
-                      <sc-if value="{{r.isDone}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
-                      <sc-if value="{{r.isProg}}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="width: 10px; height: 10px; box-sizing: border-box; border: 1.5px solid currentColor; border-radius: 999px; background: linear-gradient(90deg, currentColor 50%, transparent 50%)"></span></sc-if>
-                      <sc-if value="{{r.isNew}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="width: 10px; height: 10px; box-sizing: border-box; border: 1.5px solid currentColor; border-radius: 999px"></span></sc-if>
-                      {{r.status}}
-                    </span>
-                    <span style="color: {{t.muted}}; font-weight: 400">{{r.updated}}</span>
-                  </span>
-                  <span style="display: block; margin-top: 6px; font-size: {{z.rowTitle}}; line-height: 1.2; font-weight: 500">{{r.title}}</span>
-                  <span style="display: block; margin-top: 4px; font-size: 16px; line-height: 1.45; color: {{t.soft}}">{{r.desc}}</span>
-                  <span style="display: flex; align-items: center; gap: 10px; margin-top: 10px">
-                    <span aria-hidden="true" style="display: grid; grid-template-columns: repeat(6, 14px); gap: 2px">
-                      <sc-for list="{{r.cells}}" as="c" hint-placeholder-count="6"><span style="height: 6px; border: 1px {{c.style}} {{t.ink}}; background: {{c.bg}}"></span></sc-for>
-                    </span>
-                    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500">{{r.pct}}%</span>
-                    <sc-if value="{{r.hasBest}}" hint-placeholder-val="{{ false }}"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: {{t.muted}}">· best {{r.best}}/5</span></sc-if>
-                  </span>
-                </a>
-                <button type="button" onClick="{{r.askDelete}}" aria-label="{{r.deleteAria}}" style="align-self: start; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: {{t.muted}}; cursor: pointer">
-                  <svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"></path></svg>
-                </button>
-              </li>
-            </sc-for>
-          </ul>
-        </sc-if>
-      </section>
-
-      <!-- PAST DAILY LESSONS -->
-      <section aria-labelledby="daily-h" style="flex: 1 1 340px; min-width: 0; border-top: 3px solid {{t.ink}}">
-        <div style="display: flex; justify-content: space-between; align-items: baseline; padding-top: 14px">
-          <h2 id="daily-h" style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase">Past daily lessons</h2>
-          <sc-if value="{{isFull}}" hint-placeholder-val="{{ true }}"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: {{t.muted}}">168 so far</span></sc-if>
-        </div>
-        <sc-if value="{{isFull}}" hint-placeholder-val="{{ true }}">
-          <ul style="list-style: none; margin: 10px 0 0; padding: 0">
-            <sc-for list="{{daily}}" as="d" hint-placeholder-count="6">
-              <li style="border-top: 1px solid {{t.rule}}">
-                <a href="#" style="display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px; padding: 14px 0; color: {{t.ink}}; text-decoration: none">
-                  <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; line-height: 1.5; color: {{t.muted}}">{{d.date}}</span>
-                  <span>
-                    <span style="display: block; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: {{d.statusInk}}">{{d.cat}} · {{d.status}}</span>
-                    <span style="display: block; margin-top: 3px; font-size: 18px; line-height: 1.25">{{d.title}}</span>
-                  </span>
-                </a>
-              </li>
-            </sc-for>
-          </ul>
-          <p style="margin: 8px 0 0; font-size: 15px; font-style: italic; color: {{t.muted}}">Finishing a past lesson counts toward today’s streak.</p>
-          <button type="button" style="margin-top: 10px; min-height: 44px; padding: 0 14px; background: transparent; border: 1.5px solid {{t.ink}}; color: {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 13px">Show older lessons</button>
-        </sc-if>
-        <sc-if value="{{isLoading}}" hint-placeholder-val="{{ false }}">
-          <div aria-hidden="true" style="display: flex; flex-direction: column; gap: 14px; margin-top: 16px"><span style="height: 40px; background: {{t.sunk}}"></span><span style="height: 40px; background: {{t.sunk}}"></span><span style="height: 40px; background: {{t.sunk}}"></span></div>
-        </sc-if>
-        <sc-if value="{{isEmpty}}" hint-placeholder-val="{{ false }}">
-          <p style="margin: 18px 0 0; font-size: 17px; line-height: 1.5; color: {{t.soft}}">Each day’s lesson lands here after the day is over, so you can come back to any of them.</p>
-        </sc-if>
-      </section>
-    </div>
-
-    <sc-if value="{{phone}}" hint-placeholder-val="{{ false }}">
-      <nav aria-label="Main" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 32px -24px 0; border-top: 1px solid {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase">
-        <a href="#" style="display: flex; align-items: center; justify-content: center; min-height: 56px; color: {{t.muted}}; text-decoration: none; border-top: 3px solid transparent">Today</a>
-        <a href="#" aria-current="page" style="display: flex; align-items: center; justify-content: center; min-height: 56px; color: {{t.ink}}; font-weight: 500; text-decoration: none; border-top: 3px solid {{t.accent}}">Library</a>
-        <a href="#" style="display: flex; align-items: center; justify-content: center; min-height: 56px; color: {{t.muted}}; text-decoration: none; border-top: 3px solid transparent">Stats</a>
-      </nav>
     </sc-if>
-  </div>
+    <sc-if value="{{isEmpty}}" hint-placeholder-val="{{ false }}">
+    <section style="margin-top: {{z.leadTop}}; max-width: 860px">
+      <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: {{t.accent}}; ">Library</p>
+      <h1 style="margin: 18px 0 0; font-size: {{z.h1Sm}}; line-height: 1; font-weight: 500; letter-spacing: -0.025em">Nothing here yet.</h1>
+      <p style="margin: 22px 0 0; max-width: 560px; font-size: {{z.lead}}; line-height: 1.45; color: {{t.soft}}">A series is five lessons written around what you don’t know yet. Start one on anything, or look around the sample first.</p>
+      <div style="display: flex; flex-direction: {{z.actDir}}; align-items: {{z.actAlign}}; gap: 14px 28px; margin-top: {{z.actTop}}"><a href="#" style="display: inline-flex; align-items: center; justify-content: center; gap: 14px; width: {{z.btnW}}; box-sizing: border-box; min-height: 58px; padding: 0 30px; background: {{t.ink}}; color: {{t.bg}}; font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500; text-decoration: none; ">Start a series<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a><a href="#" style="display: inline-block; padding: 8px 0; font-size: 18px; font-style: italic; color: {{t.soft}}; text-underline-offset: 5px; ">or open the sample series</a></div>
+    </section>
 
-  <!-- delete confirmation -->
-  <sc-if value="{{confirming}}" hint-placeholder-val="{{ false }}">
-    <div style="position: absolute; inset: 0; background: {{t.scrim}}; display: flex; align-items: flex-start; justify-content: center; padding: 160px 20px 20px; box-sizing: border-box">
-      <div role="alertdialog" aria-modal="true" aria-labelledby="del-h" aria-describedby="del-b" style="width: 100%; max-width: 460px; background: {{t.raised}}; border: 1.5px solid {{t.ink}}; border-top: 3px solid {{t.incorrect}}; padding: 24px; box-sizing: border-box">
-        <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.incorrect}}">Delete series</p>
-        <h2 id="del-h" style="margin: 10px 0 0; font-size: 24px; line-height: 1.2; font-weight: 500">{{confirmTitle}}</h2>
-        <p id="del-b" style="margin: 10px 0 0; font-size: 17px; line-height: 1.5; color: {{t.soft}}">Its lessons, your progress and any Mastery Check score go with it. This can’t be undone.</p>
-        <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px">
-          <button type="button" onClick="{{confirmDelete}}" style="min-height: 50px; padding: 0 18px; background: {{t.incorrect}}; color: {{t.bg}}; border: 1.5px solid {{t.incorrect}}; font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 500; cursor: pointer">Delete series</button>
-          <button type="button" onClick="{{cancelDelete}}" style="min-height: 50px; padding: 0 18px; background: transparent; color: {{t.ink}}; border: 1.5px solid {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 14px; cursor: pointer">Keep it</button>
+    </sc-if>
+    <sc-if value="{{isLoading}}" hint-placeholder-val="{{ false }}">
+      <div aria-label="Loading your library" style="margin-top: {{z.leadTop}}; display: grid; gap: 16px; max-width: 760px"><span style="height: 14px; width: 180px; background: {{t.sunk}}"></span><span style="height: 56px; width: 90%; background: {{t.sunk}}"></span><span style="height: 56px; width: 60%; background: {{t.sunk}}"></span><span style="height: 58px; width: 240px; margin-top: 24px; background: {{t.sunk}}"></span></div>
+    </sc-if>
+
+    <!-- ALL SERIES -->
+    <sc-if value="{{showControls}}" hint-placeholder-val="{{ true }}">
+      <section aria-labelledby="all-h" style="margin-top: {{z.gap}}">
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px 40px">
+          <h2 id="all-h" style="margin: 0; font-size: {{z.h2}}; line-height: 1.1; font-weight: 500; letter-spacing: -0.015em">All series</h2>
+          <label style="flex: 0 1 420px; min-width: 0; display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 14px; border-bottom: 1.5px solid {{t.ink}}; color: {{t.muted}}"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"></circle><path d="M16 16l4.5 4.5"></path></svg><input type="search" aria-label="Search your series" value="{{q}}" onInput="{{onQ}}" placeholder="Search titles and subjects" style="flex: 1; min-width: 0; border: none; background: transparent; outline: none; font-family: 'Newsreader', Georgia, serif; font-size: 18px; color: {{t.ink}}"></label>
         </div>
+        <div role="tablist" aria-label="Filter by status" style="display: flex; flex-wrap: wrap; gap: 4px 24px; margin-top: 20px; font-family: 'IBM Plex Mono', monospace; font-size: 13px">
+          <sc-for list="{{filters}}" as="f" hint-placeholder-count="4"><button type="button" role="tab" aria-selected="{{f.on}}" onClick="{{f.pick}}" style="min-height: 44px; padding: 0; background: transparent; border: none; border-bottom: 2px solid {{f.line}}; color: {{f.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 13px; cursor: pointer">{{f.label}} <span style="color: {{t.muted}}">{{f.count}}</span></button></sc-for>
+        </div>
+        <sc-if value="{{hasRows}}" hint-placeholder-val="{{ true }}">
+          <ul style="list-style: none; margin: 12px 0 0; padding: 0; border-top: 1px solid {{t.ink}}">
+            <sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
+              <li style="display: grid; grid-template-columns: {{z.libCols}}; grid-template-areas: {{z.libAreas}}; align-items: center; gap: 10px 28px; padding: 22px 0; border-bottom: 1px solid {{t.rule}}">
+                <a href="#" style="grid-area: t; min-width: 0; color: {{t.ink}}; text-decoration: none"><span style="display: block; font-size: {{z.rowTitle}}; line-height: 1.2; font-weight: 500">{{r.title}}</span><span style="display: block; margin-top: 6px; font-size: 16px; font-style: italic; color: {{t.muted}}">{{r.meta}}</span></a>
+                <span style="grid-area: s; display: flex; align-items: center; gap: 12px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: {{r.statusInk}}"><div aria-hidden="true" style="display: grid; grid-template-columns: repeat(5, 14px); gap: 4px"><sc-for list="{{r.segs}}" as="g" hint-placeholder-count="5"><span style="height: 6px; background: {{g.c}}; outline: 1px solid {{g.o}}; outline-offset: -1px"></span></sc-for></div>{{r.status}}</span>
+                <button type="button" aria-label="{{r.deleteAria}}" onClick="{{r.askDelete}}" style="grid-area: d; justify-self: end; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: {{t.muted}}; cursor: pointer"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"></path></svg></button>
+              </li>
+            </sc-for>
+          </ul>
+        </sc-if>
+        <sc-if value="{{noResults}}" hint-placeholder-val="{{ false }}">
+          <div style="padding: 48px 0 8px; border-top: 1px solid {{t.ink}}; margin-top: 12px">
+            <p style="margin: 0; font-size: 26px; font-weight: 500">{{noResultsLine}}</p>
+            <p style="margin: 10px 0 0; font-size: 18px; color: {{t.soft}}">Try a broader word, or start a series on it.</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px 28px; margin-top: 14px"><button type="button" onClick="{{clearAll}}" style="padding: 8px 0; background: transparent; border: none; font-family: 'Newsreader', Georgia, serif; font-size: 18px; font-style: italic; color: {{t.soft}}; text-decoration: underline; text-underline-offset: 5px; cursor: pointer">Clear search and filters</button><sc-if value="{{hasQ}}" hint-placeholder-val="{{ false }}"><a href="#" style="display: inline-block; padding: 8px 0; font-size: 18px; font-style: italic; color: {{t.soft}}; text-underline-offset: 5px; ">Start a series on “{{q}}”</a></sc-if></div>
+          </div>
+        </sc-if>
+      </section>
+    </sc-if>
+
+    <!-- PAST DAILY LESSONS -->
+    <sc-if value="{{isFull}}" hint-placeholder-val="{{ true }}">
+      <section aria-labelledby="past-h" style="margin-top: {{z.gap}}">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px"><h2 id="past-h" style="margin: 0; font-size: {{z.h2}}; line-height: 1.1; font-weight: 500; letter-spacing: -0.015em">Past daily lessons</h2><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: {{t.muted}}">168 so far</span></div>
+        <ul style="list-style: none; display: grid; grid-template-columns: {{z.pastCols}}; gap: 0 40px; margin: 20px 0 0; padding: 0; border-top: 1px solid {{t.ink}}">
+          <sc-for list="{{daily}}" as="d" hint-placeholder-count="6"><li style="border-bottom: 1px solid {{t.rule}}"><a href="#" style="display: grid; grid-template-columns: 92px minmax(0, 1fr) auto; align-items: baseline; gap: 12px; padding: 16px 0; color: {{t.ink}}; text-decoration: none"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: {{t.muted}}">{{d.date}}</span><span style="font-size: 19px; line-height: 1.3">{{d.title}}</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: {{d.statusInk}}">{{d.status}}</span></a></li></sc-for>
+        </ul>
+        <p style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; margin: 16px 0 0; font-size: 16px; font-style: italic; color: {{t.muted}}"><span>Finishing a past lesson counts toward today’s streak.</span><a href="#" style="color: {{t.soft}}; text-underline-offset: 4px">Show older lessons</a></p>
+      </section>
+    </sc-if>
+    <sc-if value="{{phone}}" hint-placeholder-val="{{ false }}"><div style="margin-top: auto; padding-top: 56px"><nav aria-label="Main" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0 -24px; border-top: 1px solid {{t.ink}}; background: {{t.bg}}; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase"><a href="#" style="display: flex; align-items: center; justify-content: center; min-height: 56px; color: {{t.muted}}; text-decoration: none; border-top: 3px solid transparent">Today</a><a href="#" aria-current="page" style="display: flex; align-items: center; justify-content: center; min-height: 56px; color: {{t.ink}}; font-weight: 500; text-decoration: none; border-top: 3px solid {{t.accent}}">Library</a><a href="#" style="display: flex; align-items: center; justify-content: center; min-height: 56px; color: {{t.muted}}; text-decoration: none; border-top: 3px solid transparent">Stats</a></nav></div></sc-if>
+  </div>
+</div>
+  <sc-if value="{{confirming}}" hint-placeholder-val="{{ false }}">
+    <div style="position: absolute; inset: 0; display: flex; align-items: {{z.dlgAlign}}; justify-content: center; padding: 24px; box-sizing: border-box; background: {{t.scrim}}">
+      <div role="alertdialog" aria-labelledby="dlg-h" style="position: sticky; top: 160px; width: 100%; max-width: 520px; padding: 32px; box-sizing: border-box; background: {{t.raised}}; border: 1px solid {{t.ink}}; color: {{t.ink}}; font-family: 'Newsreader', Georgia, serif">
+        <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: {{t.muted}}; ">Delete series</p>
+        <p id="dlg-h" style="margin: 12px 0 0; font-size: 28px; line-height: 1.15; font-weight: 500">{{confirmTitle}}</p>
+        <p style="margin: 14px 0 0; font-size: 18px; line-height: 1.5; color: {{t.soft}}">Its lessons, your progress and any Mastery Check score go with it. This can’t be undone.</p>
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; margin-top: 28px"><button type="button" onClick="{{confirmDelete}}" style="min-height: 52px; padding: 0 24px; background: {{t.ink}}; color: {{t.bg}}; border: none; font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500; cursor: pointer">Delete series</button><button type="button" onClick="{{cancelDelete}}" style="padding: 8px 0; background: transparent; border: none; font-family: 'Newsreader', Georgia, serif; font-size: 18px; font-style: italic; color: {{t.soft}}; text-decoration: underline; text-underline-offset: 5px; cursor: pointer">Keep it</button></div>
       </div>
     </div>
   </sc-if>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"variant":{"editor":"enum","options":["full","loading","empty"],"default":"full"},"query":{"editor":"text","default":""},"confirmOpen":{"editor":"boolean","default":false},"dark":{"editor":"boolean","default":false},"phone":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1200}}'>
+<script type="text/x-dc" data-dc-script data-props='{"variant":{"editor":"enum","options":["full","loading","empty"],"default":"full"},"query":{"editor":"text","default":""},"confirmOpen":{"editor":"boolean","default":false},"dark":{"editor":"boolean","default":false},"tone":{"editor":"enum","options":["graphite","slate","umber","black"],"default":"graphite"},"phone":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1700}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
     this.SERIES = [
-      { id: 1, cat: 'Technology', status: 'In Progress', pct: 33, done: 2, passed: false, updated: 'Today', title: 'How a Web Page Gets Built: HTML, CSS and the Browser', desc: 'From the request your browser sends to the styled page on screen.' },
-      { id: 2, cat: 'History', status: 'In Progress', pct: 50, done: 3, passed: false, updated: 'Yesterday', title: 'The Roman Republic, from Kings to Caesar', desc: 'How a city-state governed itself for five centuries, and why it stopped.' },
-      { id: 3, cat: 'Health and Wellness', status: 'In Progress', pct: 83, done: 5, passed: false, updated: 'Nov 6', title: 'Sleep, Light and the Body Clock', desc: 'Why mornings matter, what blue light really does, and how to reset after travel.' },
-      { id: 4, cat: 'Finance', status: 'Completed', pct: 100, done: 5, passed: true, best: 5, updated: 'Oct 29', title: 'Reading a Balance Sheet Without an Accounting Degree', desc: 'Assets, liabilities and equity, and the three numbers worth checking first.' },
-      { id: 5, cat: 'Science', status: 'Not Started', pct: 0, done: 0, passed: false, updated: 'Oct 21', title: 'Why Sourdough Rises: Yeast, Bacteria and Time', desc: 'The living culture in a jar, and what temperature does to it.' },
-      { id: 6, cat: 'Language', status: 'Completed', pct: 100, done: 5, passed: true, best: 4, updated: 'Oct 12', title: 'Spanish Past Tenses: Preterite or Imperfect?', desc: 'A practical rule of thumb, the exceptions that matter, and lots of examples.' }
+      { id: 1, cat: 'Technology', status: 'In Progress', done: 2, best: 0, title: 'How a Web Page Gets Built: HTML, CSS and the Browser', next: 'How the browser decides which CSS rule wins' },
+      { id: 2, cat: 'History', status: 'In Progress', done: 3, best: 0, title: 'The Roman Republic, from Kings to Caesar', next: 'Why the Gracchi brothers frightened the Senate' },
+      { id: 3, cat: 'Health and Wellness', status: 'In Progress', done: 5, best: 0, title: 'Sleep, Light and the Body Clock', next: 'Mastery Check' },
+      { id: 4, cat: 'Finance', status: 'Completed', done: 5, best: 5, title: 'Reading a Balance Sheet Without an Accounting Degree' },
+      { id: 5, cat: 'Science', status: 'Not Started', done: 0, best: 0, title: 'Why Sourdough Rises: Yeast, Bacteria and Time' },
+      { id: 6, cat: 'Language', status: 'Completed', done: 5, best: 4, title: 'Spanish Past Tenses: Preterite or Imperfect?' }
     ];
     this.DAILY = [
-      { date: 'Tue 11.10', cat: 'Science', title: 'Why leap years exist', done: true },
-      { date: 'Mon 11.09', cat: 'Finance', title: 'How compound interest compounds', done: true },
-      { date: 'Sun 11.08', cat: 'History', title: 'Why the printing press spread so fast', done: true },
-      { date: 'Sat 11.07', cat: 'Literature', title: 'Where Shakespeare’s new words came from', done: true },
-      { date: 'Fri 11.06', cat: 'Technology', title: 'What a password hash actually stores', done: false },
-      { date: 'Thu 11.05', cat: 'Arts', title: 'How painters rediscovered perspective', done: true }
+      { date: 'Tue 11.10', title: 'Why leap years exist', done: true }, { date: 'Mon 11.09', title: 'How compound interest compounds', done: true },
+      { date: 'Sun 11.08', title: 'Why the printing press spread so fast', done: true }, { date: 'Sat 11.07', title: 'Where Shakespeare’s new words came from', done: true },
+      { date: 'Fri 11.06', title: 'What a password hash actually stores', done: false }, { date: 'Thu 11.05', title: 'How painters rediscovered perspective', done: true }
     ];
     this.state = { q: null, filter: 'All', deleted: [], confirmId: null };
   }
   renderVals() {
-    const s = this.state;
+
     const dark = this.props.dark ?? false;
+    const tone = this.props.tone ?? 'graphite';
     const phone = this.props.phone ?? false;
+    const DARK = {
+      black: { bg: '#121416', ink: '#E9EAE6', soft: '#C9CCC8', muted: '#A3A8AD', rule: '#3A3F44', accent: '#FF7A50', raised: '#1A1D20', sunk: '#24282C', correct: '#8DB4F0', correctWash: '#1A2638', incorrect: '#F0A35E', incorrectWash: '#2E2216' },
+      graphite: { bg: '#1E2124', ink: '#E6E7E3', soft: '#C4C7C3', muted: '#A0A5AA', rule: '#3E444A', accent: '#FF7A50', raised: '#272B2F', sunk: '#31363B', correct: '#8DB4F0', correctWash: '#24324A', incorrect: '#F0A35E', incorrectWash: '#3A2C1E' },
+      slate: { bg: '#1D2330', ink: '#E4E7EC', soft: '#C3C8D1', muted: '#9DA6B4', rule: '#3B4558', accent: '#FF8159', raised: '#262E3D', sunk: '#303A4C', correct: '#93B8F2', correctWash: '#26344D', incorrect: '#F2A866', incorrectWash: '#3B2E22' },
+      umber: { bg: '#24221F', ink: '#ECE8E1', soft: '#CBC5BB', muted: '#A9A397', rule: '#46423B', accent: '#FF7E54', raised: '#2D2A26', sunk: '#38352F', correct: '#93B6EE', correctWash: '#2B3446', incorrect: '#F2A866', incorrectWash: '#3E3022' }
+    };
+    const t = dark ? (DARK[tone] || DARK.graphite)
+      : { bg: '#F1F2EE', ink: '#16181A', soft: '#3B3F43', muted: '#565B60', rule: '#C9CCC6', accent: '#C23A12', raised: '#FFFFFF', sunk: '#E2E4DE', correct: '#1F4E8C', correctWash: '#E3EAF4', incorrect: '#8F3F00', incorrectWash: '#F6E7D8' };
+    const Z = phone
+      ? { minH: '844px', gutter: '24px', bottom: '0', headPad: '8px 0 10px', brand: '24px', leadTop: '56px', h1: '46px', h1Sm: '38px', h2: '28px', lead: '19px', body: '18px', gap: '88px', btnW: '100%', actDir: 'column', actAlign: 'stretch', actTop: '32px', rowTitle: '21px', big: '96px' }
+      : { minH: '1200px', gutter: '72px', bottom: '96px', headPad: '20px 0 16px', brand: '28px', leadTop: '112px', h1: '84px', h1Sm: '64px', h2: '36px', lead: '23px', body: '20px', gap: '152px', btnW: 'auto', actDir: 'row', actAlign: 'center', actTop: '40px', rowTitle: '25px', big: '160px' };
+    const base = { t, dark, isLight: !dark, phone, desk: !phone, themeLabel: dark ? 'Switch to light theme' : 'Switch to dark theme' };
+
+    const s = this.state;
     const variant = this.props.variant ?? 'full';
     const q = s.q === null ? (this.props.query ?? '') : s.q;
     const confirmId = s.confirmId === null ? (this.props.confirmOpen ? 1 : null) : (s.confirmId === 0 ? null : s.confirmId);
-    const t = dark
-      ? { bg: '#121416', raised: '#1A1D20', sunk: '#24282C', ink: '#E9EAE6', soft: '#C9CCC8', muted: '#A3A8AD', rule: '#3A3F44', accent: '#FF7A50', correct: '#8DB4F0', incorrect: '#F0A35E', scrim: 'rgba(0, 0, 0, 0.6)' }
-      : { bg: '#F1F2EE', raised: '#FFFFFF', sunk: '#E2E4DE', ink: '#16181A', soft: '#3B3F43', muted: '#565B60', rule: '#C9CCC6', accent: '#C23A12', correct: '#1F4E8C', incorrect: '#8F3F00', scrim: 'rgba(22, 24, 26, 0.45)' };
-    const z = phone
-      ? { minH: '844px', gutter: '24px', bottomPad: '0', headPad: '6px 0 8px', brand: '24px', h1: '44px', titleGap: '24px', colGap: '36px', sectionGap: '24px', rowTitle: '20px', emptyTitle: '26px' }
-      : { minH: '1200px', gutter: '72px', bottomPad: '72px', headPad: '18px 0 14px', brand: '28px', h1: '72px', titleGap: '40px', colGap: '40px 64px', sectionGap: '40px', rowTitle: '24px', emptyTitle: '32px' };
+    t.scrim = dark ? 'rgba(0, 0, 0, 0.55)' : 'rgba(22, 24, 26, 0.45)';
+    const z = Object.assign({}, Z, phone ? { segW: '28px', libAreas: '"t d" "s s"', libCols: 'minmax(0, 1fr) 44px', pastCols: 'minmax(0, 1fr)', dlgAlign: 'flex-end', gap: '80px' } : { segW: '48px', libAreas: '"t s d"', libCols: 'minmax(0, 1fr) auto 44px', pastCols: 'repeat(2, minmax(0, 1fr))', dlgAlign: 'flex-start', gap: '136px' });
+    const seg = (n) => [0, 1, 2, 3, 4].map((i) => ({ c: i < n ? t.ink : 'transparent', o: i < n ? t.ink : t.rule }));
     const live = this.SERIES.filter((x) => s.deleted.indexOf(x.id) < 0);
     const ql = q.trim().toLowerCase();
-    const matchQ = live.filter((x) => !ql || (x.title + ' ' + x.cat + ' ' + x.desc).toLowerCase().indexOf(ql) >= 0);
+    const matchQ = live.filter((x) => !ql || (x.title + ' ' + x.cat).toLowerCase().indexOf(ql) >= 0);
     const shown = matchQ.filter((x) => s.filter === 'All' || x.status === s.filter);
     const isFull = variant === 'full';
+    const word = { 'In Progress': 'In progress', 'Completed': '✓ Done', 'Not Started': '○ Not started' };
     const rows = shown.map((x) => ({
-      cat: x.cat, status: x.status, updated: 'Updated ' + x.updated, title: x.title, desc: x.desc, pct: x.pct,
-      isDone: x.status === 'Completed', isProg: x.status === 'In Progress', isNew: x.status === 'Not Started',
-      statusInk: x.status === 'Completed' ? t.correct : (x.status === 'Not Started' ? t.muted : t.ink),
-      cells: [0, 1, 2, 3, 4].map((i) => ({ bg: i < x.done ? t.ink : 'transparent', style: 'solid' })).concat([{ bg: x.passed ? t.ink : 'transparent', style: x.passed ? 'solid' : 'dashed' }]),
-      hasBest: !!x.best, best: x.best,
-      deleteAria: 'Delete series: ' + x.title,
-      askDelete: () => this.setState({ confirmId: x.id })
+      title: x.title, meta: x.cat + (x.best ? ' · Mastery ' + x.best + '/5' : ''),
+      status: x.status === 'In Progress' ? x.done + ' of 5' : word[x.status], statusInk: x.status === 'Completed' ? t.correct : t.muted,
+      segs: seg(x.done), deleteAria: 'Delete series: ' + x.title, askDelete: () => this.setState({ confirmId: x.id })
     }));
-    const filters = ['All', 'Not Started', 'In Progress', 'Completed'].map((f) => {
+    const filters = ['All', 'In Progress', 'Not Started', 'Completed'].map((f) => {
       const on = s.filter === f;
       const count = f === 'All' ? matchQ.length : matchQ.filter((x) => x.status === f).length;
-      return { label: f, count, on, bg: on ? t.ink : 'transparent', ink: on ? t.bg : t.ink, countInk: on ? t.bg : t.muted, pick: () => this.setState({ filter: f }) };
+      return { label: f === 'All' ? 'All' : word[f].replace(/^[✓○] /, ''), count, on, line: on ? t.accent : 'transparent', ink: on ? t.ink : t.soft, pick: () => this.setState({ filter: f }) };
     });
+    const top = live.find((x) => x.status === 'In Progress');
+    const leadV = top ? { cat: top.cat, title: top.title, line: top.next === 'Mastery Check' ? 'Every lesson is done. The Mastery Check is ready.' : 'Lesson ' + (top.done + 1) + ' of 5: ' + top.next + '.', cta: top.next === 'Mastery Check' ? 'Take the Mastery Check' : 'Continue with lesson ' + (top.done + 1), segs: seg(top.done), prog: top.done + ' of 5 done' } : null;
     const target = live.find((x) => x.id === confirmId);
-    const noResults = isFull && rows.length === 0;
-    return {
-      t, z, dark, isLight: !dark, phone, desk: !phone, themeLabel: dark ? 'Switch to light theme' : 'Switch to dark theme',
-      isFull, isLoading: variant === 'loading', isEmpty: variant === 'empty', showControls: isFull,
-      q, hasQ: !!q, onQ: (e) => this.setState({ q: e.target.value }), clearQ: () => this.setState({ q: '' }),
-      clearAll: () => this.setState({ q: '', filter: 'All' }),
-      filters, rows, hasRows: isFull && rows.length > 0, noResults,
+    return Object.assign(base, {
+      z, isFull, isLoading: variant === 'loading', isEmpty: variant === 'empty', showControls: isFull,
+      hasLead: isFull && !!leadV, lead: leadV || { segs: [] },
+      q, hasQ: !!q, onQ: (e) => this.setState({ q: e.target.value }), clearAll: () => this.setState({ q: '', filter: 'All' }),
+      filters, rows, hasRows: isFull && rows.length > 0, noResults: isFull && rows.length === 0,
       noResultsLine: q ? 'No series match “' + q + '”.' : 'No series with this status.',
-      resultLine: (ql || s.filter !== 'All') ? rows.length + (rows.length === 1 ? ' series' : ' series') + ' shown' : live.length + ' series',
-      skeleton: [1, 2, 3, 4],
-      daily: this.DAILY.map((d) => ({ date: d.date, cat: d.cat, title: d.title, status: d.done ? 'Done' : 'Not read', statusInk: d.done ? t.muted : t.accent })),
+      daily: this.DAILY.map((d) => ({ date: d.date, title: d.title, status: d.done ? '' : '○ Not read', statusInk: t.accent })),
       confirming: !!target, confirmTitle: target ? 'Delete “' + target.title + '”?' : '',
       confirmDelete: () => this.setState({ deleted: s.deleted.concat([confirmId]), confirmId: 0 }),
       cancelDelete: () => this.setState({ confirmId: 0 })
-    };
+    });
   }
 }
 </script>

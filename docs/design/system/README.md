@@ -1,3 +1,5 @@
+> **Note (Nov 10):** these previews predate the hierarchy pass. Dark mode is now graphite, and the rules in `../spec.md` (one primary button per screen, quiet links, selection that never uses the ink fill, the step meter) win wherever a preview differs.
+
 # TopicTutor Almanac
 
 TopicTutor reads like a small daily paper. Each day is an edition: a dated masthead, one lesson set in a reading serif, and a few ruled lines that frame it. The product respects the learner's intelligence, so the design leans on typography and rules rather than illustration, badges or colour. The reward is the reading itself, and the one moment of celebration (the finish) is earned by restraint everywhere else.

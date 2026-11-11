@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Series lesson · writing · desktop dark</title>
+<title>Series lesson</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -12,59 +12,55 @@
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0}
-a{color:#E9EAE6}a:hover{color:#FF7A50}
 </style>
 </helmet>
-<div style="min-height: 1000px; background: #121416; color: #E9EAE6; font-family: 'Newsreader', Georgia, serif; box-sizing: border-box; padding: 0 clamp(20px, 5vw, 72px) 72px">
-  <div style="max-width: 1296px; margin: 0 auto">
-    <header style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; padding: 20px 0 16px">
-      <a href="#" style="font-size: 28px; font-weight: 600; letter-spacing: -0.015em; text-decoration: none">TopicTutor</a>
-      <nav aria-label="Main" style="display: flex; align-items: center; gap: 2px; font-family: 'IBM Plex Mono', monospace; font-size: 14px">
-        <a href="#" style="padding: 12px; text-decoration: none">Today</a>
-        <a href="#" aria-current="page" style="padding: 12px; text-decoration: underline; text-decoration-color: #FF7A50; text-decoration-thickness: 2px; text-underline-offset: 6px">Library</a>
-        <a href="#" style="padding: 12px; text-decoration: none">Stats</a>
-        <button type="button" aria-label="Switch to light theme" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: #E9EAE6"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"></path></svg></button>
-        <button type="button" aria-label="Account: Duane" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none"><span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 999px; background: #E9EAE6; color: #121416; display: flex; align-items: center; justify-content: center; font-family: 'Newsreader', Georgia, serif; font-size: 17px; font-weight: 500">D</span></button>
-      </nav>
+<div style="min-height: {{z.minH}}; background: {{t.bg}}; color: {{t.ink}}; font-family: 'Newsreader', Georgia, serif; box-sizing: border-box; padding: 0 {{z.gutter}} {{z.bottom}}; overflow: hidden; display: flex; flex-direction: column">
+  <div style="width: 100%; max-width: 1200px; margin: 0 auto; flex: 1 0 auto; display: flex; flex-direction: column">
+    <header style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: {{z.headPad}}">
+      <a href="#" style="flex: 1 1 0; white-space: nowrap; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: {{t.ink}}; text-decoration: none"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg>Back to series</a>
+      <span style="font-size: {{z.brand}}; font-weight: 600; letter-spacing: -0.015em">TopicTutor</span>
+      <div style="flex: 1 1 0; display: flex; justify-content: flex-end"><button type="button" aria-label="{{themeLabel}}" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: {{t.ink}}"><sc-if value="{{isLight}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></sc-if><sc-if value="{{dark}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"></path></svg></sc-if></button></div>
     </header>
-    <hr style="margin: 0; border: none; border-top: 3px solid #E9EAE6; border-bottom: 1px solid #E9EAE6; height: 3px">
-
-    <div style="max-width: 680px; margin: 0 auto">
-      <a href="#" style="display: inline-flex; align-items: center; gap: 6px; margin-top: 20px; min-height: 44px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; text-decoration: none"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg>How a Web Page Gets Built</a>
-
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 28px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase">
-        <span style="color: #FF7A50">Lesson 3 of 5</span>
-        <span style="display: inline-flex; align-items: center; gap: 6px; color: #A3A8AD"><span aria-hidden="true" style="width: 11px; height: 11px; box-sizing: border-box; border: 1.5px solid currentColor; border-radius: 999px"></span>Not done yet</span>
-      </div>
-      <h1 style="margin: 14px 0 0; font-size: clamp(40px, 4.6vw, 58px); line-height: 1.02; font-weight: 500; letter-spacing: -0.025em">How the browser decides which CSS rule wins</h1>
-      <p style="margin: 12px 0 0; font-size: 20px; font-style: italic; color: #C9CCC8">Specificity, order, and the cascade.</p>
-      <p style="margin: 18px 0 0; display: flex; align-items: center; gap: 8px; font-size: 16px; font-style: italic; color: #A3A8AD"><span aria-hidden="true" style="width: 7px; height: 16px; background: #FF7A50"></span>Writing this lesson for you now. The first time is the only wait.</p>
-
-      <div aria-busy="true" style="display: flex; flex-direction: column; gap: 22px; margin-top: 30px; font-size: 21px; line-height: 1.6">
+    <main style="width: 100%; max-width: {{z.col}}; margin: {{z.colTop}} auto 0">
+      <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: {{t.accent}}; ">Lesson 3 of 5 · How a Web Page Gets Built</p>
+      <h1 style="margin: 18px 0 0; font-size: {{z.h1Sm}}; line-height: 1; font-weight: 500; letter-spacing: -0.025em">How the browser decides which CSS rule wins</h1>
+      <p style="display: flex; align-items: center; gap: 12px; margin: 28px 0 0; font-size: 18px; font-style: italic; color: {{t.muted}}"><span aria-hidden="true" style="width: 40px; height: 3px; background: {{t.rule}}"><span style="display: block; width: 55%; height: 100%; background: {{t.accent}}"></span></span>Writing this lesson for you. The first time is the only wait.</p>
+      <div style="margin-top: 32px; font-size: {{z.read}}; line-height: 1.65; color: {{t.soft}}">
         <p style="margin: 0">CSS rules often disagree. One rule might make a paragraph blue while another makes it red. The browser settles this with the cascade, a set of tie-breakers applied in a fixed order.</p>
-        <p style="margin: 0">The main tie-breaker is specificity. An id selector outweighs any number of classes, and a class outweighs any number of element names. So a rule aimed at<span aria-hidden="true" style="display: inline-block; width: 8px; height: 19px; margin-left: 4px; vertical-align: -3px; background: #FF7A50"></span></p>
-        <div aria-hidden="true" style="display: flex; flex-direction: column; gap: 12px; padding-top: 6px">
-          <span style="height: 16px; background: #24282C"></span><span style="height: 16px; background: #24282C"></span><span style="height: 16px; background: #24282C"></span><span style="height: 16px; width: 58%; background: #24282C"></span>
-        </div>
+        <p style="margin: 22px 0 0">The main tie-breaker is specificity. An id selector outweighs any number of classes, and a class outweighs any number of element names. So a rule aimed at<span aria-hidden="true" style="display: inline-block; width: 7px; height: 18px; margin-left: 4px; vertical-align: -3px; background: {{t.accent}}"></span></p>
       </div>
-
-      <div aria-hidden="true" style="margin-top: 44px; padding-top: 18px; border-top: 1px solid #3A3F44">
-        <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #A3A8AD">Ask the tutor and the check appear when the lesson is written</p>
-        <span style="display: block; height: 48px; margin-top: 12px; background: #1A1D20"></span>
-      </div>
-
-      <nav aria-label="Lessons in this series" style="display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 44px; padding-top: 18px; border-top: 3px solid #E9EAE6">
-        <a href="#" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; text-decoration: none"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg>Lesson 2</a>
-        <a href="#" style="display: inline-flex; align-items: center; gap: 12px; min-height: 52px; padding: 0 22px; border: 1.5px solid #E9EAE6; font-family: 'IBM Plex Mono', monospace; font-size: 14px; text-decoration: none"><span><span style="display: block; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: #A3A8AD">Ready</span>Lesson 4 · Boxes, flow and layout</span><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
-      </nav>
-    </div>
+      <div aria-hidden="true" style="display: grid; gap: 12px; margin-top: 28px"><span style="height: 14px; width: 100%; background: {{t.sunk}}"></span><span style="height: 14px; width: 92%; background: {{t.sunk}}"></span><span style="height: 14px; width: 64%; background: {{t.sunk}}"></span></div>
+      <p style="margin: 56px 0 0; padding-top: 24px; border-top: 1px solid {{t.ink}}; font-size: 17px; font-style: italic; color: {{t.muted}}">The tutor and the check appear when the lesson is written.</p>
+    </main>
   </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":true},"tone":{"editor":"enum","options":["graphite","slate","umber","black"],"default":"graphite"},"phone":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1000}}'>
 class Component extends DCLogic {
   renderVals() {
-    return {};
+
+    const dark = this.props.dark ?? false;
+    const tone = this.props.tone ?? 'graphite';
+    const phone = this.props.phone ?? false;
+    const DARK = {
+      black: { bg: '#121416', ink: '#E9EAE6', soft: '#C9CCC8', muted: '#A3A8AD', rule: '#3A3F44', accent: '#FF7A50', raised: '#1A1D20', sunk: '#24282C', correct: '#8DB4F0', correctWash: '#1A2638', incorrect: '#F0A35E', incorrectWash: '#2E2216' },
+      graphite: { bg: '#1E2124', ink: '#E6E7E3', soft: '#C4C7C3', muted: '#A0A5AA', rule: '#3E444A', accent: '#FF7A50', raised: '#272B2F', sunk: '#31363B', correct: '#8DB4F0', correctWash: '#24324A', incorrect: '#F0A35E', incorrectWash: '#3A2C1E' },
+      slate: { bg: '#1D2330', ink: '#E4E7EC', soft: '#C3C8D1', muted: '#9DA6B4', rule: '#3B4558', accent: '#FF8159', raised: '#262E3D', sunk: '#303A4C', correct: '#93B8F2', correctWash: '#26344D', incorrect: '#F2A866', incorrectWash: '#3B2E22' },
+      umber: { bg: '#24221F', ink: '#ECE8E1', soft: '#CBC5BB', muted: '#A9A397', rule: '#46423B', accent: '#FF7E54', raised: '#2D2A26', sunk: '#38352F', correct: '#93B6EE', correctWash: '#2B3446', incorrect: '#F2A866', incorrectWash: '#3E3022' }
+    };
+    const t = dark ? (DARK[tone] || DARK.graphite)
+      : { bg: '#F1F2EE', ink: '#16181A', soft: '#3B3F43', muted: '#565B60', rule: '#C9CCC6', accent: '#C23A12', raised: '#FFFFFF', sunk: '#E2E4DE', correct: '#1F4E8C', correctWash: '#E3EAF4', incorrect: '#8F3F00', incorrectWash: '#F6E7D8' };
+    const Z = phone
+      ? { minH: '844px', gutter: '24px', bottom: '0', headPad: '8px 0 10px', brand: '24px', leadTop: '56px', h1: '46px', h1Sm: '38px', h2: '28px', lead: '19px', body: '18px', gap: '88px', btnW: '100%', actDir: 'column', actAlign: 'stretch', actTop: '32px', rowTitle: '21px', big: '96px' }
+      : { minH: '1000px', gutter: '72px', bottom: '96px', headPad: '20px 0 16px', brand: '28px', leadTop: '112px', h1: '84px', h1Sm: '64px', h2: '36px', lead: '23px', body: '20px', gap: '152px', btnW: 'auto', actDir: 'row', actAlign: 'center', actTop: '40px', rowTitle: '25px', big: '160px' };
+    const base = { t, dark, isLight: !dark, phone, desk: !phone, themeLabel: dark ? 'Switch to light theme' : 'Switch to dark theme' };
+
+    const z = Object.assign({}, Z, phone ? { segW: '28px', gap: '72px' } : { segW: '48px', gap: '120px' });
+    Object.assign(z, phone ? { rowGrid: '36px minmax(0, 1fr)', tagCol: '2' } : { rowGrid: '48px minmax(0, 1fr) auto', tagCol: 'auto' });
+    const seg = (n) => [0, 1, 2, 3, 4].map((i) => ({ c: i < n ? t.ink : 'transparent', o: i < n ? t.ink : t.rule }));
+    Object.assign(z, phone ? { col: '100%', colTop: '40px', read: '19px' } : { col: '720px', colTop: '72px', read: '21px' });
+
+    return Object.assign(base, { z,  });
   }
 }
 </script>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Error, limit and not-found states</title>
+<title>State</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -14,85 +14,73 @@
 body{margin:0}
 </style>
 </helmet>
-<div style="min-height: {{z.minH}}; background: {{t.bg}}; color: {{t.ink}}; font-family: 'Newsreader', Georgia, serif; box-sizing: border-box; padding: 0 {{z.gutter}} 48px">
-  <div style="max-width: 1296px; margin: 0 auto">
-    <header style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: {{z.headPad}}">
-      <sc-if value="{{s.compact}}" hint-placeholder-val="{{ true }}">
-        <a href="#" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: {{t.ink}}; text-decoration: none"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>{{s.closeLabel}}</a>
-        <p style="margin: 0; font-size: 19px; font-weight: 600; letter-spacing: -0.01em">TopicTutor</p>
-      </sc-if>
-      <sc-if value="{{s.full}}" hint-placeholder-val="{{ false }}">
-        <a href="#" style="font-size: {{z.brand}}; font-weight: 600; letter-spacing: -0.015em; color: {{t.ink}}; text-decoration: none">TopicTutor</a>
-      </sc-if>
-      <div style="display: flex; align-items: center; font-family: 'IBM Plex Mono', monospace; font-size: 14px">
-        <sc-if value="{{s.guestNav}}" hint-placeholder-val="{{ false }}"><a href="#" style="padding: 12px 8px; color: {{t.ink}}; text-decoration: none">Log in</a></sc-if>
-        <button type="button" aria-label="{{themeLabel}}" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: {{t.ink}}">
-          <sc-if value="{{isLight}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></sc-if>
-          <sc-if value="{{dark}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"></path></svg></sc-if>
-        </button>
-      </div>
+<div style="min-height: {{z.minH}}; background: {{t.bg}}; color: {{t.ink}}; font-family: 'Newsreader', Georgia, serif; box-sizing: border-box; padding: 0 {{z.gutter}} {{z.bottom}}; overflow: hidden; display: flex; flex-direction: column">
+  <div style="width: 100%; max-width: 1200px; margin: 0 auto; flex: 1 0 auto; display: flex; flex-direction: column">
+    <sc-if value="{{v.focus}}" hint-placeholder-val="{{ true }}"><header style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: {{z.headPad}}">
+      <a href="#" style="flex: 1 1 0; white-space: nowrap; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: {{t.ink}}; text-decoration: none">{{v.leave}}</a>
+      <span style="font-size: {{z.brand}}; font-weight: 600; letter-spacing: -0.015em">TopicTutor</span>
+      <div style="flex: 1 1 0; display: flex; justify-content: flex-end"><button type="button" aria-label="{{themeLabel}}" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: {{t.ink}}"><sc-if value="{{isLight}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></sc-if><sc-if value="{{dark}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"></path></svg></sc-if></button></div>
+    </header>
+</sc-if>
+    <sc-if value="{{v.app}}" hint-placeholder-val="{{ false }}">    <header style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: {{z.headPad}}">
+      <a href="#" style="font-size: {{z.brand}}; font-weight: 600; letter-spacing: -0.015em; color: {{t.ink}}; text-decoration: none">TopicTutor</a>
+      <nav aria-label="Main" style="display: flex; align-items: center; gap: 2px; font-family: 'IBM Plex Mono', monospace; font-size: 14px"><sc-if value="{{desk}}" hint-placeholder-val="{{ true }}"><a href="#" style="padding: 12px; color: {{t.ink}}; text-decoration: none">Today</a><a href="#" style="padding: 12px; color: {{t.ink}}; text-decoration: none">Library</a><a href="#" style="padding: 12px; color: {{t.ink}}; text-decoration: none">Stats</a></sc-if><button type="button" aria-label="{{themeLabel}}" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: {{t.ink}}"><sc-if value="{{isLight}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></sc-if><sc-if value="{{dark}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"></path></svg></sc-if></button><button type="button" aria-label="Account: Duane Cabahug" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none"><span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 999px; background: {{t.ink}}; color: {{t.bg}}; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 500">D</span></button></nav>
     </header>
     <div style="border-top: 3px solid {{t.ink}}; border-bottom: 1px solid {{t.ink}}; height: 3px"></div>
-
-    <div style="max-width: 640px; margin: {{z.topGap}} auto 0">
-      <sc-if value="{{s.hasContext}}" hint-placeholder-val="{{ false }}">
-        <div aria-hidden="true" style="margin-bottom: 28px; opacity: 0.55">
-          <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.accent}}">{{s.ctxKicker}}</p>
-          <p style="margin: 10px 0 0; font-size: {{z.ctxTitle}}; line-height: 1.04; font-weight: 500; letter-spacing: -0.02em">{{s.ctxTitle}}</p>
-          <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 18px"><span style="height: 14px; background: {{t.sunk}}"></span><span style="height: 14px; width: 74%; background: {{t.sunk}}"></span></div>
-        </div>
-      </sc-if>
-
-      <div role="{{s.role}}" style="padding: {{z.pad}}; background: {{s.bg}}; border-top: 3px solid {{s.rule}}">
-        <p style="margin: 0; display: flex; align-items: center; gap: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: {{s.kInk}}">
-          <sc-if value="{{s.isError}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></sc-if>{{s.kicker}}
-        </p>
-        <h1 style="margin: 12px 0 0; font-size: {{z.h1}}; line-height: 1.08; font-weight: 500; letter-spacing: -0.015em">{{s.title}}</h1>
-        <p style="margin: 12px 0 0; font-size: 18px; line-height: 1.5; color: {{t.soft}}">{{s.body}}</p>
-        <sc-if value="{{s.hasKept}}" hint-placeholder-val="{{ false }}">
-          <p style="margin: 14px 0 0; padding: 10px 12px; display: flex; align-items: center; gap: 8px; border: 1px solid {{t.rule}}; background: {{t.bg}}; font-family: 'IBM Plex Mono', monospace; font-size: 13px"><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="{{t.correct}}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>{{s.kept}}</p>
-        </sc-if>
-        <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px">
-          <a href="#" style="display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 22px; background: {{t.ink}}; color: {{t.bg}}; font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 500; text-decoration: none">
-            <sc-if value="{{s.retryIcon}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"></path></svg></sc-if>{{s.primary}}
-          </a>
-          <a href="#" style="display: inline-flex; align-items: center; min-height: 52px; padding: 0 20px; border: 1.5px solid {{t.ink}}; color: {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 14px; text-decoration: none">{{s.secondary}}</a>
-        </div>
-        <sc-if value="{{s.hasNote}}" hint-placeholder-val="{{ false }}"><p style="margin: 14px 0 0; font-size: 15px; font-style: italic; color: {{t.muted}}">{{s.note}}</p></sc-if>
-      </div>
-    </div>
+</sc-if>
+    <sc-if value="{{v.guest}}" hint-placeholder-val="{{ false }}">    <header style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: {{z.headPad}}">
+      <a href="#" style="font-size: {{z.brand}}; font-weight: 600; letter-spacing: -0.015em; color: {{t.ink}}; text-decoration: none">TopicTutor</a>
+      <nav aria-label="Main" style="display: flex; align-items: center; gap: 2px; font-family: 'IBM Plex Mono', monospace; font-size: 14px"><a href="#" style="padding: 12px 10px; color: {{t.ink}}; text-decoration: none">Log in</a><sc-if value="{{desk}}" hint-placeholder-val="{{ true }}"><a href="#" style="padding: 10px 14px; border: 1.5px solid {{t.ink}}; color: {{t.ink}}; text-decoration: none">Register</a></sc-if><button type="button" aria-label="{{themeLabel}}" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: {{t.ink}}"><sc-if value="{{isLight}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></sc-if><sc-if value="{{dark}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"></path></svg></sc-if></button></nav>
+    </header>
+    <div style="border-top: 3px solid {{t.ink}}; border-bottom: 1px solid {{t.ink}}; height: 3px"></div>
+</sc-if>
+    <main style="width: 100%; max-width: 720px; margin: {{z.leadTop}} auto 0">
+      <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: {{v.ebInk}}; ">{{v.eb}}</p>
+      <h1 style="margin: 18px 0 0; font-size: {{z.h1Sm}}; line-height: 1; font-weight: 500; letter-spacing: -0.025em">{{v.h}}</h1>
+      <p style="margin: 22px 0 0; max-width: 560px; font-size: {{z.lead}}; line-height: 1.45; color: {{t.soft}}">{{v.line}}</p>
+      <div style="display: flex; flex-direction: {{z.actDir}}; align-items: {{z.actAlign}}; gap: 14px 28px; margin-top: {{z.actTop}}"><a href="#" style="display: inline-flex; align-items: center; justify-content: center; gap: 14px; width: {{z.btnW}}; box-sizing: border-box; min-height: 58px; padding: 0 30px; background: {{t.ink}}; color: {{t.bg}}; font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500; text-decoration: none; ">{{v.cta}}<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a><a href="#" style="display: inline-block; padding: 8px 0; font-size: 18px; font-style: italic; color: {{t.soft}}; text-underline-offset: 5px; ">{{v.alt}}</a></div>
+      <sc-if value="{{v.note}}" hint-placeholder-val="{{ true }}"><p style="margin: 56px 0 0; padding-top: 20px; border-top: 1px solid {{t.rule}}; font-size: 17px; font-style: italic; color: {{t.muted}}">{{v.note}}</p></sc-if>
+    </main>
   </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"variant":{"editor":"enum","options":["dailyFail","seriesLessonFail","placementFail","outlineFail","masteryFail","guestUsed","guestDaily","lessonNotFound","seriesNotFound","loadFail"],"default":"dailyFail"},"dark":{"editor":"boolean","default":false},"phone":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"variant":{"editor":"enum","options":["dailyFail","seriesLessonFail","placementFail","outlineFail","masteryFail","guestUsed","guestDaily","lessonNotFound","seriesNotFound","loadFail"],"default":"dailyFail"},"dark":{"editor":"boolean","default":false},"tone":{"editor":"enum","options":["graphite","slate","umber","black"],"default":"graphite"},"phone":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":900}}'>
 class Component extends DCLogic {
   renderVals() {
+
     const dark = this.props.dark ?? false;
+    const tone = this.props.tone ?? 'graphite';
     const phone = this.props.phone ?? false;
-    const v = this.props.variant ?? 'dailyFail';
-    const t = dark
-      ? { bg: '#121416', raised: '#1A1D20', sunk: '#24282C', ink: '#E9EAE6', soft: '#C9CCC8', muted: '#A3A8AD', rule: '#3A3F44', accent: '#FF7A50', correct: '#8DB4F0', incorrect: '#F0A35E', incorrectWash: '#2E2216' }
-      : { bg: '#F1F2EE', raised: '#FFFFFF', sunk: '#E2E4DE', ink: '#16181A', soft: '#3B3F43', muted: '#565B60', rule: '#C9CCC6', accent: '#C23A12', correct: '#1F4E8C', incorrect: '#8F3F00', incorrectWash: '#F6E7D8' };
-    const z = phone
-      ? { minH: '844px', gutter: '24px', headPad: '6px 0 8px', brand: '24px', h1: '28px', topGap: '32px', pad: '20px', ctxTitle: '32px' }
-      : { minH: '900px', gutter: '72px', headPad: '18px 0 14px', brand: '28px', h1: '38px', topGap: '72px', pad: '28px 32px', ctxTitle: '48px' };
-    const err = { isError: true, role: 'alert', bg: t.incorrectWash, rule: t.incorrect, kInk: t.incorrect, retryIcon: true };
-    const info = { isError: false, role: 'status', bg: t.raised, rule: t.ink, kInk: t.ink, retryIcon: false };
-    const S = {
-      dailyFail: Object.assign({ compact: true, closeLabel: 'Leave lesson', hasContext: true, ctxKicker: 'Science · Tue, Nov 10', ctxTitle: 'Why leap years exist', kicker: 'Didn’t finish writing', title: 'Today’s lesson didn’t finish writing.', body: 'This happens now and then. Trying again usually works within a few seconds.', hasKept: true, kept: 'Your streak is safe. Today counts until midnight.', primary: 'Try again', secondary: 'Back to Today' }, err),
-      seriesLessonFail: Object.assign({ compact: true, closeLabel: 'Series', hasContext: true, ctxKicker: 'Lesson 4 of 5', ctxTitle: 'Boxes, flow and layout', kicker: 'Didn’t finish writing', title: 'Lesson 4 didn’t finish writing.', body: 'The rest of your series is fine. Try again, or open another lesson and come back to this one.', primary: 'Try again', secondary: 'Back to the series' }, err),
-      placementFail: Object.assign({ compact: true, closeLabel: 'Leave', kicker: 'Couldn’t write questions', title: 'Your placement test didn’t come through.', body: 'No questions were written, so there is nothing to lose. Try again, or change what you want to learn.', hasKept: true, kept: 'Topic saved: Basics of Web Development', primary: 'Try again', secondary: 'Change the topic' }, err),
-      outlineFail: Object.assign({ compact: true, closeLabel: 'Leave', kicker: 'Couldn’t write the outline', title: 'Your series outline didn’t come through.', body: 'Your test results are kept, so you won’t take the test again. Try again to build the series from them.', hasKept: true, kept: 'Placement test kept: 3 of 5', primary: 'Try again', secondary: 'Back to Library' }, err),
-      masteryFail: Object.assign({ compact: true, closeLabel: 'Series', kicker: 'Couldn’t write questions', title: 'Your Mastery Check didn’t come through.', body: 'Your lessons, checks and progress are untouched. Try again whenever you’re ready.', primary: 'Try again', secondary: 'Back to the series' }, err),
-      guestUsed: Object.assign({ compact: false, full: true, guestNav: true, kicker: 'Guest limit', title: 'You’ve used your guest series.', body: 'Guests can go deeper once. Your series is still yours in this browser. To start another, create a free account, or look around the sample series.', primary: 'Create a free account', secondary: 'Open the sample series', hasNote: true, note: 'Free, no credit card. Your progress so far comes with you.' }, info),
-      guestDaily: Object.assign({ compact: false, full: true, guestNav: true, kicker: 'Daily limit reached', title: 'New series are paused for guests today.', body: 'Guests share a daily limit, and it’s used up for today. The sample series is open to everyone, with working checks.', primary: 'Open the sample series', secondary: 'Create a free account', hasNote: true, note: 'Your daily lesson still works as usual.' }, info),
-      lessonNotFound: Object.assign({ compact: false, full: true, kicker: 'Not found', title: 'This lesson isn’t here.', body: 'The link may be mistyped, or the lesson belongs to another account.', primary: 'Go to Today', secondary: 'Library' }, info),
-      seriesNotFound: Object.assign({ compact: false, full: true, kicker: 'Not found', title: 'This series isn’t here.', body: 'It may have been deleted, or the link is from another account.', primary: 'Go to Library', secondary: 'Start a series' }, info),
-      loadFail: Object.assign({ compact: false, full: true, kicker: 'Couldn’t load', title: 'This series didn’t load.', body: 'It’s probably the connection. Nothing was lost.', primary: 'Try again', secondary: 'Go to Library' }, err)
-    }[v];
-    const s = Object.assign({ full: false, guestNav: false, hasContext: false, hasKept: false, hasNote: false }, S);
-    if (!s.compact) s.full = true;
-    return { t, z, s, dark, isLight: !dark, themeLabel: dark ? 'Switch to light theme' : 'Switch to dark theme' };
+    const DARK = {
+      black: { bg: '#121416', ink: '#E9EAE6', soft: '#C9CCC8', muted: '#A3A8AD', rule: '#3A3F44', accent: '#FF7A50', raised: '#1A1D20', sunk: '#24282C', correct: '#8DB4F0', correctWash: '#1A2638', incorrect: '#F0A35E', incorrectWash: '#2E2216' },
+      graphite: { bg: '#1E2124', ink: '#E6E7E3', soft: '#C4C7C3', muted: '#A0A5AA', rule: '#3E444A', accent: '#FF7A50', raised: '#272B2F', sunk: '#31363B', correct: '#8DB4F0', correctWash: '#24324A', incorrect: '#F0A35E', incorrectWash: '#3A2C1E' },
+      slate: { bg: '#1D2330', ink: '#E4E7EC', soft: '#C3C8D1', muted: '#9DA6B4', rule: '#3B4558', accent: '#FF8159', raised: '#262E3D', sunk: '#303A4C', correct: '#93B8F2', correctWash: '#26344D', incorrect: '#F2A866', incorrectWash: '#3B2E22' },
+      umber: { bg: '#24221F', ink: '#ECE8E1', soft: '#CBC5BB', muted: '#A9A397', rule: '#46423B', accent: '#FF7E54', raised: '#2D2A26', sunk: '#38352F', correct: '#93B6EE', correctWash: '#2B3446', incorrect: '#F2A866', incorrectWash: '#3E3022' }
+    };
+    const t = dark ? (DARK[tone] || DARK.graphite)
+      : { bg: '#F1F2EE', ink: '#16181A', soft: '#3B3F43', muted: '#565B60', rule: '#C9CCC6', accent: '#C23A12', raised: '#FFFFFF', sunk: '#E2E4DE', correct: '#1F4E8C', correctWash: '#E3EAF4', incorrect: '#8F3F00', incorrectWash: '#F6E7D8' };
+    const Z = phone
+      ? { minH: '844px', gutter: '24px', bottom: '0', headPad: '8px 0 10px', brand: '24px', leadTop: '56px', h1: '46px', h1Sm: '38px', h2: '28px', lead: '19px', body: '18px', gap: '88px', btnW: '100%', actDir: 'column', actAlign: 'stretch', actTop: '32px', rowTitle: '21px', big: '96px' }
+      : { minH: '900px', gutter: '72px', bottom: '96px', headPad: '20px 0 16px', brand: '28px', leadTop: '112px', h1: '84px', h1Sm: '64px', h2: '36px', lead: '23px', body: '20px', gap: '152px', btnW: 'auto', actDir: 'row', actAlign: 'center', actTop: '40px', rowTitle: '25px', big: '160px' };
+    const base = { t, dark, isLight: !dark, phone, desk: !phone, themeLabel: dark ? 'Switch to light theme' : 'Switch to dark theme' };
+
+    const variant = this.props.variant ?? 'dailyFail';
+    const z = Object.assign({}, Z, phone ? { leadTop: '56px' } : { leadTop: '128px' });
+    const fail = (w) => '✕ ' + w;
+    const V = {
+      dailyFail: { kind: 'focus', leave: 'Leave lesson', eb: fail('Didn’t finish writing'), h: 'Today’s lesson didn’t finish writing.', line: 'This happens now and then. Trying again usually works within a few seconds.', cta: 'Try again', alt: 'or go back to Today', note: 'Your streak is safe. Today counts until midnight.' },
+      seriesLessonFail: { kind: 'focus', leave: 'Series', eb: fail('Didn’t finish writing'), h: 'Lesson 4 didn’t finish writing.', line: 'The rest of your series is fine. Try again, or open another lesson and come back to this one.', cta: 'Try again', alt: 'or go back to the series', note: 'Lesson 4 of 5 · Boxes, flow and layout' },
+      placementFail: { kind: 'focus', leave: 'Leave', eb: fail('Couldn’t write questions'), h: 'Your placement test didn’t come through.', line: 'No questions were written, so there is nothing to lose.', cta: 'Try again', alt: 'or change the topic', note: 'Topic saved: Basics of Web Development' },
+      outlineFail: { kind: 'focus', leave: 'Leave', eb: fail('Couldn’t write the outline'), h: 'Your series outline didn’t come through.', line: 'Your test results are kept, so you won’t take the test again.', cta: 'Try again', alt: 'or go back to Library', note: 'Placement test kept: 3 of 5' },
+      masteryFail: { kind: 'focus', leave: 'Series', eb: fail('Couldn’t write questions'), h: 'Your Mastery Check didn’t come through.', line: 'Your lessons, checks and progress are untouched. Try again whenever you’re ready.', cta: 'Try again', alt: 'or go back to the series', note: '' },
+      guestUsed: { kind: 'guest', eb: 'Guest limit', ebInk: t.muted, h: 'You’ve used your guest series.', line: 'Guests can go deeper once. Your series is still yours in this browser. To start another, create a free account.', cta: 'Create a free account', alt: 'or open the sample series', note: 'Free, no credit card. Your progress so far comes with you.' },
+      guestDaily: { kind: 'guest', eb: 'Daily limit reached', ebInk: t.muted, h: 'New series are paused for guests today.', line: 'Guests share a daily limit, and it’s used up. The sample series is open to everyone, with working checks.', cta: 'Open the sample series', alt: 'or create a free account', note: 'Your daily lesson still works as usual.' },
+      lessonNotFound: { kind: 'app', eb: 'Not found', ebInk: t.muted, h: 'This lesson isn’t here.', line: 'The link may be mistyped, or the lesson belongs to another account.', cta: 'Go to Today', alt: 'or open Library', note: '' },
+      seriesNotFound: { kind: 'app', eb: 'Not found', ebInk: t.muted, h: 'This series isn’t here.', line: 'It may have been deleted, or the link is from another account.', cta: 'Go to Library', alt: 'or start a series', note: '' },
+      loadFail: { kind: 'app', eb: fail('Couldn’t load'), h: 'This series didn’t load.', line: 'It’s probably the connection. Nothing was lost.', cta: 'Try again', alt: 'or go to Library', note: '' }
+    }[variant];
+    const v = Object.assign({ ebInk: t.incorrect }, V, { focus: V.kind === 'focus', app: V.kind === 'app', guest: V.kind === 'guest' });
+    return Object.assign(base, { z, v });
   }
 }
 </script>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Landing · full page</title>
+<title>Landing</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -14,135 +14,281 @@
 body{margin:0}
 </style>
 </helmet>
-<div style="background: {{t.bg}}; color: {{t.ink}}; font-family: 'Newsreader', Georgia, serif; box-sizing: border-box; padding: 0 {{z.gutter}}">
-  <div style="max-width: 1296px; margin: 0 auto">
-    <!-- masthead -->
-    <header style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; padding: {{z.headPad}}">
+<div style="background: {{t.bg}}; color: {{t.ink}}; font-family: 'Newsreader', Georgia, serif; box-sizing: border-box; padding: 0 {{z.gutter}}; overflow: hidden">
+  <div style="max-width: 1200px; margin: 0 auto">
+    <header style="display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: {{z.headPad}}">
       <a href="#" style="font-size: {{z.brand}}; font-weight: 600; letter-spacing: -0.015em; color: {{t.ink}}; text-decoration: none">TopicTutor</a>
-      <sc-if value="{{desk}}" hint-placeholder-val="{{ true }}"><p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.muted}}">Tuesday, November 10 · Day 314 of 365</p></sc-if>
       <nav aria-label="Account" style="display: flex; align-items: center; gap: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 14px">
-        <sc-if value="{{signedOut}}" hint-placeholder-val="{{ true }}">
-          <a href="#" style="padding: 12px 10px; color: {{t.ink}}; text-decoration: none">Log in</a>
-          <a href="#" style="padding: 10px 14px; border: 1.5px solid {{t.ink}}; color: {{t.ink}}; text-decoration: none">Register</a>
-        </sc-if>
-        <sc-if value="{{signedIn}}" hint-placeholder-val="{{ false }}">
-          <a href="#" style="padding: 10px 14px; border: 1.5px solid {{t.ink}}; color: {{t.ink}}; text-decoration: none">Go to Today</a>
-        </sc-if>
-        <button type="button" aria-label="{{themeLabel}}" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: {{t.ink}}">
-          <sc-if value="{{isLight}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></sc-if>
-          <sc-if value="{{dark}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"></path></svg></sc-if>
-        </button>
+        <sc-if value="{{guest}}" hint-placeholder-val="{{ true }}"><a href="#" style="padding: 12px 10px; color: {{t.ink}}; text-decoration: none">Log in</a>
+        <sc-if value="{{desk}}" hint-placeholder-val="{{ true }}"><a href="#" style="padding: 10px 14px; border: 1.5px solid {{t.ink}}; color: {{t.ink}}; text-decoration: none">Register</a></sc-if></sc-if>
+        <sc-if value="{{signedIn}}" hint-placeholder-val="{{ false }}"><a href="#" style="padding: 12px 10px; color: {{t.ink}}; text-decoration: none">Today</a><span aria-hidden="true" style="width: 32px; height: 32px; margin-left: 6px; border-radius: 999px; background: {{t.ink}}; color: {{t.bg}}; display: flex; align-items: center; justify-content: center; font-family: 'Newsreader', Georgia, serif; font-size: 17px; font-weight: 500">D</span></sc-if>
+        <button type="button" aria-label="{{themeLabel}}" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: {{t.ink}}"><sc-if value="{{isLight}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></sc-if><sc-if value="{{dark}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"></path></svg></sc-if></button>
       </nav>
     </header>
     <div style="border-top: 3px solid {{t.ink}}; border-bottom: 1px solid {{t.ink}}; height: 3px"></div>
 
     <!-- HERO -->
-    <section style="display: flex; flex-wrap: wrap; gap: 48px 80px; padding: {{z.heroPad}}; align-items: flex-start">
-      <div style="flex: 999 1 520px; min-width: 0">
-        <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.accent}}">A new lesson every day · about three minutes</p>
-        <h1 style="margin: 24px 0 0; font-size: {{z.h1}}; line-height: 0.96; font-weight: 500; letter-spacing: -0.025em">Learn one thing <em style="font-weight: 400">well</em>, every day.</h1>
-        <p style="margin: 28px 0 0; max-width: 600px; font-size: {{z.lead}}; line-height: 1.5; color: {{t.soft}}">A short lesson from the subjects you choose. A recall question keeps yesterday from fading. When something grabs you, Go Deeper writes a five-lesson series around what you got wrong.</p>
-        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; margin-top: 36px">
-          <a href="#" style="display: inline-flex; align-items: center; gap: 14px; min-height: 58px; padding: 0 28px; background: {{t.ink}}; color: {{t.bg}}; font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500; text-decoration: none">{{heroCta}}<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
-          <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: {{t.muted}}">{{heroMeta}}</p>
+    <section style="padding: {{z.heroTop}} 0 0; text-align: center">
+      <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: {{t.muted}}">Tuesday, November 10</p>
+      <h1 style="margin: 22px auto 0; max-width: 900px; font-size: {{z.h1}}; line-height: 0.95; font-weight: 500; letter-spacing: -0.03em">Learn one thing <em style="font-weight: 400">well</em>, every day.</h1>
+      <p style="margin: 28px auto 0; max-width: 460px; font-size: {{z.lead}}; line-height: 1.45; color: {{t.soft}}">A three-minute lesson from the subjects you choose.</p>
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 16px; margin-top: 40px">
+        <a href="#" style="display: inline-flex; align-items: center; gap: 14px; min-height: 58px; padding: 0 30px; background: {{t.ink}}; color: {{t.bg}}; font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500; text-decoration: none">{{ctaLabel}}<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+        <a href="#" style="padding: 8px 0; font-size: 17px; font-style: italic; color: {{t.soft}}; text-underline-offset: 5px">or build a series on anything</a>
+      </div>
+    </section>
+
+    <!-- TODAY'S LESSON, the demo -->
+    <section aria-label="Today’s lesson" style="max-width: 760px; margin: {{z.cardTop}} auto 0; background: {{t.raised}}; border: 1px solid {{t.ink}}; padding: {{z.cardPad}}; box-sizing: border-box">
+      <div style="display: flex; justify-content: space-between; gap: 12px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase">
+        <span style="color: {{t.accent}}">Today in Science</span><span style="color: {{t.muted}}">3 min</span>
+      </div>
+      <h2 style="margin: 16px 0 0; font-size: {{z.cardTitle}}; line-height: 1.02; font-weight: 500; letter-spacing: -0.02em">Why leap years exist</h2>
+      <p style="margin: 20px 0 0; font-size: {{z.cardBody}}; line-height: 1.6; color: {{t.soft}}"><span style="float: left; font-size: {{z.drop}}; line-height: 0.82; font-weight: 500; padding: 6px 10px 0 0; color: {{t.ink}}">E</span>arth takes about 365.2422 days to circle the Sun, not a neat 365. A calendar of exactly 365 days slips behind the seasons by almost six hours a year.</p>
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 24px; padding-top: 16px; border-top: 1px solid {{t.rule}}">
+        <span style="font-size: 16px; font-style: italic; color: {{t.muted}}">Two more paragraphs, then a quick check.</span>
+        <a href="#" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: {{t.ink}}">Keep reading<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+      </div>
+    </section>
+
+    <!-- SESSION PLAYER -->
+    <section aria-labelledby="pl-h" style="margin-top: {{z.gap}}">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 12px 24px">
+        <h2 id="pl-h" style="margin: 0; font-size: {{z.h2}}; line-height: 1.05; font-weight: 500; letter-spacing: -0.02em">Watch a whole session.</h2>
+        <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.muted}}">Step {{stepNum}} of 4 · about three minutes for real</p>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; margin-top: 24px; background: {{t.raised}}; border: 1px solid {{t.ink}}">
+        <div role="tablist" aria-label="Session steps" style="flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; border-right: {{z.plRule}}; border-bottom: {{z.plRuleB}}">
+          <sc-for list="{{steps}}" as="s" hint-placeholder-count="4">
+            <button type="button" role="tab" aria-selected="{{s.on}}" onClick="{{s.go}}" style="display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 10px; width: 100%; padding: {{z.tabPad}}; text-align: left; background: {{s.bg}}; color: {{s.ink}}; border: none; border-bottom: 1px solid {{t.rule}}; font-family: 'Newsreader', Georgia, serif; cursor: pointer; transition: background 240ms">
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 28px; color: {{s.numInk}}">{{s.n}}</span>
+              <span><span style="display: block; font-size: 22px; line-height: 1.25; font-weight: 500">{{s.name}}</span><span style="display: block; margin-top: 2px; font-size: 16px; line-height: 1.4; color: {{s.sub}}">{{s.line}}</span></span>
+            </button>
+          </sc-for>
         </div>
-        <form style="margin-top: 44px; max-width: 600px; padding-top: 18px; border-top: 1px solid {{t.rule}}">
-          <label for="topic-l" style="display: block; font-size: 18px; font-style: italic; color: {{t.soft}}">Or name something you want to learn, and we’ll build a series.</label>
-          <div style="display: flex; gap: 10px; margin-top: 10px">
-            <input id="topic-l" type="text" placeholder="Basics of Web Development" style="flex: 1 1 auto; min-width: 0; height: 48px; padding: 0 2px; background: transparent; border: none; border-bottom: 1.5px solid {{t.ink}}; border-radius: 0; font-family: 'Newsreader', Georgia, serif; font-size: 20px; color: {{t.ink}}">
-            <button type="submit" style="flex: none; height: 48px; padding: 0 16px; background: transparent; border: 1.5px solid {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: {{t.ink}}">Build series</button>
+        <div role="tabpanel" aria-live="polite" style="flex: 999 1 460px; min-width: 0; min-height: {{z.stageH}}; padding: {{z.stagePad}}; box-sizing: border-box; display: flex; align-items: center">
+          <div style="width: 100%; opacity: {{fadeOp}}; transform: translateY({{fadeY}}px); transition: {{fadeT}}">
+            <sc-if value="{{isRecall}}" hint-placeholder-val="{{ true }}">
+              <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.accent}}">Recall · from Monday · Finance</p>
+              <p style="margin: 12px 0 0; font-size: {{z.stageQ}}; line-height: 1.2; font-weight: 500">Interest compounds monthly instead of yearly. The total after a year is:</p>
+              <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 22px; font-size: 19px">
+                <span style="padding: 16px 18px; border: 1.5px solid {{t.rule}}; color: {{t.muted}}">The same</span>
+                <span style="display: flex; justify-content: space-between; padding: 16px 18px; border: 1.5px solid {{t.correct}}; background: {{t.correctWash}}">Slightly higher<span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: {{t.correct}}">✓ CORRECT</span></span>
+              </div>
+            </sc-if>
+            <sc-if value="{{isLesson}}" hint-placeholder-val="{{ false }}">
+              <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.accent}}">Science</p>
+              <p style="margin: 10px 0 0; font-size: {{z.stageTitle}}; line-height: 1.02; font-weight: 500; letter-spacing: -0.02em">Why leap years exist</p>
+              <p style="margin: 18px 0 0; font-size: 19px; line-height: 1.6; color: {{t.soft}}">Earth takes about 365.2422 days to circle the Sun, not a neat 365. A calendar of exactly 365 days slips behind the seasons by almost six hours a year.<span aria-hidden="true" style="display: inline-block; width: 7px; height: 17px; margin-left: 4px; vertical-align: -2px; background: {{t.accent}}"></span></p>
+            </sc-if>
+            <sc-if value="{{isCheck}}" hint-placeholder-val="{{ false }}">
+              <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.accent}}">Check</p>
+              <p style="margin: 12px 0 0; font-size: {{z.stageQ}}; line-height: 1.2; font-weight: 500">Which of these years got a leap day?</p>
+              <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 22px">
+                <span style="display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border: 1.5px solid {{t.incorrect}}; background: {{t.incorrectWash}}; font-size: 34px; font-weight: 500">1900<span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: {{t.incorrect}}">✕ YOUR PICK</span></span>
+                <span style="display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border: 1.5px solid {{t.correct}}; background: {{t.correctWash}}; font-size: 34px; font-weight: 500">2000<span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: {{t.correct}}">✓ ANSWER</span></span>
+              </div>
+              <p style="margin: 14px 0 0; font-size: 16px; font-style: italic; color: {{t.muted}}">Wrong still counts. The lesson is finished.</p>
+            </sc-if>
+            <sc-if value="{{isFinish}}" hint-placeholder-val="{{ false }}">
+              <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.muted}}">Lesson finished</p>
+              <div style="display: flex; align-items: flex-end; gap: 16px; margin-top: 12px">
+                <div style="position: relative; height: {{z.flipH}}; width: {{z.flipW}}; overflow: hidden">
+                  <span aria-hidden="true" style="position: absolute; left: 0; bottom: 0; font-size: {{z.flipH}}; line-height: 1; font-weight: 500; letter-spacing: -0.05em; color: {{t.muted}}; opacity: {{oldOp}}; transform: translateY({{oldY}}%); transition: {{flipT}}">12</span>
+                  <span style="position: absolute; left: 0; bottom: 0; font-size: {{z.flipH}}; line-height: 1; font-weight: 500; letter-spacing: -0.05em; color: {{t.accent}}; opacity: {{newOp}}; transform: translateY({{newY}}%); transition: {{flipT}}">13</span>
+                </div>
+                <p style="margin: 0 0 14px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: {{t.muted}}">days in a row</p>
+              </div>
+            </sc-if>
           </div>
-        </form>
+        </div>
       </div>
-      <aside aria-label="Today’s lesson" style="flex: 1 1 320px; min-width: 0; background: {{t.raised}}; border: 1px solid {{t.ink}}; padding: 26px; box-sizing: border-box">
-        <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.accent}}">Today in Science</p>
-        <h2 style="margin: 12px 0 0; font-size: 36px; line-height: 1.05; font-weight: 500; letter-spacing: -0.015em">Why leap years exist</h2>
-        <p style="margin: 14px 0 0; font-size: 18px; line-height: 1.55; color: {{t.soft}}"><span style="float: left; font-size: 56px; line-height: 0.82; font-weight: 500; padding: 5px 7px 0 0; color: {{t.ink}}">E</span>arth takes about 365.2422 days to circle the Sun, not a neat 365. A calendar of exactly 365 days slips behind the seasons by almost six hours a year.</p>
-        <a href="#" style="display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; min-height: 44px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: {{t.ink}}">Keep reading<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
-      </aside>
-    </section>
-
-    <!-- HOW IT WORKS -->
-    <section aria-labelledby="how-h" style="margin-top: {{z.sectionGap}}; border-top: 3px solid {{t.ink}}">
-      <h2 id="how-h" style="margin: 18px 0 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.muted}}">How it works</h2>
-      <ol style="list-style: none; margin: 8px 0 0; padding: 0; display: grid; grid-template-columns: {{z.threeCols}}; gap: 0 48px">
-        <li style="padding: 22px 0; border-bottom: 1px solid {{t.rule}}">
-          <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 40px; font-weight: 500; color: {{t.accent}}">01</p>
-          <h3 style="margin: 12px 0 0; font-size: 28px; line-height: 1.12; font-weight: 500">A new lesson every day</h3>
-          <p style="margin: 8px 0 0; font-size: 18px; line-height: 1.5; color: {{t.soft}}">Three short paragraphs and a quick check. About three minutes, then you’re done for the day.</p>
-        </li>
-        <li style="padding: 22px 0; border-bottom: 1px solid {{t.rule}}">
-          <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 40px; font-weight: 500; color: {{t.accent}}">02</p>
-          <h3 style="margin: 12px 0 0; font-size: 28px; line-height: 1.12; font-weight: 500">Recall, so it sticks</h3>
-          <p style="margin: 8px 0 0; font-size: 18px; line-height: 1.5; color: {{t.soft}}">Each session opens with one question from an earlier lesson. Remembering is how learning lasts.</p>
-        </li>
-        <li style="padding: 22px 0; border-bottom: 1px solid {{t.rule}}">
-          <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 40px; font-weight: 500; color: {{t.accent}}">03</p>
-          <h3 style="margin: 12px 0 0; font-size: 28px; line-height: 1.12; font-weight: 500">Go deeper, on your gaps</h3>
-          <p style="margin: 8px 0 0; font-size: 18px; line-height: 1.5; color: {{t.soft}}">A five-question test finds what you don’t know. Your five-lesson series is written around exactly that.</p>
-        </li>
-      </ol>
-    </section>
-
-    <!-- FEATURES -->
-    <section aria-labelledby="feat-h" style="margin-top: {{z.sectionGap}}; border-top: 3px solid {{t.ink}}">
-      <h2 id="feat-h" style="margin: 18px 0 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.muted}}">What’s inside</h2>
-      <dl style="margin: 8px 0 0; display: grid; grid-template-columns: {{z.twoCols}}; gap: 0 48px">
-        <div style="display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 16px; padding: 22px 0; border-bottom: 1px solid {{t.rule}}">
-          <dt style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; line-height: 1.6">Daily lessons</dt>
-          <dd style="margin: 0; font-size: 18px; line-height: 1.5">From the subjects you pick: Math, Science, History, Literature, Finance and more. One a day, rotating.</dd>
+      <div style="display: flex; align-items: center; gap: 16px; margin-top: 14px">
+        <button type="button" onClick="{{toggle}}" aria-label="{{playLabel}}" style="flex: none; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: {{t.ink}}; color: {{t.bg}}; border: none; cursor: pointer">
+          <sc-if value="{{playing}}" hint-placeholder-val="{{ true }}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14"></rect><rect x="14" y="5" width="4" height="14"></rect></svg></sc-if>
+          <sc-if value="{{paused}}" hint-placeholder-val="{{ false }}"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5l12 7-12 7z"></path></svg></sc-if>
+        </button>
+        <div aria-hidden="true" style="flex: 1 1 auto; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px">
+          <sc-for list="{{bars}}" as="b" hint-placeholder-count="4"><span style="height: 4px; background: {{t.rule}}"><span style="display: block; height: 100%; width: {{b.w}}%; background: {{t.ink}}"></span></span></sc-for>
         </div>
-        <div style="display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 16px; padding: 22px 0; border-bottom: 1px solid {{t.rule}}">
-          <dt style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; line-height: 1.6">A tutor inside</dt>
-          <dd style="margin: 0; font-size: 18px; line-height: 1.5">Ask about what you’re reading, or ask for it explained differently. Answers come from that lesson.</dd>
-        </div>
-        <div style="display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 16px; padding: 22px 0; border-bottom: 1px solid {{t.rule}}">
-          <dt style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; line-height: 1.6">Your own series</dt>
-          <dd style="margin: 0; font-size: 18px; line-height: 1.5">Five lessons on anything, shaped by a short test, and finished with a Mastery Check. <a href="#" style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: {{t.ink}}">See a sample</a></dd>
-        </div>
-        <div style="display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 16px; padding: 22px 0; border-bottom: 1px solid {{t.rule}}">
-          <dt style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; line-height: 1.6">Streak and stats</dt>
-          <dd style="margin: 0; font-size: 18px; line-height: 1.5">A streak that counts real learning, plus how much you still remember from earlier lessons.</dd>
-        </div>
-      </dl>
-    </section>
-
-    <!-- CLOSING CTA -->
-    <section style="margin-top: {{z.sectionGap}}; padding: {{z.closePad}}; background: {{t.ink}}; color: {{t.bg}}">
-      <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.closeMuted}}">Free · no credit card · no account to start</p>
-      <h2 style="margin: 16px 0 0; max-width: 900px; font-size: {{z.closeH}}; line-height: 1; font-weight: 500; letter-spacing: -0.025em">Today’s lesson is ready. It takes about three minutes.</h2>
-      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; margin-top: 30px">
-        <a href="#" style="display: inline-flex; align-items: center; gap: 14px; min-height: 58px; padding: 0 28px; background: {{t.bg}}; color: {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500; text-decoration: none">{{heroCta}}<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
-        <a href="#" style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: {{t.bg}}; text-underline-offset: 4px">Look around a sample series</a>
       </div>
     </section>
 
-    <!-- FOOTER -->
-    <footer style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 24px; padding: 28px 0 40px">
-      <p style="margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.015em">TopicTutor</p>
-      <p style="margin: 0; font-size: 17px; font-style: italic; color: {{t.muted}}">A small daily paper for learning one thing well.</p>
-    </footer>
+    <!-- GO DEEPER, staircase -->
+    <section aria-labelledby="gd-h" style="margin-top: {{z.gap}}">
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 28px 48px">
+        <div style="flex: 1 1 420px; min-width: 0; max-width: 600px">
+          <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: {{t.accent}}">Go deeper</p>
+          <h2 id="gd-h" style="margin: 14px 0 0; font-size: {{z.h2}}; line-height: 1.05; font-weight: 500; letter-spacing: -0.02em">Five lessons on anything you name.</h2>
+          <p style="margin: 16px 0 0; font-size: 19px; line-height: 1.5; color: {{t.soft}}">A short placement test finds your level, so the series starts where you are.</p>
+        </div>
+        <div role="group" aria-label="Example topics" style="display: flex; flex-wrap: wrap; gap: 8px">
+          <sc-for list="{{gd.chips}}" as="c" hint-placeholder-count="3"><button type="button" aria-pressed="{{c.on}}" onClick="{{c.go}}" style="min-height: 44px; padding: 0 16px; border: 1.5px solid {{c.border}}; background: {{c.bg}}; color: {{c.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 14px; cursor: pointer; transition: background 200ms, color 200ms">{{c.label}}</button></sc-for>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: {{y.stairDir}}; align-items: {{y.stairAlign}}; gap: {{y.stairGap}}; margin-top: {{y.stairTop}}">
+        <sc-for list="{{gd.steps}}" as="s" hint-placeholder-count="5">
+          <div style="flex: {{y.stepFlex}}; min-width: 0; height: {{s.h}}; margin-left: {{s.ml}}; display: flex; flex-direction: {{y.stepDir}}; justify-content: space-between; align-items: {{y.stepAlignIn}}; gap: 12px; padding: {{y.stepPad}}; box-sizing: border-box; background: {{s.bg}}; color: {{s.ink}}; border-top: 3px solid {{s.top}}; transition: height 420ms cubic-bezier(0.2, 0, 0, 1), background 240ms, color 240ms">
+            <div style="min-width: 0">
+              <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{s.tag}}">{{s.label}}</p>
+              <p style="margin: 8px 0 0; font-size: {{y.stepTitle}}; line-height: 1.15; font-weight: 500">{{s.title}}</p>
+            </div>
+            <span aria-hidden="true" style="font-size: {{y.stepNum}}; line-height: 0.8; font-weight: 500; letter-spacing: -0.04em; color: {{s.num}}">{{s.n}}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; margin-top: 16px; padding-top: 14px; border-top: 1px solid {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase">
+        <span style="color: {{t.accent}}">{{gd.startLine}}</span>
+        <span style="color: {{t.muted}}">Then a Mastery Check</span>
+      </div>
+    </section>
+
   </div>
+
+  <!-- ASK THE TUTOR, full bleed -->
+  <section aria-labelledby="ask-h" style="margin: {{z.gap}} calc(-1 * {{z.gutter}}) 0; padding: {{y.askPad}}; background: {{t.sunk}}">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 40px 80px; align-items: center">
+      <div style="flex: 1 1 320px; min-width: 0">
+        <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: {{t.accent}}">The tutor</p>
+        <h2 id="ask-h" style="margin: 14px 0 0; font-size: {{y.askH}}; line-height: 0.98; font-weight: 500; letter-spacing: -0.03em">Stuck on a line? <em style="font-weight: 400">Ask.</em></h2>
+        <p style="margin: 20px 0 0; max-width: 380px; font-size: 19px; line-height: 1.5; color: {{t.soft}}">Every lesson has a tutor that answers from the lesson itself, and shows you where.</p>
+      </div>
+      <div style="flex: 1.5 1 440px; min-width: 0; background: {{t.raised}}; border: 1px solid {{t.ink}}">
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; padding: 16px {{y.askSide}}; border-bottom: 1px solid {{t.rule}}; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase"><span style="color: {{t.muted}}">Asking about</span><span>Why leap years exist</span></div>
+        <div style="position: relative; min-height: {{y.askMin}}; padding: {{y.askBoxPad}}; box-sizing: border-box">
+          <p style="margin: 0; font-size: {{y.askQ}}; line-height: 1.25; font-weight: 500">{{ask.q}}</p>
+          <p aria-hidden="true" style="margin: 16px 0 0; font-size: 19px; line-height: 1.6; color: {{t.soft}}">{{ask.shown}}<sc-if value="{{ask.typing}}" hint-placeholder-val="{{ false }}"><span style="display: inline-block; width: 7px; height: 17px; margin-left: 3px; vertical-align: -2px; background: {{t.accent}}"></span></sc-if></p>
+          <p aria-live="polite" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap">{{ask.full}}</p>
+          <p style="margin: 16px 0 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: {{t.accent}}; opacity: {{ask.srcOp}}; transition: opacity 240ms">↳ From {{ask.src}}</p>
+        </div>
+        <div role="group" aria-label="Try a question" style="display: flex; flex-wrap: wrap; gap: 8px; padding: 16px {{y.askSide}} 20px; border-top: 1px solid {{t.rule}}">
+          <sc-for list="{{ask.chips}}" as="c" hint-placeholder-count="3"><button type="button" aria-pressed="{{c.on}}" onClick="{{c.go}}" style="min-height: 44px; padding: 8px 14px; border: 1.5px solid {{c.border}}; background: {{c.bg}}; color: {{c.ink}}; font-family: 'Newsreader', Georgia, serif; font-size: 17px; font-style: italic; text-align: left; cursor: pointer; transition: background 200ms, color 200ms">{{c.label}}</button></sc-for>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLOSING BAND, full bleed -->
+  <section style="margin: 0 calc(-1 * {{z.gutter}}) 0; padding: {{z.bandPad}}; background: {{t.ink}}; color: {{t.bg}}">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 32px">
+      <div>
+        <h2 style="margin: 0; font-size: {{z.closeH}}; line-height: 1; font-weight: 500; letter-spacing: -0.025em">Today’s lesson is ready.</h2>
+        <p style="margin: 16px 0 0; font-size: 19px; color: {{t.bandMuted}}">Free. No account, no card.</p>
+      </div>
+      <a href="#" style="display: inline-flex; align-items: center; gap: 14px; min-height: 58px; padding: 0 30px; background: {{t.bg}}; color: {{t.ink}}; font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500; text-decoration: none">{{ctaLabel}}<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+    </div>
+    <div style="max-width: 1200px; margin: {{z.footTop}} auto 0; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 24px; padding-top: 20px; border-top: 1px solid {{t.bandRule}}">
+      <p style="margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.015em">TopicTutor</p>
+      <p style="margin: 0; font-size: 16px; font-style: italic; color: {{t.bandMuted}}">A small daily paper for learning one thing well.</p>
+    </div>
+  </section>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"signedIn":{"editor":"boolean","default":false},"dark":{"editor":"boolean","default":false},"phone":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":2400}}'>
+<script type="text/x-dc" data-dc-script data-props='{"phone":{"editor":"boolean","default":false},"signedIn":{"editor":"boolean","default":false},"dark":{"editor":"boolean","default":false},"tone":{"editor":"enum","options":["black","graphite","slate","umber"],"default":"graphite"},"$preview":{"width":1440,"height":4250}}'>
 class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.STEP = 3400;
+    let reduced = false;
+    try { reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+    this.reduced = reduced;
+    this.state = { step: 0, elapsed: 0, playing: !reduced, entering: false, topic: 0, askI: 0, askC: 9999 };
+    this.TOPICS = [
+      { name: 'Bridges', start: 1, lessons: ['What holds a bridge up', 'Beams and arches', 'Why suspension works', 'Wind and resonance', 'Reading a real bridge'] },
+      { name: 'Jazz harmony', start: 0, lessons: ['What a chord is', 'The ii V I', 'Extensions and color', 'Substitutions', 'Hearing it in a standard'] },
+      { name: 'Black holes', start: 2, lessons: ['What gravity bends', 'How stars collapse', 'The event horizon', 'Hawking radiation', 'Reading the first image'] }
+    ];
+    this.ASK = [
+      { q: 'Why skip 1900 but not 2000?', src: 'paragraph 3', a: 'Century years skip the leap day unless they divide evenly by 400. 1900 does not, 2000 does. That one rule keeps the calendar within a day of the seasons for thousands of years.' },
+      { q: 'What if we had no leap days?', src: 'paragraph 1', a: 'The calendar would drift about a day every four years. After roughly 750 years, July would land in the middle of winter.' },
+      { q: 'Who came up with this?', src: 'paragraph 2', a: 'Julius Caesar added a leap day every four years in 46 BC. That overshot a little, so in 1582 Pope Gregory XIII added the century rule we still use.' }
+    ];
+
+  }
+  componentDidMount() {
+    this.timer = setInterval(() => {
+      if (!this.state.playing) return;
+      const e = this.state.elapsed + 100;
+      if (e >= this.STEP) this.goTo((this.state.step + 1) % 4);
+      else this.setState({ elapsed: e });
+    }, 100);
+    if (this.mountExtra) this.mountExtra();
+  }
+  componentWillUnmount() { clearInterval(this.timer); if (this.timer2) clearInterval(this.timer2); }
+  goTo(i) {
+    this.setState({ step: i, elapsed: 0, entering: !this.reduced });
+    if (!this.reduced) setTimeout(() => this.setState({ entering: false }), 30);
+  }
   renderVals() {
-    const dark = this.props.dark ?? false;
     const phone = this.props.phone ?? false;
-    const signedIn = this.props.signedIn ?? false;
-    const t = dark
-      ? { bg: '#121416', raised: '#1A1D20', ink: '#E9EAE6', soft: '#C9CCC8', muted: '#A3A8AD', rule: '#3A3F44', accent: '#FF7A50', closeMuted: '#565B60' }
-      : { bg: '#F1F2EE', raised: '#FFFFFF', ink: '#16181A', soft: '#3B3F43', muted: '#565B60', rule: '#C9CCC6', accent: '#C23A12', closeMuted: '#A3A8AD' };
-    const z = phone
-      ? { gutter: '24px', headPad: '8px 0 10px', brand: '24px', heroPad: '32px 0 0', h1: '52px', lead: '19px', sectionGap: '56px', threeCols: 'minmax(0, 1fr)', twoCols: 'minmax(0, 1fr)', closePad: '32px 24px', closeH: '36px' }
-      : { gutter: '72px', headPad: '20px 0 16px', brand: '30px', heroPad: '72px 0 0', h1: '100px', lead: '22px', sectionGap: '96px', threeCols: 'repeat(3, minmax(0, 1fr))', twoCols: 'repeat(2, minmax(0, 1fr))', closePad: '64px 56px', closeH: '64px' };
-    return {
-      t, z, dark, isLight: !dark, phone, desk: !phone, signedIn, signedOut: !signedIn,
-      themeLabel: dark ? 'Switch to light theme' : 'Switch to dark theme',
-      heroCta: signedIn ? 'Go to Today' : 'Start today’s lesson',
-      heroMeta: signedIn ? 'Day 47 of your streak' : 'Free · no account needed'
+    const dark = this.props.dark ?? false;
+    const tone = this.props.tone ?? 'graphite';
+    const DARK = {
+      black: { bg: '#121416', ink: '#E9EAE6', soft: '#C9CCC8', muted: '#A3A8AD', rule: '#3A3F44', accent: '#FF7A50', raised: '#1A1D20', sunk: '#24282C', correct: '#8DB4F0', correctWash: '#1A2638', incorrect: '#F0A35E', incorrectWash: '#2E2216', bandMuted: '#565B60', bandRule: '#C9CCC6' },
+      graphite: { bg: '#1E2124', ink: '#E6E7E3', soft: '#C4C7C3', muted: '#A0A5AA', rule: '#3E444A', accent: '#FF7A50', raised: '#272B2F', sunk: '#31363B', correct: '#8DB4F0', correctWash: '#24324A', incorrect: '#F0A35E', incorrectWash: '#3A2C1E', bandMuted: '#5A6066', bandRule: '#BFC3BE' },
+      slate: { bg: '#1D2330', ink: '#E4E7EC', soft: '#C3C8D1', muted: '#9DA6B4', rule: '#3B4558', accent: '#FF8159', raised: '#262E3D', sunk: '#303A4C', correct: '#93B8F2', correctWash: '#26344D', incorrect: '#F2A866', incorrectWash: '#3B2E22', bandMuted: '#566070', bandRule: '#BFC5CF' },
+      umber: { bg: '#24221F', ink: '#ECE8E1', soft: '#CBC5BB', muted: '#A9A397', rule: '#46423B', accent: '#FF7E54', raised: '#2D2A26', sunk: '#38352F', correct: '#93B6EE', correctWash: '#2B3446', incorrect: '#F2A866', incorrectWash: '#3E3022', bandMuted: '#5F594F', bandRule: '#C9C3B8' }
     };
+    const t = dark
+      ? (DARK[tone] || DARK.graphite)
+      : { bg: '#F1F2EE', ink: '#16181A', soft: '#3B3F43', muted: '#565B60', rule: '#C9CCC6', accent: '#C23A12', raised: '#FFFFFF', sunk: '#E2E4DE', correct: '#1F4E8C', correctWash: '#E3EAF4', incorrect: '#8F3F00', incorrectWash: '#F6E7D8', bandMuted: '#A3A8AD', bandRule: '#3A3F44' };
+    const z = phone
+      ? { gutter: '24px', headPad: '8px 0 10px', brand: '24px', heroTop: '64px', h1: '54px', lead: '19px', cardTop: '64px', cardPad: '24px', cardTitle: '34px', cardBody: '18px', drop: '58px', gap: '112px', four: 'repeat(2, minmax(0, 1fr))', cellPad: '18px 14px 20px', cellRuleA: '1px solid ' + t.rule, cellRuleB2: 'none', cellRuleB: '1px solid ' + t.rule, vis: '128px', streak: '88px', bandPad: '64px 24px 32px', closeH: '40px', footTop: '64px', h2: '34px', plRule: 'none', plRuleB: '1px solid ' + t.ink, tabPad: '14px 18px', stageH: '340px', stagePad: '24px', stageQ: '22px', stageTitle: '34px', flipH: '120px', flipW: '170px' }
+      : { gutter: '72px', headPad: '20px 0 16px', brand: '28px', heroTop: '140px', h1: '108px', lead: '23px', cardTop: '112px', cardPad: '44px 52px', cardTitle: '52px', cardBody: '21px', drop: '72px', gap: '200px', four: 'repeat(4, minmax(0, 1fr))', cellPad: '24px 24px 28px', cellRuleA: '1px solid ' + t.rule, cellRuleB2: '1px solid ' + t.rule, cellRuleB: 'none', vis: '168px', streak: '120px', bandPad: '112px 72px 40px', closeH: '64px', footTop: '120px', h2: '48px', plRule: '1px solid ' + t.ink, plRuleB: 'none', tabPad: '22px 26px', stageH: '440px', stagePad: '48px 56px', stageQ: '30px', stageTitle: '52px', flipH: '200px', flipW: '280px' };
+    return { z, t, dark, isLight: !dark, themeLabel: dark ? 'Switch to light theme' : 'Switch to dark theme', phone, desk: !phone, ...this.extra(t, phone), signedIn: !!this.props.signedIn, guest: !this.props.signedIn, ctaLabel: this.props.signedIn ? 'Go to today’s lesson' : 'Start today’s lesson',
+      ...(() => {
+        const s = this.state, names = ['Recall', 'Lesson', 'Check', 'Finish'];
+        const lines = ['One question from before', 'Three short paragraphs', 'A quick check', 'Your streak goes up'];
+        const flip = s.step === 3 && s.elapsed >= 500;
+        const ease = 'cubic-bezier(0.2, 0, 0, 1)';
+        return {
+          stepNum: s.step + 1,
+          steps: names.map((n, i) => ({ n: '0' + (i + 1), name: n, line: lines[i], on: i === s.step,
+            bg: i === s.step ? t.bg : 'transparent', ink: t.ink, sub: i === s.step ? t.soft : t.muted, numInk: i === s.step ? t.accent : t.muted,
+            go: () => this.goTo(i) })),
+          isRecall: s.step === 0, isLesson: s.step === 1, isCheck: s.step === 2, isFinish: s.step === 3,
+          bars: [0, 1, 2, 3].map((i) => ({ w: i < s.step ? 100 : (i === s.step ? Math.round(s.elapsed / this.STEP * 100) : 0) })),
+          playing: s.playing, paused: !s.playing, playLabel: s.playing ? 'Pause' : 'Play',
+          toggle: () => this.setState({ playing: !s.playing }),
+          fadeOp: s.entering ? 0 : 1, fadeY: s.entering ? 8 : 0, fadeT: s.entering || this.reduced ? 'none' : 'opacity 240ms ' + ease + ', transform 240ms ' + ease,
+          oldOp: flip ? 0 : 1, oldY: flip ? -100 : 0, newOp: flip ? 1 : 0, newY: flip ? 0 : 100,
+          flipT: this.reduced ? 'none' : 'transform 640ms ' + ease + ', opacity 640ms ' + ease
+        };
+      })() };
+  }
+
+  mountExtra() {
+    this.timer2 = setInterval(() => {
+      const a = this.ASK[this.state.askI];
+      if (this.state.askC < a.a.length) this.setState({ askC: Math.min(a.a.length, this.state.askC + 2) });
+    }, 22);
+  }
+  extra(t, phone) {
+    const s = this.state;
+    const y = phone
+      ? { stairDir: 'column', stairAlign: 'stretch', stairGap: '6px', stairTop: '40px', stepFlex: '0 0 auto', stepDir: 'row', stepAlignIn: 'flex-end', stepPad: '14px 16px', stepTitle: '19px', stepNum: '44px',
+          askPad: '72px 24px', askH: '44px', askSide: '18px', askMin: '250px', askBoxPad: '22px 18px', askQ: '22px' }
+      : { stairDir: 'row', stairAlign: 'flex-end', stairGap: '8px', stairTop: '56px', stepFlex: '1 1 0', stepDir: 'column', stepAlignIn: 'stretch', stepPad: '20px 20px 18px', stepTitle: '21px', stepNum: '96px',
+          askPad: '128px 72px', askH: '76px', askSide: '28px', askMin: '300px', askBoxPad: '32px 28px', askQ: '26px' };
+    const T = this.TOPICS[s.topic];
+    const gd = {
+      chips: this.TOPICS.map((tp, i) => ({ label: tp.name, on: i === s.topic, bg: i === s.topic ? t.ink : 'transparent', ink: i === s.topic ? t.bg : t.ink, border: i === s.topic ? t.ink : t.rule, go: () => this.setState({ topic: i }) })),
+      startLine: '↑ Placement starts you at lesson ' + (T.start + 1),
+      steps: T.lessons.map((title, i) => {
+        const skip = i < T.start, here = i === T.start;
+        return { n: String(i + 1), title, label: skip ? 'Skipped' : (here ? 'You start here' : 'Lesson ' + (i + 1)),
+          h: phone ? 'auto' : (210 + i * 56) + 'px', ml: phone ? (i * 14) + 'px' : '0',
+          bg: here ? t.ink : (skip ? 'transparent' : t.sunk), ink: here ? t.bg : (skip ? t.muted : t.ink),
+          top: here ? t.accent : (skip ? t.rule : t.ink), tag: here ? t.bg : (skip ? t.muted : t.accent), num: here ? t.bg : (skip ? t.rule : t.ink) };
+      })
+    };
+    const A = this.ASK[s.askI];
+    const ask = {
+      q: A.q, shown: A.a.slice(0, s.askC), full: A.a, typing: s.askC < A.a.length, src: A.src, srcOp: s.askC < A.a.length ? 0 : 1,
+      chips: this.ASK.map((a, i) => ({ label: a.q, on: i === s.askI, bg: i === s.askI ? t.ink : 'transparent', ink: i === s.askI ? t.bg : t.ink, border: i === s.askI ? t.ink : t.rule,
+        go: () => this.setState({ askI: i, askC: this.reduced ? a.a.length : 0 }) }))
+    };
+    return { y, gd, ask };
   }
 }
 </script>

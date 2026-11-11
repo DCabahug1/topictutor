@@ -1,24 +1,24 @@
 # TopicTutor: developer spec (Almanac design)
 
-Online copy: https://claude.ai/artifact/NQNY7CFHs9D9HAkZKoSdPw (this file is the offline copy).
+This file is the source of truth. It was updated on Nov 10 for the C1 hierarchy pass, so it is newer than the online copy at https://claude.ai/artifact/NQNY7CFHs9D9HAkZKoSdPw.
 
 ## Tokens and theming
 
-Tokens are in `tokens.css`. Components use roles, never hex values. Dark mode swaps variables on `<html data-theme>`.
+Tokens are in `tokens.css`. Components use roles, never hex values. Dark mode swaps variables on `<html data-theme>`. Dark uses the **graphite** tone by default. Black, slate and umber are optional via `data-tone` (see `tokens.css`).
 
 | Token | Light | Dark | Use |
 | --- | --- | --- | --- |
-| `--paper` | #F1F2EE | #121416 | Page background |
-| `--paper-raised` | #FFFFFF | #1A1D20 | Cards, options, inputs |
-| `--paper-sunk` | #E2E4DE | #24282C | Wells, skeleton lines while writing |
-| `--ink` | #16181A | #E9EAE6 | Text, control borders, primary fill |
-| `--ink-soft` | #3B3F43 | #C9CCC8 | Lead paragraphs, secondary body copy |
-| `--ink-muted` | #565B60 | #A3A8AD | Metadata, captions, upcoming steps |
-| `--on-ink` | #F1F2EE | #121416 | Text on an ink fill |
-| `--rule` | #C9CCC6 | #3A3F44 | Decorative hairlines only, never a control border |
+| `--paper` | #F1F2EE | #1E2124 | Page background |
+| `--paper-raised` | #FFFFFF | #272B2F | Cards, options, inputs |
+| `--paper-sunk` | #E2E4DE | #31363B | Wells, skeleton lines while writing |
+| `--ink` | #16181A | #E6E7E3 | Text, control borders, primary fill |
+| `--ink-soft` | #3B3F43 | #C4C7C3 | Lead paragraphs, secondary body copy |
+| `--ink-muted` | #565B60 | #A0A5AA | Metadata, captions, upcoming steps |
+| `--on-ink` | #F1F2EE | #1E2124 | Text on an ink fill |
+| `--rule` | #C9CCC6 | #3E444A | Decorative hairlines only, never a control border |
 | `--accent` | #C23A12 | #FF7A50 | Kickers, current step, streak, focus. One or two marks per screen. |
-| `--correct` / `--correct-wash` | #1F4E8C / #E3EAF4 | #8DB4F0 / #1A2638 | Correct, passed, completed |
-| `--incorrect` / `--incorrect-wash` | #8F3F00 / #F6E7D8 | #F0A35E / #2E2216 | Wrong, failed, errors |
+| `--correct` / `--correct-wash` | #1F4E8C / #E3EAF4 | #8DB4F0 / #24324A | Correct, passed, completed |
+| `--incorrect` / `--incorrect-wash` | #8F3F00 / #F6E7D8 | #F0A35E / #3A2C1E | Wrong, failed, errors |
 | `--focus` | accent | accent | 2px ring, 2px offset |
 
 Theme switch:
@@ -29,39 +29,57 @@ Theme switch:
 
 Spacing is a 4px scale (`--space-1` 4px to `--space-8` 72px). Radius is 0 everywhere, except 2px on answer markers and full round on avatars and day dots. There are no shadows.
 
+## Hierarchy rules (C1 pass)
+
+The first version had too much text and too many elements that looked alike, so learners had to search for what to do next. Every screen now follows these rules. When a reference file and an older note disagree, the reference file wins.
+
+1. **One primary button per screen, and it is the next step.** Filled ink, 58px tall, mono label with an arrow, full width on phones. It sits directly under the lead block. Nothing else on the screen uses the ink fill.
+2. **Everything else is a quiet link:** italic serif, `--ink-soft`, underlined, usually starting with "or" ("or stop for today"). Outlined buttons are only used for "Continue with Google" and inside dialogs.
+3. **Every screen opens with a lead block:** one mono eyebrow (accent), one large serif heading (`.t-lead-h1` or `.t-lead-h1-sm`), at most one supporting sentence (`.t-lead`), then the button. Keep the heading the biggest thing on the screen, except a hero numeral where the number is the point (streak, score).
+4. **Supporting information is smaller and set aside.** Streak, stats and metadata sit to the right on desktop or after a long gap (`--section-gap`). Numerals there are ink, not accent. Accent numerals are for the finish moment only.
+5. **Selection never looks like the primary button.** Subject tiles and toggles: selected is `--paper-raised` with a 4px accent bar and a "✓" mark, unselected is transparent with muted text. Filters are text tabs with a 2px accent underline. Answer options: selected is a 2px ink border on raised.
+6. **Lists are ruled rows:** a title, an optional italic line, and a status glyph plus word only where it changes a decision. No descriptions or "updated" dates in lists.
+7. **Sessions and tests use a step meter,** a row of thin bars (done ink, current accent, upcoming rule) with one mono line under it ("Lesson · step 2 of 4"). The placement test no longer has a question list beside it.
+8. **Charts are quiet.** Bars use `--ink-muted` so the primary button stays the darkest element.
+9. **Space does the grouping.** Use `--lead-top` above the lead and `--section-gap` between groups instead of extra rules, boxes or labels.
+
 ## Type and layout
 
 - **Newsreader** (Google, opsz 6 to 72, weights 400/500/600, plus italic) for everything you read. **IBM Plex Mono** (400/500) for labels, buttons, numbers and dates. Load both with `next/font/google` and expose them as `--font-serif` and `--font-mono`.
 - Text styles are the `.t-*` classes in `tokens.css`. Phone sizes: titles 36 to 42px, lesson text 18.5px / 1.55. Desktop lesson text: 20 to 21px / 1.6.
 - Labels are mono, 12px, 0.08em tracking, uppercase. Buttons are mono, 15px, sentence case.
 - Breakpoints: phone below 768px, tablet 768 to 1119px, desktop from 1120px. Everything works at 320px.
-- Gutters: 24px on phone, 72px on desktop. Content max width 1296px. Reading column (lessons and tests) 680px max, centred.
+- Gutters: 24px on phone, 72px on desktop (`--gutter`). Content max width 1200px. Reading column (lessons, checks, tests) 720px max, centred.
+- Vertical rhythm: `--lead-top` (112px desktop, 56px phone) from the masthead to the lead block, `--section-gap` (152px, 88px) between groups.
 - Two-column pages use `flex-wrap` (main column basis 520 to 560px, side column 320 to 380px), so they stack without media queries.
 - On phones, session actions sit in a footer pinned to the bottom of the viewport. Signed-in pages get a three-tab bar (Today, Library, Stats); the current tab has a 3px accent top border.
 - The masthead closes with a double rule: 3px ink, 3px gap, 1px ink.
-- Touch targets are 44px minimum. Primary buttons are 52 to 58px tall.
+- Touch targets are 44px minimum. The primary button is 58px tall.
 
 ## Components
 
 | Component | Props | States | Notes |
 | --- | --- | --- | --- |
-| `Button` | `variant` primary, secondary, quiet · `busy` · `disabled` · `icon` · `fullWidth` · `href` | default, hover (primary turns accent), focus, busy, disabled | Disabled is a dashed muted outline and the label says why ("Submit · answer 2 more"). Busy shows the writing caret. |
+| `Button` | `variant` primary, outline, quiet · `busy` · `disabled` · `href` | default, hover (primary turns accent), focus, busy, disabled | One primary per screen. `quiet` is the italic "or …" link. `outline` is only for Google sign-in and dialogs. Disabled is a dashed muted outline and says why ("Pick an answer"). |
+| `LeadBlock` | `eyebrow` · `title` · `size` lg or sm · `line` · `primary` · `quiet[]` · `numeral` | | The opening of every screen (rule 3). `numeral` adds a hero number above the title (streak, score). |
 | `AnswerOption` | `letter` · `text` · `selected` · `result` none, correct, incorrect, dimmed · `unsure` · `onSelect` | default, selected, correct, incorrect, dimmed, Not sure | `role="radio"` inside a `radiogroup`. Tags "Selected", "Your answer", "Correct answer" are required text. Not sure: dashed border, italic, "?" marker. |
 | `Question` | `prompt` · `options` · `mode` instant or deferred · `explanation` | unanswered, answered, revealed | `instant` for recall and checks (reveal on select), `deferred` for tests (reveal after submit). Explanation leads with a mono verdict: "Correct." or "Not quite." |
-| `QuestionNav` | `count` · `current` · `answered[]` · `onJump` | current, answered, not answered | Tests only. Five buttons on phone, a list with difficulty on desktop. |
-| `SessionProgress` | `steps` · `current` · `hasRecall` | done, current, upcoming | Recall disappears and steps renumber when there's no history. |
+| `StepMeter` | `steps` · `current` · `label` | done, current, upcoming | Thin bars plus one mono line. Used in the daily session, placement test and Mastery Check. Replaces the old step rail and the test question list. |
+| `SessionProgress` | (now `StepMeter`) | | Recall disappears and steps renumber when there's no history. |
 | `LessonBody` | `paragraphs` (3) · `streaming` · `dropCap` | writing, written | Reserves three paragraph slots as `--paper-sunk` lines while writing. Daily lessons use a drop cap. |
 | `AskBox` | `lessonId` · `onAsk` · `onExplainDifferently` · `stream` | empty, answering, answered, failed | Not persisted. Unmounting clears it. The italic note says so. |
 | `TextField` | `label` · `type` · `error` · `help` · `maxLength` · `readOnly` · `revealable` | default, error, read-only, counted | Errors appear in context after submit, linked with `aria-describedby`. Password has a Show/Hide toggle with `aria-pressed`. |
 | `StatusLabel` | `status` notStarted, inProgress, completed, done | | Ring, half ring or check, plus a word. |
-| `ProgressMeter` | `lessonsDone` · `passed` | | Six cells, the last dashed until the Mastery Check is passed. Always shows the percent as text. |
-| `StreakMark` | `count` · `week` · `todayDone` · `size` | active, done today, zero | Newsreader numeral in accent. Today undone is a dashed ring with "Today still counts until midnight." Zero is muted, never a warning. |
+| `ProgressMeter` | `lessonsDone` · `size` | | Five small segments plus "2 of 5 done" as text. The Mastery Check is its own row in the lesson list, not a sixth cell. |
+| `StreakMark` | `count` · `week` · `todayDone` · `size` · `celebrate` | active, done today, zero | Newsreader numeral in ink, set aside from the lead. Accent only with `celebrate` (Finish). Today undone is a dashed ring with "Today still counts until midnight." Zero is muted, never a warning. |
 | `Masthead` | `user` · `guestProgress` · `current` | signed out, guest with progress, signed in | Account button shows photo or initial; menu shows name (or email), email, Profile, Sign out. |
 | `SessionBar` | `onLeave` · `leaveLabel` | | Replaces the masthead in sessions and tests: close, name, theme. |
 | `Notice` | `tone` error or info · `title` · `body` · `kept` · `primary` · `secondary` | | Every failure has a retry and a way to leave. `kept` names what was saved. |
 | `ConfirmDialog` | `title` · `body` · `confirmLabel` · `onConfirm` · `onCancel` | | `role="alertdialog"`, focus trapped, starts on "Keep it", Escape cancels. |
 
-Also: `SeriesRow`, `LessonRow` (with the "why this is in your series" line), `SubjectToggle` (`aria-pressed`), `StatBars`, `ThemeButton`, `BottomTabs`.
+Also: `SeriesRow`, `LessonRow` (the "why this is in your series" line shows only on the next lesson), `SubjectToggle` (`aria-pressed`, selected per rule 5), `FilterTabs` (underlined text tabs with counts), `StatBars` (muted bars), `ThemeButton`, `BottomTabs`.
+
+The component previews in `system/components/` predate the hierarchy pass. Where they differ from this table or the reference screens, follow this file.
 
 Live component previews (HTML, use the same CSS variables) are in `system/components/*/preview.html`, with notes in each `README.md`.
 
@@ -124,12 +142,12 @@ Streaming text (a lesson's first open, tutor answers, outlines):
 
 ## Accessibility checklist
 
-- [ ] All text 4.5:1 (measured: `--ink-muted` 6.1:1 light, 7.7:1 dark; `--accent` 4.8:1 light, 7.2:1 dark).
+- [ ] All text 4.5:1 (measured: `--ink-muted` 6.1:1 light, 6.5:1 dark graphite; `--accent` 4.8:1 light, 6.3:1 dark graphite).
 - [ ] Real `button`, `a`, `input` everywhere, with visible labels. Icon-only buttons have an `aria-label`.
 - [ ] Visible focus on everything, never removed.
 - [ ] Questions are radio groups: arrows move, Space selects. Desktop shortcuts: A to D, N for Not sure.
 - [ ] Status never relies on color alone: glyph plus word.
-- [ ] Session rail uses `aria-current="step"`; done steps have hidden ", done".
+- [ ] The step meter is `aria-hidden`; its text line ("Lesson · step 2 of 4") carries the progress.
 - [ ] Feedback in `role="status"`, errors in `role="alert"`.
 - [ ] Meters and charts are `role="img"` with an `aria-label` that spells out the value.
 - [ ] Delete dialog traps focus, starts on "Keep it", Escape cancels.
@@ -145,4 +163,7 @@ Streaming text (a lesson's first open, tutor answers, outlines):
 | Subject picker | Offers "Skip for now" | Require at least one |
 | Recall | Must be answered before the lesson | Allow skipping |
 | Signed-in phone navigation | Bottom tab bar | Masthead links only |
+| Library opening | Leads with the most recent in-progress series and its Continue button | Lead with "Start a new series" |
+| Stats opening | Leads with the streak and "Start today's lesson" (hidden once today is done) | No button on Stats |
+| Today when done | The primary becomes "Continue your series" | No primary once done |
 | Email links | Work for one hour, once | Whatever the auth provider uses |
