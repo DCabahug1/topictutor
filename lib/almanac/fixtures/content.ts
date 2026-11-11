@@ -13,9 +13,9 @@ export const DAILY = {
   deeperTopic: "calendars and time",
   askHint: "Why 400 and not 500?",
   paragraphs: [
-    "Earth takes about 365.2422 days to circle the Sun, not a neat 365. A calendar of exactly 365 days slips behind the seasons by almost six hours a year. Left alone, that adds up to a full day every four years.",
-    "Julius Caesar’s fix in 46 BC was simple: add one extra day every fourth year. That assumes a year of 365.25 days, about eleven minutes too long. By the 1500s the error had grown to ten days, and the spring equinox was arriving around March 11.",
-    "The Gregorian calendar of 1582 trimmed the excess. Century years skip the leap day unless they divide evenly by 400. That is why 1900 was not a leap year but 2000 was. The rule keeps the calendar within a day of the seasons for about 3,000 years.",
+    "A year is about 365 and a quarter days long, not 365. So a 365-day calendar drifts behind the seasons by nearly six hours a year, a whole day every four years.",
+    "Julius Caesar fixed it by adding a leap day every fourth year. That overshoots by about eleven minutes a year. By 1582 the calendar was ten days off.",
+    "The Gregorian rule trims the overshoot. Century years skip the leap day unless they divide by 400. So 1900 had none, but 2000 did. That keeps the calendar on track for about 3,000 years.",
   ],
   check: [
     {

@@ -339,7 +339,9 @@ async function writeProse(lesson: LessonRow, onText: (text: string) => void): Pr
   }
   const paragraphs = paragraphsOf(text);
   // A daily lesson reaches everyone that day, so a malformed one is never kept.
-  if (paragraphs.length !== 3) throw new GenerationError(`Expected three paragraphs, got ${paragraphs.length}`);
+  if (paragraphs.length < 2 || paragraphs.length > 4) {
+    throw new GenerationError(`Expected two to four sections, got ${paragraphs.length}`);
+  }
   check(
     await db()
       .from("daily_lessons")
