@@ -40,3 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .env*.local
+
+# dev-only previews (gallery, signed-in preview): local only, never deployed
+/app/(almanac)/dev/
