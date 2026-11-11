@@ -13,6 +13,7 @@ export const RPC_METHODS = [
   "getDailySession",
   "answerRecall",
   "answerDailyCheck",
+  "retryDailyCheck",
   "getPastDailyLessons",
   "getPastDailyLesson",
   "getSubjects",

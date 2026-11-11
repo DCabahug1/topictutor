@@ -12,6 +12,7 @@ import {
   type Streak,
   type Subject,
 } from "../types";
+import { askDailyQuestionAgain, dailyCheckPassed } from "../lesson-check";
 import { Channel, paragraphsOf } from "./channel";
 import { claim, once, release, waitFor } from "./claims";
 import { check, db, isUuid, requireUser, type Learner } from "./context";
@@ -36,7 +37,10 @@ type ProgressRow = {
   recall_lesson_id: string | null;
   recall_answer: number | null;
   recall_correct: boolean | null;
+  /** Picks as given, right or wrong. A wrong one waits for retryDailyCheck. */
   check_answers: Array<number | null>;
+  /** This learner's questions once one was asked again with its options moved. Null: the lesson's own. */
+  check_questions: ChoiceQuestion[] | null;
   finished_at: string | null;
 };
 
@@ -163,11 +167,17 @@ function toDailyLesson(row: LessonRow): DailyLesson {
 
 // ---- The learner's day ----
 
+/** The check as this learner sees it: the lesson's questions, or theirs once one was asked again. */
+function questionsFor(lesson: LessonRow, progress: ProgressRow | null): ChoiceQuestion[] {
+  const own = progress?.check_questions;
+  return own && own.length === lesson.check_questions.length ? own : lesson.check_questions;
+}
+
 async function progressOf(userId: string, date: string): Promise<ProgressRow | null> {
   return check(
     await db()
       .from("daily_progress")
-      .select("lesson_id, recall_lesson_id, recall_answer, recall_correct, check_answers, finished_at")
+      .select("lesson_id, recall_lesson_id, recall_answer, recall_correct, check_answers, check_questions, finished_at")
       .eq("user_id", userId)
       .eq("lesson_date", date)
       .maybeSingle()
@@ -242,11 +252,12 @@ export async function getDailySession(learner: Learner): Promise<DailySession> {
   const [lesson, recall, continueSeries] = await Promise.all([
     lessonForToday(learner, subjects, progress),
     recallFor(finishes, learner.today, progress),
-    continueSeriesFor(userId),
+    // Series need an account, so a guest is never offered one to continue.
+    continueSeriesFor(learner.isGuest ? null : userId),
   ]);
 
   return {
-    lesson: toDailyLesson(lesson),
+    lesson: { ...toDailyLesson(lesson), check: questionsFor(lesson, progress) },
     recall: recall?.prompt ?? null,
     recallAnswer: progress?.recall_answer ?? null,
     checkAnswers: lesson.check_questions.map((_, i) => progress?.check_answers?.[i] ?? null),
@@ -301,14 +312,19 @@ export async function answerRecall(learner: Learner, answer: number): Promise<Da
   return getDailySession(learner);
 }
 
+/**
+ * One pick per question until it is asked again. The lesson finishes, and the day
+ * counts, only once enough of the check is right (see DAILY_PASS_SHARE).
+ */
 export async function answerDailyCheck(learner: Learner, index: number, answer: number): Promise<DailySession> {
   const { userId, progress, lesson } = await ensureProgress(learner);
   if (index < 0 || index >= lesson.check_questions.length) throw new AlmanacError("notFound");
-  const answers = lesson.check_questions.map((_, i) => progress.check_answers?.[i] ?? null);
+  const questions = questionsFor(lesson, progress);
+  const answers = questions.map((_, i) => progress.check_answers?.[i] ?? null);
   // The first answer wins.
   if (answers[index] === null) {
     answers[index] = answer;
-    const finishing = progress.finished_at === null && answers.every((a) => a !== null);
+    const finishing = progress.finished_at === null && dailyCheckPassed(questions, answers);
     const now = new Date().toISOString();
     check(
       await db()
@@ -327,6 +343,27 @@ export async function answerDailyCheck(learner: Learner, index: number, answer: 
           )
       );
     }
+  }
+  return getDailySession(learner);
+}
+
+/** After a miss: asks that question again, the same words with the right answer moved. */
+export async function retryDailyCheck(learner: Learner, index: number): Promise<DailySession> {
+  const { userId, progress, lesson } = await ensureProgress(learner);
+  if (index < 0 || index >= lesson.check_questions.length) throw new AlmanacError("notFound");
+  if (progress.finished_at !== null) return getDailySession(learner);
+  const current = questionsFor(lesson, progress);
+  const picks = current.map((_, i) => progress.check_answers?.[i] ?? null);
+  const again = askDailyQuestionAgain(current, picks, index);
+  if (again.questions !== current) {
+    check(
+      await db()
+        .from("daily_progress")
+        .update({ check_questions: again.questions, check_answers: again.picks, updated_at: new Date().toISOString() })
+        .eq("user_id", userId)
+        .eq("lesson_date", learner.today)
+        .is("finished_at", null)
+    );
   }
   return getDailySession(learner);
 }

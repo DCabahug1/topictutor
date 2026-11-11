@@ -5,12 +5,14 @@ import { useState, type FormEvent } from "react";
 import { Button } from "@/components/almanac/Button";
 import { TextField } from "@/components/almanac/TextField";
 import { authService } from "@/lib/auth";
+import { withNext } from "@/lib/next-path";
 import { AuthFrame } from "./AuthFrame";
 import { FootLine, FormAlert, FormHeader, GoogleSignIn, emailProblem, focusField } from "./AuthParts";
 
 type Errors = { email?: string; password?: string };
 
-export function LoginForm() {
+/** `next` is a checked same-site path to go to once logged in. */
+export function LoginForm({ next = null }: { next?: string | null }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<Errors>({});
@@ -39,7 +41,7 @@ export function LoginForm() {
 
     if (result.success) {
       // A full page load, so the server picks up the new session.
-      window.location.assign("/today");
+      window.location.assign(next ?? "/today");
       return;
     }
 
@@ -62,7 +64,7 @@ export function LoginForm() {
       <form noValidate onSubmit={submit}>
         <FormHeader kicker="Welcome back" title="Log in" />
         {alert && <FormAlert kicker="Couldn’t log in">{alert}</FormAlert>}
-        <GoogleSignIn fallback="log in with your email" />
+        <GoogleSignIn fallback="log in with your email" next={next} />
 
         <div className="mt-7 flex flex-col gap-6">
           <TextField
@@ -106,7 +108,7 @@ export function LoginForm() {
         <Button type="submit" icon fullWidth busy={busy} className="mt-8">
           {busy ? "Logging in" : "Log in"}
         </Button>
-        <FootLine lead="New here?" label="Create an account" href="/register" />
+        <FootLine lead="New here?" label="Create an account" href={withNext("/register", next)} />
       </form>
     </AuthFrame>
   );

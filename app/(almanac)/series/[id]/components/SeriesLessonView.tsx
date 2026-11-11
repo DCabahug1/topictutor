@@ -27,6 +27,8 @@ function SeriesLesson({ id, number }: { id: string; number: number }) {
   const { data: series } = useAlmanac(() => almanac.getSeries(id), [id]);
   const { text, status: writeStatus, start: startWriting } = useTextStream();
   const [saveFailed, setSaveFailed] = useState(false);
+  // The pick shown right away while it saves, so the check never waits on the network.
+  const [pending, setPending] = useState<number | null>(null);
   const [retrying, setRetrying] = useState(false);
   const [retryFailed, setRetryFailed] = useState(false);
   const checkHeading = useRef<HTMLHeadingElement>(null);
@@ -66,10 +68,17 @@ function SeriesLesson({ id, number }: { id: string; number: number }) {
 
   const answer = (choice: number) => {
     setSaveFailed(false);
+    setPending(choice);
     almanac
       .answerSeriesCheck(id, number, choice)
-      .then(setData)
-      .catch(() => setSaveFailed(true));
+      .then((saved) => {
+        setData(saved);
+        setPending(null);
+      })
+      .catch(() => {
+        setPending(null);
+        setSaveFailed(true);
+      });
   };
 
   // A wrong answer is shown with the right one, then the check comes back in new words.
@@ -119,7 +128,14 @@ function SeriesLesson({ id, number }: { id: string; number: number }) {
         {retrying ? "Writing a new question" : "Try the question again"}
       </Button>
     ),
-    unanswered: <Button disabled>Answer the check to continue</Button>,
+    unanswered:
+      pending !== null ? (
+        <Button disabled busy>
+          Saving your answer
+        </Button>
+      ) : (
+        <Button disabled>Answer the check to continue</Button>
+      ),
     passed: onward,
   }[lesson.checkState];
   const footerNote = lesson.checkState === "missed" ? "Get the check right to move on. It comes back in new words." : onwardNote;
@@ -200,7 +216,7 @@ function SeriesLesson({ id, number }: { id: string; number: number }) {
               className="mt-7"
               label={lesson.check.prompt}
               options={lesson.check.options}
-              value={lesson.checkPick}
+              value={lesson.checkPick ?? pending}
               onChange={(choice) => {
                 if (typeof choice === "number") answer(choice);
               }}

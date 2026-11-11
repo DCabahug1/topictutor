@@ -3,18 +3,15 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
 import { ensureProfileExists } from '@/lib/profiles'
 import { adoptAfterSignIn } from '@/lib/almanac/server/adopt'
+import { safeNext } from '@/lib/next-path'
 
 export async function GET(request: Request) {
   console.log("callback", request.url )
   const { searchParams, origin } = new URL(request.url)
   const name = searchParams.get('name')
   const code = searchParams.get('code')
-  // if "next" is in param, use it as the redirect URL
-  let next = searchParams.get('next') ?? '/today'
-  if (!next.startsWith('/')) {
-    // if "next" is not a relative URL, use the default
-    next = '/today'
-  }
+  // Where the learner was headed before signing in, if it's a path on this site.
+  const next = safeNext(searchParams.get('next')) ?? '/today'
 
   if (code) {
     const supabase = await createClient()

@@ -2,7 +2,6 @@ import "server-only";
 import type { GuestState, Stats, Subject } from "../types";
 import { check, db, type Learner } from "./context";
 import { finishesOf, streakFrom, subjectsOf } from "./daily";
-import { guestDailyLimitReached, guestSeriesUsed } from "./placement";
 
 export async function getStats(learner: Learner): Promise<Stats> {
   const userId = learner.userId;
@@ -37,17 +36,10 @@ export async function getStats(learner: Learner): Promise<Stats> {
 
 export async function getGuestState(learner: Learner): Promise<GuestState> {
   const userId = learner.userId;
-  const [finishes, settings, used, limit] = await Promise.all([
-    finishesOf(userId),
-    subjectsOf(userId),
-    userId && learner.isGuest ? guestSeriesUsed(userId) : Promise.resolve(false),
-    guestDailyLimitReached(),
-  ]);
+  const [finishes, settings] = await Promise.all([finishesOf(userId), subjectsOf(userId)]);
   return {
     hasProgress: finishes.length > 0,
     streak: streakFrom(finishes, learner.today).count,
-    seriesUsed: used,
-    dailyLimitReached: limit,
     subjectsPrompted: settings.prompted,
   };
 }

@@ -24,8 +24,10 @@ import { SAMPLE_LESSONS, SAMPLE_SERIES } from "./fixtures/sample-series";
 import {
   answerCheck,
   askCheckAgain,
+  askDailyQuestionAgain,
   canAskAgain,
   checkForScreen,
+  dailyCheckPassed,
   isDone,
   moveRightAnswer,
   type LessonCheck,
@@ -121,7 +123,10 @@ type StoredPlacement = {
 
 type StoredDaily = {
   recallAnswer: number | null;
+  /** Picks as given, right or wrong. */
   checkAnswers: Array<number | null>;
+  /** The check once a question was asked again with its options moved. */
+  checkQuestions?: ChoiceQuestion[];
   finishedAt: string | null;
 };
 
@@ -138,7 +143,6 @@ type Store = {
   baseline: { bySubject: Array<[Subject, number]>; longest: number };
   series: StoredSeries[];
   placement: StoredPlacement | null;
-  guestSeriesUsed: boolean;
 };
 
 // ---- Storage ----
@@ -147,6 +151,11 @@ const KEY = "almanac:v1";
 let scope = "guest";
 
 /** Called by SessionProvider: guests and each signed-in learner keep separate progress. */
+/** Series need an account, as on the server: guests get today's lesson only. */
+function requireMemberScope() {
+  if (scope === "guest") throw new AlmanacError("accountRequired");
+}
+
 export function setFixtureScope(userId: string | null) {
   scope = userId ? `user:${userId}` : "guest";
 }
@@ -192,7 +201,6 @@ function emptyStore(): Store {
     baseline: { bySubject: [], longest: 0 },
     series: [],
     placement: null,
-    guestSeriesUsed: false,
   };
 }
 
@@ -573,7 +581,7 @@ function toDailySession(store: Store): DailySession {
       title: DAILY.title,
       minutes: DAILY.minutes,
       paragraphs: dailyIsWritten(today) ? DAILY.paragraphs : null,
-      check: DAILY.check,
+      check: progress.checkQuestions ?? DAILY.check,
       deeperTopic: DAILY.deeperTopic,
       askHint: DAILY.askHint,
     },
@@ -627,10 +635,23 @@ export const fixtureSource: AlmanacSource = {
     const progress = todayProgress(store);
     if (progress.checkAnswers[index] === null) {
       progress.checkAnswers[index] = answer;
-      if (progress.finishedAt === null && progress.checkAnswers.every((a) => a !== null)) {
+      if (progress.finishedAt === null && dailyCheckPassed(progress.checkQuestions ?? DAILY.check, progress.checkAnswers)) {
         progress.finishedAt = new Date().toISOString();
         store.finished.push({ date: localDate(), subject: DAILY.subject, kind: "daily" });
       }
+      save(store);
+    }
+    return toDailySession(store);
+  },
+
+  async retryDailyCheck(index) {
+    await wait(300);
+    const store = load();
+    const progress = todayProgress(store);
+    if (progress.finishedAt === null) {
+      const again = askDailyQuestionAgain(progress.checkQuestions ?? DAILY.check, progress.checkAnswers, index);
+      progress.checkQuestions = again.questions;
+      progress.checkAnswers = again.picks;
       save(store);
     }
     return toDailySession(store);
@@ -722,13 +743,12 @@ export const fixtureSource: AlmanacSource = {
     return {
       hasProgress: store.finished.length > 0,
       streak: streakOf(store).count,
-      seriesUsed: store.guestSeriesUsed || forced("guestUsed"),
-      dailyLimitReached: forced("guestDaily"),
       subjectsPrompted: store.subjectsPrompted,
     } satisfies GuestState;
   },
 
   async listSeries() {
+    requireMemberScope();
     assertLoads();
     return load()
       .series.filter((s) => s.content !== "sample")
@@ -737,6 +757,7 @@ export const fixtureSource: AlmanacSource = {
   },
 
   async getSeries(id) {
+    requireMemberScope();
     assertLoads();
     const store = load();
     const series = findSeries(store, id);
@@ -766,6 +787,7 @@ export const fixtureSource: AlmanacSource = {
   },
 
   async getSeriesLesson(id, number) {
+    requireMemberScope();
     assertLoads();
     const store = load();
     const series = findSeries(store, id);
@@ -819,6 +841,7 @@ export const fixtureSource: AlmanacSource = {
   },
 
   async checkTopic(request: SeriesRequest): Promise<TopicCheck> {
+    requireMemberScope();
     await wait(500);
     const topic = request.topic.trim();
     if (forced("topicSuggest")) {
@@ -849,11 +872,8 @@ export const fixtureSource: AlmanacSource = {
   },
 
   async startPlacement(request: SeriesRequest) {
+    requireMemberScope();
     const store = load();
-    if (scope === "guest") {
-      if (forced("guestDaily")) throw new AlmanacError("guestDailyLimit");
-      if (store.guestSeriesUsed || forced("guestUsed")) throw new AlmanacError("guestSeriesUsed");
-    }
     store.placement = {
       id: `p-${Date.now().toString(36)}`,
       topic: request.topic.trim() || WEB_TOPIC,
@@ -869,6 +889,7 @@ export const fixtureSource: AlmanacSource = {
   },
 
   async getPlacement() {
+    requireMemberScope();
     assertLoads();
     const { placement } = load();
     return placement ? toPlacement(placement) : null;
@@ -950,11 +971,11 @@ export const fixtureSource: AlmanacSource = {
     };
     store.series.unshift(series);
     placement.seriesId = series.id;
-    if (scope === "guest") store.guestSeriesUsed = true;
     save(store);
   },
 
   async getMastery(seriesId) {
+    requireMemberScope();
     assertLoads();
     return toMastery(findSeries(load(), seriesId));
   },

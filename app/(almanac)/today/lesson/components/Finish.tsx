@@ -7,7 +7,8 @@ import { LeadActions } from "@/components/almanac/LeadBlock";
 import { useSession } from "@/components/almanac/SessionProvider";
 import { FourWeekGrid } from "@/components/almanac/StreakMark";
 import { almanac, prefersReducedMotion, runLength, useAlmanac, type DailySession } from "@/lib/almanac";
-import { deeperHref } from "./copy";
+import { DEEPER_ACTION, OWN_TOPIC_ACTION, OWN_TOPIC_HREF, deeperHref } from "./copy";
+import { DeeperSuggestion } from "./DeeperSuggestion";
 
 /** The subject picker is offered once, after the first lesson. */
 function useSubjectsPrompted(): boolean | null {
@@ -15,7 +16,10 @@ function useSubjectsPrompted(): boolean | null {
   return data ? data.subjectsPrompted : null;
 }
 
-/** "You got 1 of 2 on the check." Missing it still finishes the lesson. */
+/**
+ * "You got the check right." The lesson finishes only once the check is right, so
+ * this is nearly always all of it; days finished before that rule may show misses.
+ */
 function checkLine(correct: number, total: number): string {
   if (correct === total) return total === 1 ? "You got the check right." : `You got all ${total} on the check.`;
   if (correct === 0) return "You missed the check, and it still counts.";
@@ -72,16 +76,12 @@ export function Finish({ session, headingRef }: { session: DailySession; heading
     </Button>
   ) : (
     <Button icon href={deeper}>
-      Go deeper on {lesson.deeperTopic}
+      {DEEPER_ACTION}
     </Button>
   );
-
-  // Going deeper is a real second path, so it gets a button; stopping is the quiet way out.
-  const secondary = (series || pickSubjects) && (
-    <Button variant="outline" href={deeper}>
-      Go deeper on {lesson.deeperTopic}
-    </Button>
-  );
+  // Going deeper is the primary unless there is a series to continue or subjects to pick.
+  // Then it is a real second path: its own block under the actions, with an outline button.
+  const deeperIsSecond = Boolean(series || pickSubjects);
 
   const quiet = (
     <Button variant="quiet" href={stopHref}>
@@ -129,7 +129,29 @@ export function Finish({ session, headingRef }: { session: DailySession; heading
         <p className="t-lead m-0 mt-5 max-w-[560px]">
           {checkLine(correct, lesson.check.length)} {next}
         </p>
-        <LeadActions primary={primary} secondary={secondary} quiet={quiet} />
+        {!deeperIsSecond && <DeeperSuggestion topic={lesson.deeperTopic} className="mt-9" />}
+        <LeadActions
+          primary={primary}
+          secondary={
+            !deeperIsSecond && (
+              <Button variant="outline" href={OWN_TOPIC_HREF}>
+                {OWN_TOPIC_ACTION}
+              </Button>
+            )
+          }
+          quiet={quiet}
+        />
+        {deeperIsSecond && (
+          <DeeperSuggestion
+            topic={lesson.deeperTopic}
+            className="mt-12"
+            action={
+              <Button variant="outline" icon href={deeper}>
+                {DEEPER_ACTION}
+              </Button>
+            }
+          />
+        )}
       </div>
       {/* Today's square fills in accent as the number flips. Phones keep just the number. */}
       <FourWeekGrid

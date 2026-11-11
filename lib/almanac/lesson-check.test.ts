@@ -2,6 +2,10 @@ import { describe, expect, it } from "vitest";
 import {
   answerCheck,
   askCheckAgain,
+  askDailyQuestionAgain,
+  dailyCheckPassed,
+  dailyQuestionState,
+  firstOpenDailyQuestion,
   canAskAgain,
   checkForScreen,
   checkState,
@@ -95,5 +99,50 @@ describe("moving the right answer", () => {
   it("leaves options whose order matters alone", () => {
     const ordered = { ...question, options: ["version 1", "version 2", "version 3", "All of the above"] };
     expect(moveRightAnswer(ordered)).toBe(ordered);
+  });
+});
+
+describe("the daily check", () => {
+  const two = [question, rephrased];
+
+  it("needs every question right when there are one or two", () => {
+    expect(dailyCheckPassed([question], [2])).toBe(true);
+    expect(dailyCheckPassed([question], [0])).toBe(false);
+    expect(dailyCheckPassed(two, [2, 0])).toBe(true);
+    expect(dailyCheckPassed(two, [2, 1])).toBe(false);
+    expect(dailyCheckPassed(two, [2, null])).toBe(false);
+  });
+
+  it("passes at four of five", () => {
+    const five = [question, question, question, question, question];
+    expect(dailyCheckPassed(five, [2, 2, 2, 2, 0])).toBe(true);
+    expect(dailyCheckPassed(five, [2, 2, 2, 0, 0])).toBe(false);
+  });
+
+  it("tells a right pick from a miss", () => {
+    expect(dailyQuestionState(question, null)).toBe("unanswered");
+    expect(dailyQuestionState(question, 2)).toBe("right");
+    expect(dailyQuestionState(question, 1)).toBe("missed");
+  });
+
+  it("picks up at the first question that isn't right yet", () => {
+    expect(firstOpenDailyQuestion(two, [null, null])).toBe(0);
+    expect(firstOpenDailyQuestion(two, [2, null])).toBe(1);
+    expect(firstOpenDailyQuestion(two, [1, null])).toBe(0);
+    expect(firstOpenDailyQuestion(two, [2, 0])).toBe(1);
+  });
+
+  it("asks a missed question again with the right answer moved and the pick cleared", () => {
+    const again = askDailyQuestionAgain(two, [2, 3], 1);
+    expect(again.picks).toEqual([2, null]);
+    expect(again.questions[0]).toBe(question);
+    expect(again.questions[1].prompt).toBe(rephrased.prompt);
+    expect(again.questions[1].options[again.questions[1].correctIndex]).toBe("w");
+    expect(again.questions[1].correctIndex).not.toBe(0);
+  });
+
+  it("leaves right and unanswered questions alone", () => {
+    expect(askDailyQuestionAgain(two, [2, null], 0)).toEqual({ questions: two, picks: [2, null] });
+    expect(askDailyQuestionAgain(two, [2, null], 1)).toEqual({ questions: two, picks: [2, null] });
   });
 });

@@ -1,6 +1,7 @@
 "use server";
 
 import { adoptGuest, recordPendingAdoption } from "./almanac/server/adopt";
+import { callbackPath } from "./next-path";
 import { createClient } from "@/utils/supabase/server";
 
 export type SignUpResult = { success: true } | { success: false; error: { code: string; message: string } };
@@ -14,17 +15,18 @@ export async function signUpWithEmailAndPasswordAction(
   email: string,
   password: string,
   name?: string | null,
-  origin?: string
+  origin?: string,
+  /** Where to go once the confirmation link is opened, for example the series they asked for. */
+  next?: string | null
 ): Promise<SignUpResult> {
   const supabase = await createClient();
   const { data: before } = await supabase.auth.getClaims();
   const guestId = before?.claims?.is_anonymous && typeof before.claims.sub === "string" ? before.claims.sub : null;
 
-  const query = name ? `?name=${encodeURIComponent(name)}` : "";
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { emailRedirectTo: `${origin ?? ""}/auth/callback${query}` },
+    options: { emailRedirectTo: `${origin ?? ""}${callbackPath({ name, next })}` },
   });
 
   if (error || !data.user) {

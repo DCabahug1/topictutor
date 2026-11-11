@@ -71,3 +71,50 @@ export function moveRightAnswer<T extends { options: string[]; correctIndex: num
 export function checkForScreen(check: LessonCheck): { check: ChoiceQuestion; checkState: CheckState; checkPick: number | null } {
   return { check: check.question, checkState: checkState(check), checkPick: check.passed ?? check.missed };
 }
+
+// ---- The daily check ----
+// One or two questions after the daily lesson. The lesson is done, and the day counts
+// toward the streak, only at DAILY_PASS_SHARE right, which with one or two questions
+// means every one. A wrong pick is shown with the right answer, then the same question
+// is asked again with the right answer moved. Picks are kept as given, so a pick that
+// isn't the right one is a miss waiting to be asked again.
+
+/** The share of daily check questions that must be right. */
+export const DAILY_PASS_SHARE = 0.8;
+
+export type DailyQuestionState = "unanswered" | "right" | "missed";
+
+export function dailyQuestionState(question: Pick<ChoiceQuestion, "correctIndex">, pick: number | null): DailyQuestionState {
+  if (pick === null) return "unanswered";
+  return pick === question.correctIndex ? "right" : "missed";
+}
+
+/** Enough questions are right to finish the lesson. */
+export function dailyCheckPassed(questions: Array<Pick<ChoiceQuestion, "correctIndex">>, picks: Array<number | null>): boolean {
+  if (questions.length === 0) return false;
+  const right = questions.filter((q, i) => dailyQuestionState(q, picks[i] ?? null) === "right").length;
+  return right / questions.length >= DAILY_PASS_SHARE;
+}
+
+/** Where to pick the check up: the first question not yet right. */
+export function firstOpenDailyQuestion(questions: Array<Pick<ChoiceQuestion, "correctIndex">>, picks: Array<number | null>): number {
+  const open = questions.findIndex((q, i) => dailyQuestionState(q, picks[i] ?? null) !== "right");
+  return open === -1 ? Math.max(0, questions.length - 1) : open;
+}
+
+/**
+ * After a miss: the question asked again with the right answer moved, and its pick
+ * cleared. Unchanged unless that question was missed.
+ */
+export function askDailyQuestionAgain<Q extends ChoiceQuestion>(
+  questions: Q[],
+  picks: Array<number | null>,
+  index: number
+): { questions: Q[]; picks: Array<number | null> } {
+  const question = questions[index];
+  if (!question || dailyQuestionState(question, picks[index] ?? null) !== "missed") return { questions, picks };
+  return {
+    questions: questions.map((q, i) => (i === index ? moveRightAnswer(q) : q)),
+    picks: picks.map((p, i) => (i === index ? null : p)),
+  };
+}

@@ -18,9 +18,8 @@ export async function checkTopic(learner: Learner, request: SeriesRequest): Prom
   const pass: TopicCheck = { verdict: "clear", topic, note: "", suggestions: [] };
   if (!topic) return { verdict: "unclear", topic: "", note: "Name a topic to start.", suggestions: [] };
 
-  const cap = learner.isGuest ? CAPS.guestTopicChecksPerDay : CAPS.memberTopicChecksPerDay;
   try {
-    if (!(await countUse(`topic-check:${userId}`, cap))) return pass;
+    if (!(await countUse(`topic-check:${userId}`, CAPS.memberTopicChecksPerDay))) return pass;
   } catch {
     return pass;
   }

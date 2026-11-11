@@ -281,10 +281,6 @@ export type GuestState = {
   /** A guest has finished at least one lesson in this browser. */
   hasProgress: boolean;
   streak: number;
-  /** Guests can start one series. */
-  seriesUsed: boolean;
-  /** New series are paused for all guests for the rest of the day. */
-  dailyLimitReached: boolean;
   /** The subject picker has been shown once. */
   subjectsPrompted: boolean;
 };
@@ -298,8 +294,6 @@ export const FORCE_FLAGS = [
   "outlineFail",
   "masteryFail",
   "loadFail",
-  "guestUsed",
-  "guestDaily",
   "topicSuggest",
   "topicUnclear",
   "topicRefused",
@@ -310,7 +304,7 @@ export type ForceFlag = (typeof FORCE_FLAGS)[number];
 /** Thrown by the source when writing or loading fails. Screens show a Notice. */
 export class AlmanacError extends Error {
   constructor(
-    public kind: "writeFailed" | "loadFailed" | "notFound" | "guestSeriesUsed" | "guestDailyLimit",
+    public kind: "writeFailed" | "loadFailed" | "notFound" | "accountRequired",
     message?: string
   ) {
     super(message ?? kind);

@@ -59,14 +59,14 @@ export function FormAlert({ kicker, children }: { kicker: string; children: Reac
 }
 
 /** "Continue with Google" and the rule that separates it from the email form. */
-export function GoogleSignIn({ fallback }: { fallback: string }) {
+export function GoogleSignIn({ fallback, next = null }: { fallback: string; next?: string | null }) {
   const [starting, setStarting] = useState(false);
   const [failed, setFailed] = useState(false);
 
   const start = async () => {
     setFailed(false);
     setStarting(true);
-    const result = await authService.signInWithGoogle().catch(() => ({ success: false }));
+    const result = await authService.signInWithGoogle(next).catch(() => ({ success: false }));
     // On success the browser is already leaving for Google.
     if (!result.success) {
       setFailed(true);

@@ -34,8 +34,13 @@ export interface AlmanacSource {
   /** Writes today's lesson. Only needed while `lesson.paragraphs` is null. */
   streamDailyLesson(): AsyncIterable<string>;
   answerRecall(answer: number): Promise<DailySession>;
-  /** A right answer finishes the lesson; a wrong one waits for retrySeriesCheck. */
+  /**
+   * One pick per question. The lesson finishes once enough of the check is right
+   * (DAILY_PASS_SHARE in lesson-check.ts); a wrong pick waits for retryDailyCheck.
+   */
   answerDailyCheck(index: number, answer: number): Promise<DailySession>;
+  /** Asks a missed daily question again, the same words with the right answer moved. */
+  retryDailyCheck(index: number): Promise<DailySession>;
   getPastDailyLessons(): Promise<PastDailyLesson[]>;
   getPastDailyLesson(id: string): Promise<DailyLesson>;
 
@@ -71,7 +76,7 @@ export interface AlmanacSource {
    * answers "clear" whenever it can't tell, so it never stands in the way.
    */
   checkTopic(request: SeriesRequest): Promise<TopicCheck>;
-  /** Rejects with guestSeriesUsed or guestDailyLimit for guests who are out of room. */
+  /** Needs an account: rejects with accountRequired for guests, as every series call does. */
   startPlacement(request: SeriesRequest): Promise<Placement>;
   getPlacement(): Promise<Placement | null>;
   /** Writes the five questions. Resolves at once if they exist. */

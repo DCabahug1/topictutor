@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { cx } from "@/components/almanac/cx";
 import { Reveal } from "@/components/almanac/Reveal";
+import { FourWeekGrid } from "@/components/almanac/StreakMark";
+import { localDate, recentDays, shiftDate } from "@/lib/almanac/rules";
 import { useInView } from "@/components/almanac/useInView";
 import { useReducedMotion } from "./useReducedMotion";
 
@@ -16,6 +18,20 @@ const STEPS = [
   { name: "Check", line: "A quick check" },
   { name: "Finish", line: "Your streak goes up" },
 ];
+
+/**
+ * Four weeks for the demo finish: a 12-day run before today, a few earlier days, and today.
+ * Built only when the finish step shows, which is never on the first render.
+ */
+function demoMonth() {
+  const today = localDate();
+  const ago = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 16, 19, 22, 23, 26];
+  return recentDays(
+    ago.map((n) => shiftDate(today, -n)),
+    28,
+    today
+  );
+}
 
 const KICKER = "m-0 font-label text-[12px] uppercase tracking-[0.08em]";
 
@@ -55,7 +71,7 @@ export function SessionPlayer() {
         <h2 id="player-heading" className="m-0 text-[34px] font-medium leading-[1.05] tracking-[-0.02em] md:text-[48px]">
           Watch a whole session.
         </h2>
-        <p className={cx(KICKER, "text-(--ink-muted)")}>Step {step + 1} of 4 · about three minutes for real</p>
+        <p className={cx(KICKER, "text-(--ink-muted)")}>Step {step + 1} of 4 · about three minutes</p>
       </div>
 
       <div ref={frameRef} className="mt-6 flex flex-wrap border border-solid border-(--ink) bg-(--paper-raised)">
@@ -135,27 +151,44 @@ export function SessionPlayer() {
                     <span className="font-label text-[12px] text-(--correct)">✓ ANSWER</span>
                   </span>
                 </div>
-                <p className="m-0 mt-[14px] text-[16px] italic text-(--ink-muted)">Wrong still counts. The lesson is finished.</p>
+                <p className="m-0 mt-[14px] text-[16px] italic text-(--ink-muted)">A miss comes back with the answers moved. Right finishes the lesson.</p>
               </>
             )}
             {step === 3 && (
-              <>
-                <p className={cx(KICKER, "text-(--ink-muted)")}>Lesson finished</p>
-                <div className="mt-3 flex items-end gap-4">
-                  <div className="relative h-[120px] w-[170px] overflow-hidden text-[120px] font-medium leading-none tracking-[-0.05em] md:h-[200px] md:w-[280px] md:text-[200px]">
-                    <span
-                      aria-hidden="true"
-                      className={cx(slide, "text-(--ink-muted)", flipped ? "-translate-y-full opacity-0" : "translate-y-0 opacity-100")}
-                    >
-                      12
-                    </span>
-                    <span className={cx(slide, "text-(--accent)", flipped ? "translate-y-0 opacity-100" : "translate-y-full opacity-0")}>
-                      13
-                    </span>
+              // Laid out like the real finish: the number and headline on the left, the four weeks on the right.
+              // The grid grows with the room beside the number, up to the real finish's size.
+              <div className="@container flex items-center justify-between gap-8">
+                <div className="min-w-0">
+                  <p className={cx(KICKER, "text-(--ink-muted)")}>Lesson finished · Science</p>
+                  <div className="mt-3 flex items-baseline gap-4">
+                    <div className="relative h-[1em] w-fit shrink-0 overflow-hidden text-[120px] font-medium leading-none tracking-[-0.05em] md:text-[160px]">
+                      {/* Reserves the width of the wider number, as on the real finish. */}
+                      <span aria-hidden="true" className="invisible grid">
+                        <span className="col-start-1 row-start-1">12</span>
+                        <span className="col-start-1 row-start-1">13</span>
+                      </span>
+                      <span
+                        aria-hidden="true"
+                        className={cx(slide, "text-(--ink-muted)", flipped ? "-translate-y-full opacity-0" : "translate-y-0 opacity-100")}
+                      >
+                        12
+                      </span>
+                      <span className={cx(slide, "text-(--accent)", flipped ? "translate-y-0 opacity-100" : "translate-y-full opacity-0")}>
+                        13
+                      </span>
+                    </div>
+                    <p className="m-0 font-serif text-[22px] leading-none text-(--ink-muted) md:text-[26px]">day streak</p>
                   </div>
-                  <p className="m-0 mb-[14px] font-serif text-[24px] leading-none text-(--ink-muted)">day streak</p>
+                  <p className="t-title m-0 mt-5">Another day done!</p>
                 </div>
-              </>
+                <FourWeekGrid
+                  days={demoMonth()}
+                  count={flipped ? 13 : 12}
+                  todayDone={flipped}
+                  celebrate
+                  className="hidden shrink-0 [--cell:clamp(16px,calc(12cqi-46px),48px)] [--gap:calc(var(--cell)*0.18)] [--meta:clamp(11px,1.6cqi,13px)] md:block @max-[34rem]:hidden!"
+                />
+              </div>
             )}
           </div>
         </div>

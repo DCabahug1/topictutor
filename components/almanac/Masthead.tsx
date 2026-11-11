@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { authService } from "@/lib/auth";
+import { Caret } from "./Button";
 import { cx } from "./cx";
 import { useSession, type SessionUser } from "./SessionProvider";
 import { ThemeButton } from "./ThemeButton";
@@ -35,6 +36,7 @@ export function Dateline({ className }: { className?: string }) {
 
 function AccountMenu({ user }: { user: SessionUser }) {
   const [open, setOpen] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
   const button = useRef<HTMLButtonElement>(null);
   const display = user.name || user.email;
@@ -59,6 +61,7 @@ function AccountMenu({ user }: { user: SessionUser }) {
   }, [open]);
 
   const signOut = async () => {
+    setSigningOut(true);
     await authService.signOut();
     window.location.assign("/");
   };
@@ -125,9 +128,11 @@ function AccountMenu({ user }: { user: SessionUser }) {
             role="menuitem"
             type="button"
             onClick={signOut}
-            className="block w-full cursor-pointer border-0 bg-transparent px-4 py-3 text-left font-label text-[14px] text-(--ink) hover:bg-(--paper-sunk)"
+            disabled={signingOut}
+            className="flex w-full cursor-pointer items-center gap-2 border-0 bg-transparent px-4 py-3 text-left font-label text-[14px] text-(--ink) hover:bg-(--paper-sunk) disabled:cursor-progress"
           >
-            Sign out
+            {signingOut && <Caret className="almanac-pulse h-[13px]" />}
+            {signingOut ? "Signing out" : "Sign out"}
           </button>
         </div>
       )}

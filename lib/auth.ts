@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/client";
 import { createClient as createServerClient } from "@/utils/supabase/server";
+import { callbackPath } from "./next-path";
 import { getProfileByEmail, ensureProfileExists } from "./profiles";
 
 const getUserAndProfile = async () => {
@@ -100,9 +101,10 @@ const signInWithEmailAndPassword = async (email: string, password: string) => {
   return { success: true, data };
 };
 
-const signInWithGoogle = async () => {
+/** `next` is where to land after signing in, for example the series a guest asked for. */
+const signInWithGoogle = async (next?: string | null) => {
   const supabase = createClient();
-  const redirectUrl = window.origin + "/auth/callback";
+  const redirectUrl = window.origin + callbackPath({ next });
 
   console.log("Redirect URL:", redirectUrl);
 

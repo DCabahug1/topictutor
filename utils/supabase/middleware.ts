@@ -1,10 +1,11 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { isSeriesPath, safeNext } from "@/lib/next-path";
 
-// Guests can read today's lesson, start one series and open the sample series.
-// Series pages are open: a guest's series belongs to their anonymous session until they sign up.
+// Guests get today's lesson only. Series, the sample series included, need an account:
+// a guest who opens one is sent to sign up, then on to the series they asked for.
 const PUBLIC_EXACT = ["/", "/today/lesson", "/login", "/register", "/reset"];
-const PUBLIC_PREFIXES = ["/auth/", "/welcome/", "/series/"];
+const PUBLIC_PREFIXES = ["/auth/", "/welcome/"];
 
 // Signed-in learners never see these.
 const SIGNED_OUT_ONLY = ["/login", "/register", "/auth/login", "/auth/register"];
@@ -68,16 +69,21 @@ export async function updateSession(request: NextRequest) {
   if (pathname.startsWith("/api/almanac/")) return supabaseResponse;
 
   if (!user && !isPublicPath(pathname)) {
-    // no user, potentially respond by redirecting the user to the login page
+    // Sign up for a series, log in for anything else, and come back here afterwards.
     const url = request.nextUrl.clone();
-    url.pathname = "/login";
+    const back = `${pathname}${request.nextUrl.search}`;
+    url.pathname = isSeriesPath(pathname) ? "/register" : "/login";
+    url.search = "";
+    url.searchParams.set("next", back);
     return redirectKeepingCookies(url, supabaseResponse);
   }
 
   if (user && SIGNED_OUT_ONLY.some((path) => pathname === path)) {
+    // Already signed in: go where the link was headed, or to Today.
+    const next = safeNext(request.nextUrl.searchParams.get("next"));
     const url = request.nextUrl.clone();
-    url.pathname = "/today";
-    url.search = "";
+    url.pathname = next ? next.split("?")[0] : "/today";
+    url.search = next?.includes("?") ? next.slice(next.indexOf("?")) : "";
     return redirectKeepingCookies(url, supabaseResponse);
   }
 

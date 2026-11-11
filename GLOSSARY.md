@@ -2,7 +2,7 @@
 
 The words the Almanac code and docs use for the product. When a module is named after one of these, it means exactly this.
 
-**Daily lesson.** The three-minute lesson for today. It ends with the **daily check**: two quick questions, and any answer counts.
+**Daily lesson.** The three-minute lesson for today. It ends with the **daily check**: one or two quick questions. The lesson is done, and the day counts toward the streak, only at 80% right, which with one or two questions means all of them. A miss is shown with the right answer, then asked again in the same words with the right answer moved. Owned by the daily part of `lib/almanac/lesson-check.ts`. Days finished before this rule stay finished.
 
 **Series.** Five lessons on one topic, written for one learner after a placement test.
 

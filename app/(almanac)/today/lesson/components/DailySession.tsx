@@ -11,6 +11,7 @@ import { Question } from "@/components/almanac/Question";
 import { useSession } from "@/components/almanac/SessionProvider";
 import { StepMeter } from "@/components/almanac/StepMeter";
 import { changeStep } from "@/components/almanac/stepTransition";
+import { dailyQuestionState, firstOpenDailyQuestion } from "@/lib/almanac/lesson-check";
 import { Markdown } from "@/components/almanac/Markdown";
 import { almanac, splitSections, useAlmanac, useTextStream, type DailySession as Session } from "@/lib/almanac";
 import { DoneForToday } from "./DoneForToday";
@@ -51,6 +52,12 @@ function DailySessionInner() {
   const [arrivedDone, setArrivedDone] = useState<boolean | null>(null);
   // An answer that didn't save. The option stays open so it can be picked again.
   const [saveFailed, setSaveFailed] = useState(false);
+  // An answer shown right away while it saves, so the check never waits on the network.
+  const [pending, setPending] = useState<{ at: "recall" | number; answer: number } | null>(null);
+  // A missed check question being asked again, and whether that failed.
+  const [retrying, setRetrying] = useState(false);
+  const [retryFailed, setRetryFailed] = useState(false);
+  const [retries, setRetries] = useState(0);
   const lesson = useTextStream();
   const heading = useRef<HTMLHeadingElement>(null);
   const moved = useRef(false);
@@ -59,7 +66,7 @@ function DailySessionInner() {
   if (session && step === null) {
     setArrivedDone(session.finishedAt !== null);
     setStep(firstStep(session));
-    setCheckIndex(Math.max(0, session.checkAnswers.findIndex((a) => a === null)));
+    setCheckIndex(firstOpenDailyQuestion(session.lesson.check, session.checkAnswers));
   }
 
   const go = useCallback((next: Step) => {
@@ -71,10 +78,10 @@ function DailySessionInner() {
     });
   }, []);
 
-  // After a step change, start reading from the new step's heading.
+  // After a step change or a question asked again, start reading from the new heading.
   useEffect(() => {
     if (moved.current) heading.current?.focus();
-  }, [step, checkIndex]);
+  }, [step, checkIndex, retries]);
 
   // A lesson opened for the first time is written while the learner watches.
   const needsWriting = Boolean(session && !session.lesson.paragraphs);
@@ -94,8 +101,30 @@ function DailySessionInner() {
   const paragraphs = session?.lesson.paragraphs ?? (lesson.text ? splitSections(lesson.text, { streaming: true }) : []);
   const writeFailed = needsWriting && lesson.status === "failed";
   const checkCount = session?.lesson.check.length ?? 0;
-  const checkAnswered = session ? session.checkAnswers[checkIndex] !== null : false;
+  // Only a right answer moves on: the lesson needs the whole check right (DAILY_PASS_SHARE).
+  const checkState = session
+    ? dailyQuestionState(session.lesson.check[checkIndex], session.checkAnswers[checkIndex] ?? null)
+    : "unanswered";
   const lastCheck = checkIndex === checkCount - 1;
+
+  /** After a miss: the same question again, with the right answer moved. */
+  const retryCheck = () => {
+    if (retrying) return;
+    setRetrying(true);
+    setRetryFailed(false);
+    setSaveFailed(false);
+    almanac
+      .retryDailyCheck(checkIndex)
+      .then((fresh) => {
+        moved.current = true;
+        changeStep(() => {
+          setData(fresh);
+          setRetries((n) => n + 1);
+        });
+      })
+      .catch(() => setRetryFailed(true))
+      .finally(() => setRetrying(false));
+  };
 
   const continueFromRecall = () => go("lesson");
   const continueFromLesson = () => go("check");
@@ -112,13 +141,28 @@ function DailySessionInner() {
     }
   };
 
-  /** Saves an answer. If it doesn't save, the question stays open and says so. */
-  const save = (write: () => Promise<Session>) => {
+  /**
+   * Shows the answer at once and saves it. The next button waits, busy, until it
+   * has saved. If it doesn't save, the question opens again and says so.
+   */
+  const save = (at: "recall" | number, answer: number, write: () => Promise<Session>) => {
     setSaveFailed(false);
+    setPending({ at, answer });
     write()
-      .then(setData)
-      .catch(() => setSaveFailed(true));
+      .then((saved) => {
+        setData(saved);
+        setPending(null);
+      })
+      .catch(() => {
+        setPending(null);
+        setSaveFailed(true);
+      });
   };
+  const saving = (
+    <Button disabled busy>
+      Saving your answer
+    </Button>
+  );
 
   // Enter moves on, as the step's button says.
   const advance = useRef<(() => void) | null>(null);
@@ -128,9 +172,11 @@ function DailySessionInner() {
         ? continueFromRecall
         : step === "lesson" && !writing && !writeFailed
           ? continueFromLesson
-          : step === "check" && checkAnswered
+          : step === "check" && checkState === "right"
             ? continueFromCheck
-            : null;
+            : step === "check" && checkState === "missed"
+              ? retryCheck
+              : null;
   });
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -243,6 +289,8 @@ function DailySessionInner() {
             <Button icon onClick={continueFromRecall}>
               Continue to the lesson
             </Button>
+          ) : pending?.at === "recall" ? (
+            saving
           ) : (
             <Button disabled>Pick an answer</Button>
           )
@@ -259,9 +307,9 @@ function DailySessionInner() {
             className="mt-7 md:mt-10"
             label={recall.question.prompt}
             options={recall.question.options}
-            value={session.recallAnswer}
+            value={session.recallAnswer ?? (pending?.at === "recall" ? pending.answer : null)}
             onChange={(answer) => {
-              if (typeof answer === "number") save(() => almanac.answerRecall(answer));
+              if (typeof answer === "number") save("recall", answer, () => almanac.answerRecall(answer));
             }}
             mode="instant"
             correctIndex={recall.question.correctIndex}
@@ -341,13 +389,19 @@ function DailySessionInner() {
       <SessionPage
         {...leave}
         rail={rail}
-        stepKey={`check-${checkIndex}`}
-        footerNote={checkAnswered && lastCheck ? "Right or wrong, answering finishes the lesson." : undefined}
+        stepKey={`check-${checkIndex}-${retries}`}
+        footerNote={checkState === "missed" ? "Get it right to finish today’s lesson. It comes back with the answers moved." : undefined}
         footer={
-          checkAnswered ? (
+          checkState === "right" ? (
             <Button icon onClick={continueFromCheck}>
               {lastCheck ? "Finish" : "Next question"}
             </Button>
+          ) : checkState === "missed" ? (
+            <Button icon busy={retrying} onClick={retryCheck}>
+              {retrying ? "Asking again" : "Try again"}
+            </Button>
+          ) : pending?.at === checkIndex ? (
+            saving
           ) : (
             <Button disabled>Pick an answer</Button>
           )
@@ -364,15 +418,20 @@ function DailySessionInner() {
             className="mt-7 md:mt-10"
             label={question.prompt}
             options={question.options}
-            value={session.checkAnswers[checkIndex]}
+            value={session.checkAnswers[checkIndex] ?? (pending?.at === checkIndex ? pending.answer : null)}
             onChange={(answer) => {
-              if (typeof answer === "number") save(() => almanac.answerDailyCheck(checkIndex, answer));
+              if (typeof answer === "number") save(checkIndex, answer, () => almanac.answerDailyCheck(checkIndex, answer));
             }}
             mode="instant"
             correctIndex={question.correctIndex}
             explanation={question.explanation}
           />
           {notSaved}
+          {retryFailed && (
+            <p role="alert" className="m-0 mt-5 text-[17px] text-(--incorrect)">
+              The question didn’t come back. Try again.
+            </p>
+          )}
         </section>
       </SessionPage>
     );

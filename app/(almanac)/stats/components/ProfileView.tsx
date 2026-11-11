@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
-import { Button } from "@/components/almanac/Button";
+import { Button, Caret } from "@/components/almanac/Button";
 import { cx } from "@/components/almanac/cx";
 import { CheckIcon, CrossIcon } from "@/components/almanac/icons";
 import { Notice } from "@/components/almanac/Notice";
@@ -289,8 +289,9 @@ export function ProfileView({ user }: { user: SessionUser }) {
           type="button"
           onClick={signOut}
           disabled={signingOut}
-          className="min-h-11 cursor-pointer border-0 bg-transparent p-0 font-label text-[13px] text-(--ink) underline underline-offset-4"
+          className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-0 bg-transparent p-0 font-label text-[13px] text-(--ink) underline underline-offset-4 disabled:cursor-progress"
         >
+          {signingOut && <Caret className="almanac-pulse h-[13px]" />}
           {signingOut ? "Signing out" : "Sign out"}
         </button>
       </div>

@@ -4,15 +4,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useId, useState, type FormEvent } from "react";
 import { Button } from "@/components/almanac/Button";
 import { LeadActions, LeadBlock } from "@/components/almanac/LeadBlock";
-import { Notice } from "@/components/almanac/Notice";
 import { PaperPage } from "@/components/almanac/Page";
 import { useSession } from "@/components/almanac/SessionProvider";
-import { AlmanacError, almanac, useAlmanac, type TopicCheck } from "@/lib/almanac";
+import { almanac, useAlmanac, type TopicCheck } from "@/lib/almanac";
 import { BackLink } from "../../[id]/components/SeriesStates";
 import { InlineAlert, LoadingLines } from "./parts";
 import { TopicReview } from "./TopicReview";
-
-type Limit = "used" | "daily";
 
 const HOW_IT_WORKS = [
   { title: "Placement test", text: "Five questions, easy to hard." },
@@ -39,16 +36,15 @@ function StartSeriesInner() {
   const fromUrl = useSearchParams().get("topic")?.trim() ?? "";
   const howId = useId();
 
-  // What the form needs before it shows: a guest's limits, a test left unfinished,
-  // and today's lesson when the topic arrived in the link.
+  // What the form needs before it shows: a test left unfinished, and today's lesson
+  // when the topic arrived in the link. Only learners with an account get here.
   const { data: context, loading } = useAlmanac(
     async () => {
-      const [guest, pending, daily] = await Promise.all([
-        user ? null : almanac.getGuestState().catch(() => null),
+      const [pending, daily] = await Promise.all([
         almanac.getPlacement().catch(() => null),
         fromUrl ? almanac.getDailySession().catch(() => null) : null,
       ]);
-      return { guest, pending: pending && !pending.submitted ? pending : null, daily };
+      return { pending: pending && !pending.submitted ? pending : null, daily };
     },
     [user?.id, fromUrl]
   );
@@ -61,7 +57,6 @@ function StartSeriesInner() {
   // The topic whose test is being started, or null.
   const [starting, setStarting] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
-  const [refused, setRefused] = useState<Limit | null>(null);
   // A topic that needs a second look, and what was typed when it was checked.
   const [review, setReview] = useState<{ check: TopicCheck; typed: string } | null>(null);
 
@@ -74,9 +69,7 @@ function StartSeriesInner() {
   const fromToday = Boolean(todaysLesson && fromUrl && todaysLesson.deeperTopic.toLowerCase() === fromUrl.toLowerCase());
   const prefilled = Boolean(fromUrl) && typedTopic === null;
 
-  const limit: Limit | null = context?.guest?.dailyLimitReached ? "daily" : context?.guest?.seriesUsed ? "used" : refused;
-
-  /** Starts the test on `chosen`. Only this charges a guest's series. */
+  /** Starts the test on `chosen`. Only this counts toward the daily series limit. */
   const begin = async (chosen: string) => {
     setStarting(chosen);
     setFailed(false);
@@ -84,11 +77,9 @@ function StartSeriesInner() {
     try {
       await almanac.startPlacement({ topic: chosen, focus: focus.trim() || undefined });
       router.push("/series/new/placement");
-    } catch (cause) {
+    } catch {
       setStarting(null);
-      if (cause instanceof AlmanacError && cause.kind === "guestDailyLimit") setRefused("daily");
-      else if (cause instanceof AlmanacError && cause.kind === "guestSeriesUsed") setRefused("used");
-      else setFailed(true);
+      setFailed(true);
     }
   };
 
@@ -128,38 +119,6 @@ function StartSeriesInner() {
       <PaperPage tabs={false}>
         <div className="mt-(--lead-top)">
           <LoadingLines label="Loading" />
-        </div>
-      </PaperPage>
-    );
-  }
-
-  if (limit) {
-    return (
-      <PaperPage tabs={false}>
-        <div className="mt-(--lead-top) max-w-[780px]">
-          {limit === "daily" ? (
-            <Notice
-              tone="info"
-              headingLevel={1}
-              kicker="Daily limit reached"
-              title="New series are paused for guests today."
-              body="Guests share a daily limit, and it’s used up for today. The sample series is open to everyone, with working checks."
-              kept="Your daily lesson still works as usual."
-              primary={{ label: "Open the sample series", href: "/series/sample" }}
-              secondary={{ label: "or create a free account", href: "/register" }}
-            />
-          ) : (
-            <Notice
-              tone="info"
-              headingLevel={1}
-              kicker="Guest limit"
-              title="You’ve used your guest series."
-              body="Guests can go deeper once, and your series is still yours in this browser. To start another, create a free account."
-              kept="Free, no credit card. Your progress comes with you."
-              primary={{ label: "Create a free account", href: "/register" }}
-              secondary={{ label: "or open the sample series", href: "/series/sample" }}
-            />
-          )}
         </div>
       </PaperPage>
     );

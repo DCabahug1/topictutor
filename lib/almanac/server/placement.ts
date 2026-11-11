@@ -15,7 +15,7 @@ import { check, db, requireUser, type Learner } from "./context";
 import { ArrayScanner } from "./json-scan";
 import { finishChoice, keepKeyPoints, outlinePrompt, outlineSchema, placementPrompt, placementSchema, type OutlineLesson } from "./prompts";
 import { writeAhead, type SeriesRow } from "./series";
-import { CAPS, LIMITS, countUse, used } from "./usage";
+import { CAPS, LIMITS, countUse } from "./usage";
 
 type PlacementRow = {
   id: string;
@@ -67,31 +67,15 @@ function toResult(row: PlacementRow): PlacementResult {
   };
 }
 
-/** A guest's one series, already made or under way. */
-export async function guestSeriesUsed(userId: string): Promise<boolean> {
-  const { count } = await db()
-    .from("series")
-    .select("id", { count: "exact", head: true })
-    .eq("user_id", userId)
-    .eq("is_sample", false);
-  return (count ?? 0) > 0;
-}
-
-export async function guestDailyLimitReached(): Promise<boolean> {
-  return (await used("guest-series")) >= CAPS.guestSeriesPerDay;
-}
-
 export async function startPlacement(learner: Learner, request: SeriesRequest): Promise<Placement> {
   const userId = requireUser(learner);
   const topic = request.topic.trim().slice(0, LIMITS.topic);
   const focus = (request.focus ?? "").trim().slice(0, LIMITS.focus);
   if (!topic) throw new AlmanacError("writeFailed");
 
-  if (learner.isGuest) {
-    if (await guestSeriesUsed(userId)) throw new AlmanacError("guestSeriesUsed");
-    // Charged when the test starts, since starting over is otherwise free.
-    if (!(await countUse("guest-series", CAPS.guestSeriesPerDay))) throw new AlmanacError("guestDailyLimit");
-  } else if (!(await countUse(`member-series:${userId}`, CAPS.memberSeriesPerDay))) {
+  // Only learners with an account get here (see dispatch.ts). Charged when the test starts,
+  // since starting over is otherwise free.
+  if (!(await countUse(`member-series:${userId}`, CAPS.memberSeriesPerDay))) {
     throw new AlmanacError("writeFailed", "Daily series limit");
   }
 

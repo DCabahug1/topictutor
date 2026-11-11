@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { Button } from "@/components/almanac/Button";
 import { TextField } from "@/components/almanac/TextField";
 import { signUpWithEmailAndPasswordAction } from "@/lib/actions";
+import { callbackPath, isSeriesPath, withNext } from "@/lib/next-path";
 import { createClient } from "@/utils/supabase/client";
 import { AuthFrame } from "../../login/components/AuthFrame";
 import {
@@ -25,7 +26,8 @@ type Resend = "idle" | "sending" | "sent" | "failed";
 
 const ORDER: Field[] = ["name", "email", "password", "confirm"];
 
-export function RegisterForm() {
+/** `next` is a checked same-site path to go to once the account is made: often the series a guest asked for. */
+export function RegisterForm({ next = null }: { next?: string | null }) {
   const [values, setValues] = useState<Record<Field, string>>({ name: "", email: "", password: "", confirm: "" });
   const [errors, setErrors] = useState<Errors>({});
   const [alert, setAlert] = useState<string | null>(null);
@@ -62,7 +64,7 @@ export function RegisterForm() {
     if (stopped) return;
 
     setBusy(true);
-    const result = await signUpWithEmailAndPasswordAction(email, values.password, name, window.location.origin).catch(
+    const result = await signUpWithEmailAndPasswordAction(email, values.password, name, window.location.origin, next).catch(
       () => ({ success: false as const, error: { code: "", message: "" } })
     );
 
@@ -92,7 +94,7 @@ export function RegisterForm() {
     if (!sentTo || resend === "sending") return;
     setResend("sending");
     // The same return address the first email used, so the name still reaches the new profile.
-    const emailRedirectTo = `${window.location.origin}/auth/callback?name=${encodeURIComponent(values.name.trim())}`;
+    const emailRedirectTo = `${window.location.origin}${callbackPath({ name: values.name.trim(), next })}`;
     const failed = await createClient()
       .auth.resend({ type: "signup", email: sentTo, options: { emailRedirectTo } })
       .then(({ error }) => Boolean(error))
@@ -108,7 +110,7 @@ export function RegisterForm() {
           kicker="One more step"
           title="Check your email."
           body={`We sent a confirmation link to ${sentTo}. Open it on this device and you’re in. It can take a minute to arrive.`}
-          primary={{ label: "Go to log in", href: "/login" }}
+          primary={{ label: "Go to log in", href: withNext("/login", next) }}
           secondary={{
             lead: "Nothing yet?",
             label: resend === "sending" ? "Sending" : "Send it again",
@@ -128,13 +130,22 @@ export function RegisterForm() {
   return (
     <AuthFrame>
       <form noValidate onSubmit={submit}>
-        <FormHeader
-          kicker="Free · no credit card"
-          title="Create your account"
-          lead="If you started as a guest, your streak and lessons come with you."
-        />
+        {isSeriesPath(next) ? (
+          // Sent here from a series: say why, then carry on to it once the account is made.
+          <FormHeader
+            kicker="Series need an account"
+            title="Create your account"
+            lead="It’s free. Today’s lesson and your streak come with you."
+          />
+        ) : (
+          <FormHeader
+            kicker="Free · no credit card"
+            title="Create your account"
+            lead="If you started as a guest, your streak and lessons come with you."
+          />
+        )}
         {alert && <FormAlert kicker="Couldn’t create your account">{alert}</FormAlert>}
-        <GoogleSignIn fallback="sign up with your email" />
+        <GoogleSignIn fallback="sign up with your email" next={next} />
 
         <div className="mt-7 flex flex-col gap-6">
           <TextField
@@ -186,7 +197,7 @@ export function RegisterForm() {
         <Button type="submit" icon fullWidth busy={busy} className="mt-8">
           {busy ? "Creating your account" : "Create account"}
         </Button>
-        <FootLine lead="Already have one?" label="Log in" href="/login" />
+        <FootLine lead="Already have one?" label="Log in" href={withNext("/login", next)} />
       </form>
     </AuthFrame>
   );

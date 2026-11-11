@@ -8,7 +8,7 @@ import { localDate } from "./rules";
 import type { AlmanacSource } from "./source";
 import { AlmanacError, type OutlineRow, type TutorChunk } from "./types";
 
-const KINDS: ErrorKind[] = ["writeFailed", "loadFailed", "notFound", "guestSeriesUsed", "guestDailyLimit"];
+const KINDS: ErrorKind[] = ["writeFailed", "loadFailed", "notFound", "accountRequired"];
 
 function toError(kind: unknown): AlmanacError {
   return new AlmanacError(KINDS.includes(kind as ErrorKind) ? (kind as ErrorKind) : "loadFailed");
@@ -119,6 +119,7 @@ export const remoteSource: AlmanacSource = {
   streamDailyLesson: () => text("streamDailyLesson", []),
   answerRecall: (answer) => retried(() => rpc("answerRecall", [answer], { session: true })),
   answerDailyCheck: (index, answer) => retried(() => rpc("answerDailyCheck", [index, answer], { session: true })),
+  retryDailyCheck: (index) => retried(() => rpc("retryDailyCheck", [index], { session: true })),
   getPastDailyLessons: () => rpc("getPastDailyLessons"),
   getPastDailyLesson: (id) => rpc("getPastDailyLesson", [id]),
 

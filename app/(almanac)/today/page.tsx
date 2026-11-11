@@ -10,7 +10,8 @@ import { SeriesRow } from "@/components/almanac/SeriesRow";
 import { useSession } from "@/components/almanac/SessionProvider";
 import { StreakMark } from "@/components/almanac/StreakMark";
 import { almanac, useAlmanac, type DailySession, type SeriesSummary } from "@/lib/almanac";
-import { deeperHref } from "./lesson/components/copy";
+import { DEEPER_ACTION, OWN_TOPIC_ACTION, OWN_TOPIC_HREF, deeperHref } from "./lesson/components/copy";
+import { DeeperSuggestion } from "./lesson/components/DeeperSuggestion";
 
 function timeOfDay(hour: number): string {
   if (hour >= 5 && hour < 12) return "Good morning";
@@ -103,9 +104,11 @@ export default function TodayPage() {
     </Button>
   ) : (
     <Button icon href={deeperHref(lesson.deeperTopic)}>
-      Go deeper on {lesson.deeperTopic}
+      {DEEPER_ACTION}
     </Button>
   );
+  // Done with no series to continue: the related topic is named above its button.
+  const suggestDeeper = done && !continueTo?.nextLesson;
 
   return (
     <PaperPage current="today">
@@ -120,6 +123,13 @@ export default function TodayPage() {
           line={leadLine(session, isNew, started)}
           className="max-w-[780px] flex-[1_1_620px]"
           primary={primary}
+          secondary={
+            suggestDeeper ? (
+              <Button variant="outline" href={OWN_TOPIC_HREF}>
+                {OWN_TOPIC_ACTION}
+              </Button>
+            ) : undefined
+          }
           quiet={
             done ? (
               <Button variant="quiet" href="/today/lesson?read=1">
@@ -127,7 +137,9 @@ export default function TodayPage() {
               </Button>
             ) : undefined
           }
-        />
+        >
+          {suggestDeeper ? <DeeperSuggestion topic={lesson.deeperTopic} /> : undefined}
+        </LeadBlock>
         {!isNew && (
           <StreakMark
             count={streak.count}
