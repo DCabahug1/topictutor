@@ -71,6 +71,9 @@ export function ProfileView({ user }: { user: SessionUser }) {
     adder.name !== "";
   const initial = (currentName.trim() || user.email)[0]?.toUpperCase();
   const saving = save === "saving";
+  const hasChanges = currentName.trim() !== user.name || Boolean(photo?.file) || subjectsChanged;
+  // A failed save can always be tried again, changed or not.
+  const canSave = hasChanges || (save === "failed" && failure.retry);
 
   const onPhoto = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -101,7 +104,7 @@ export function ProfileView({ user }: { user: SessionUser }) {
   };
 
   const saveChanges = async () => {
-    if (saving || adder.checking) return;
+    if (saving || adder.checking || !canSave) return;
     // A name still in the add field is checked and added first. Its review stops the save.
     let list = custom;
     if (adder.name) {
@@ -325,7 +328,7 @@ export function ProfileView({ user }: { user: SessionUser }) {
       </fieldset>
 
       <div className="mt-12 flex flex-wrap items-center gap-x-7 gap-y-[14px]">
-        <Button type="submit" busy={saving} className="max-md:w-full">
+        <Button type="submit" busy={saving} disabled={!canSave && !saving} className="max-md:w-full">
           {saving ? "Saving" : save === "failed" && failure.retry ? "Try saving again" : "Save changes"}
         </Button>
         {/* The status region stays mounted so "Saved" is announced when it arrives. */}
