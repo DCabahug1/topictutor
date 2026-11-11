@@ -2,6 +2,7 @@
 
 import { adoptGuest, recordPendingAdoption } from "./almanac/server/adopt";
 import { callbackPath } from "./next-path";
+import { createAdminClient } from "@/utils/supabase/admin";
 import { createClient } from "@/utils/supabase/server";
 
 export type SignUpResult = { success: true } | { success: false; error: { code: string; message: string } };
@@ -38,5 +39,56 @@ export async function signUpWithEmailAndPasswordAction(
     if (data.session) await adoptGuest(guestId, data.user.id);
     else await recordPendingAdoption(data.user.id, guestId);
   }
+  return { success: true };
+}
+
+const PHOTO_BUCKET = "profile_files";
+
+/** Every file path under a folder in the photo bucket, including nested folders. */
+async function listPhotoFiles(folder: string): Promise<string[]> {
+  const storage = createAdminClient().storage.from(PHOTO_BUCKET);
+  const paths: string[] = [];
+  const pageSize = 100;
+  for (let offset = 0; ; offset += pageSize) {
+    const { data, error } = await storage.list(folder, { limit: pageSize, offset });
+    if (error) throw error;
+    for (const item of data) {
+      const path = `${folder}/${item.name}`;
+      // Folders come back without an id.
+      if (item.id === null) paths.push(...(await listPhotoFiles(path)));
+      else paths.push(path);
+    }
+    if (data.length < pageSize) return paths;
+  }
+}
+
+/**
+ * Deletes the signed-in learner's account for good. Their photos go first, since
+ * storage isn't cascaded; every table row goes with the auth user. If the photos
+ * can't be removed, nothing else is touched.
+ */
+export async function deleteAccountAction(): Promise<{ success: true } | { success: false }> {
+  const supabase = await createClient();
+  // The verified user, not the cookie's claims.
+  const { data, error } = await supabase.auth.getUser();
+  const user = data?.user;
+  if (error || !user || user.is_anonymous) return { success: false };
+
+  try {
+    const admin = createAdminClient();
+    const files = await listPhotoFiles(user.id);
+    if (files.length) {
+      const { error: removeError } = await admin.storage.from(PHOTO_BUCKET).remove(files);
+      if (removeError) throw removeError;
+    }
+    const { error: deleteError } = await admin.auth.admin.deleteUser(user.id);
+    if (deleteError) throw deleteError;
+  } catch (cause) {
+    console.error("Couldn't delete account", cause);
+    return { success: false };
+  }
+
+  // The user is gone already, so a failed sign-out only leaves stale cookies behind.
+  await supabase.auth.signOut({ scope: "local" }).catch(() => undefined);
   return { success: true };
 }

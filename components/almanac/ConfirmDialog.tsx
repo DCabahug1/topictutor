@@ -12,6 +12,10 @@ type ConfirmDialogProps = {
   cancelLabel?: string;
   /** True while the action runs. */
   busy?: boolean;
+  /** Blocks the destructive button, for example until a confirmation word is typed. */
+  confirmDisabled?: boolean;
+  /** Extra content under the body, such as a confirmation field or an error. */
+  children?: ReactNode;
   onConfirm: () => void;
   onCancel: () => void;
 };
@@ -27,6 +31,8 @@ export function ConfirmDialog({
   confirmLabel,
   cancelLabel = "Keep it",
   busy = false,
+  confirmDisabled = false,
+  children,
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
@@ -70,12 +76,13 @@ export function ConfirmDialog({
             {body}
           </p>
         )}
+        {children && <div className="mt-5">{children}</div>}
         <div className="mt-6 flex flex-wrap gap-2">
           {/* The safe choice is filled and has focus; the red outline is what deletes. */}
           <Button ref={keep} onClick={onCancel}>
             {cancelLabel}
           </Button>
-          <Button variant="danger" onClick={onConfirm} busy={busy}>
+          <Button variant="danger" onClick={onConfirm} busy={busy} disabled={confirmDisabled && !busy}>
             {confirmLabel}
           </Button>
         </div>

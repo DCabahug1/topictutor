@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { Button, Caret } from "@/components/almanac/Button";
+import { ConfirmDialog } from "@/components/almanac/ConfirmDialog";
 import { cx } from "@/components/almanac/cx";
 import { CheckIcon, CrossIcon } from "@/components/almanac/icons";
 import { Notice } from "@/components/almanac/Notice";
@@ -11,6 +12,7 @@ import type { SessionUser } from "@/components/almanac/SessionProvider";
 import { LeadBlock } from "@/components/almanac/LeadBlock";
 import { AddSubjectTile, SubjectGrid, SubjectToggle } from "@/components/almanac/SubjectToggle";
 import { TextField } from "@/components/almanac/TextField";
+import { deleteAccountAction } from "@/lib/actions";
 import {
   CUSTOM_LIMIT,
   FIXED_SUBJECTS,
@@ -28,6 +30,12 @@ import { updateProfile, uploadProfileImage } from "@/lib/profiles";
 const NAME_MAX = 25;
 const LEGEND = "m-0 p-0 font-label text-[12px] uppercase tracking-[0.08em] text-(--ink-muted)";
 const AVATAR = "h-[72px] w-[72px] rounded-(--radius-full)";
+const ACCOUNT_LINK =
+  "inline-flex min-h-11 cursor-pointer items-center gap-2 border-0 bg-transparent p-0 font-label text-[13px] underline underline-offset-4 disabled:cursor-progress";
+const DELETE_WORD = "DELETE";
+
+type DeleteState = { open: boolean; typed: string; busy: boolean; failed: boolean };
+const DELETE_CLOSED: DeleteState = { open: false, typed: "", busy: false, failed: false };
 
 type SaveState = "idle" | "saving" | "saved" | "failed";
 
@@ -45,6 +53,7 @@ export function ProfileView({ user }: { user: SessionUser }) {
   const [save, setSave] = useState<SaveState>("idle");
   const [failure, setFailure] = useState({ message: "", retry: true });
   const [signingOut, setSigningOut] = useState(false);
+  const [removal, setRemoval] = useState<DeleteState>(DELETE_CLOSED);
 
   // Free the preview when it is replaced or the page is left.
   const previewUrl = photo?.url;
@@ -93,7 +102,6 @@ export function ProfileView({ user }: { user: SessionUser }) {
     setChosen(picked.includes(subject) ? picked.filter((s) => s !== subject) : [...picked, subject]);
     setSave("idle");
   };
-
   const toggleCustom = (index: number) => {
     setCustomChosen(custom.map((c, i) => (i === index ? { ...c, on: !c.on } : c)));
     setSave("idle");
@@ -188,182 +196,238 @@ export function ProfileView({ user }: { user: SessionUser }) {
     window.location.assign("/");
   };
 
-  return (
-    <form
-      noValidate
-      onSubmit={(event: FormEvent) => {
-        event.preventDefault();
-        void saveChanges();
-      }}
-      className="mt-(--lead-top) max-w-[760px]"
-    >
-      <LeadBlock
-        size="sm"
-        eyebrow="Profile"
-        title={currentName.trim() || user.email}
-        line={
-          <>
-            {user.email} · <span className="italic">email can’t be changed</span>
-          </>
-        }
-      />
+  const deleteAccount = async () => {
+    if (removal.busy || removal.typed !== DELETE_WORD) return;
+    setRemoval((current) => ({ ...current, busy: true, failed: false }));
+    const result = await deleteAccountAction().catch(() => ({ success: false }));
+    if (result.success) {
+      window.location.assign("/");
+      return;
+    }
+    setRemoval((current) => ({ ...current, busy: false, failed: true }));
+  };
 
-      <fieldset className="m-0 mt-14 border-0 p-0">
-        <legend className="sr-only">Photo</legend>
-        <div className="flex flex-wrap items-center gap-5">
-          {photo ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={photo.url}
-              alt={photo.file ? "Preview of your new photo" : "Your photo"}
-              className={cx(
-                AVATAR,
-                "flex-none object-cover",
-                photo.file && "outline-2 outline-offset-[3px] outline-dashed outline-(--accent)"
-              )}
-            />
-          ) : user.imageUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={user.imageUrl} alt="Your photo" className={cx(AVATAR, "flex-none object-cover")} />
-          ) : (
-            <span
-              aria-hidden="true"
-              className={cx(
-                AVATAR,
-                "flex flex-none items-center justify-center bg-(--ink) text-[32px] font-medium text-(--on-ink)"
-              )}
-            >
-              {initial}
-            </span>
-          )}
-          <div className="min-w-0">
-            {/* The input comes first so the label can show its focus ring. */}
-            <input id="profile-photo" type="file" accept="image/*" onChange={onPhoto} className="peer sr-only" />
-            <label
-              htmlFor="profile-photo"
-              className="t-quiet-link inline-flex min-h-11 cursor-pointer items-center peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--focus)"
-            >
-              {photo || user.imageUrl ? "Choose a different photo" : "Upload a photo"}
-            </label>
-            {notAnImage ? (
-              <p role="alert" className="m-0 mt-2 flex items-center gap-[6px] text-[15px] text-(--incorrect)">
-                <CrossIcon size={14} className="flex-none" />
-                That file isn’t a picture. Choose a photo instead.
-              </p>
+  return (
+    <>
+      <form
+        noValidate
+        onSubmit={(event: FormEvent) => {
+          event.preventDefault();
+          void saveChanges();
+        }}
+        className="mt-(--lead-top) max-w-[760px]">
+        <LeadBlock
+          size="sm"
+          eyebrow="Profile"
+          title={currentName.trim() || user.email}
+          line={
+            <>
+              {user.email} · <span className="italic">email can’t be changed</span>
+            </>
+          }
+        />
+
+        <fieldset className="m-0 mt-14 border-0 p-0">
+          <legend className="sr-only">Photo</legend>
+          <div className="flex flex-wrap items-center gap-5">
+            {photo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={photo.url}
+                alt={photo.file ? "Preview of your new photo" : "Your photo"}
+                className={cx(
+                  AVATAR,
+                  "flex-none object-cover",
+                  photo.file && "outline-2 outline-offset-[3px] outline-dashed outline-(--accent)"
+                )}
+              />
+            ) : user.imageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={user.imageUrl} alt="Your photo" className={cx(AVATAR, "flex-none object-cover")} />
             ) : (
-              <p className="m-0 text-[16px] text-(--ink-soft)">
-                {photo
-                  ? photo.file
-                    ? "Preview. Save to use it."
-                    : "Saved. This is your photo now."
-                  : user.imageUrl
-                    ? "This is your photo."
-                    : "No photo yet, so your initial is shown."}
+              <span
+                aria-hidden="true"
+                className={cx(
+                  AVATAR,
+                  "flex flex-none items-center justify-center bg-(--ink) text-[32px] font-medium text-(--on-ink)"
+                )}
+              >
+                {initial}
+              </span>
+            )}
+            <div className="min-w-0">
+              {/* The input comes first so the label can show its focus ring. */}
+              <input id="profile-photo" type="file" accept="image/*" onChange={onPhoto} className="peer sr-only" />
+              <label
+                htmlFor="profile-photo"
+                className="t-quiet-link inline-flex min-h-11 cursor-pointer items-center peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--focus)"
+              >
+                {photo || user.imageUrl ? "Choose a different photo" : "Upload a photo"}
+              </label>
+              {notAnImage ? (
+                <p role="alert" className="m-0 mt-2 flex items-center gap-[6px] text-[15px] text-(--incorrect)">
+                  <CrossIcon size={14} className="flex-none" />
+                  That file isn’t a picture. Choose a photo instead.
+                </p>
+              ) : (
+                <p className="m-0 text-[16px] text-(--ink-soft)">
+                  {photo
+                    ? photo.file
+                      ? "Preview. Save to use it."
+                      : "Saved. This is your photo now."
+                    : user.imageUrl
+                      ? "This is your photo."
+                      : "No photo yet, so your initial is shown."}
+                </p>
+              )}
+            </div>
+          </div>
+        </fieldset>
+
+        <div className="mt-10">
+          <TextField
+            label="Name"
+            name="name"
+            autoComplete="name"
+            maxLength={NAME_MAX}
+            help="Shown in the account menu"
+            value={currentName}
+            onValueChange={(value) => {
+              setName(value.slice(0, NAME_MAX));
+              setSave("idle");
+            }}
+          />
+        </div>
+
+        <fieldset className="m-0 mt-10 border-0 p-0">
+          <legend className={LEGEND}>Subjects for your daily lesson</legend>
+          {subjects.error ? (
+            <Notice
+              className="mt-3"
+              tone="error"
+              kicker="Couldn’t load"
+              title="Your subjects didn’t load."
+              body="It’s probably the connection. Nothing was lost."
+              primary={{ label: "Try again", onClick: subjects.reload }}
+              secondary={{ label: "or go to Today", href: "/today" }}
+            />
+          ) : subjects.data ? (
+            <SubjectGrid label="Subjects for your daily lesson" columns={3} className="mt-3">
+              {FIXED_SUBJECTS.map((subject) => (
+                <SubjectToggle
+                  key={subject}
+                  variant="row"
+                  name={subject}
+                  on={picked.includes(subject)}
+                  onToggle={() => toggle(subject)}
+                />
+              ))}
+              {custom.map((c, i) => (
+                <SubjectToggle
+                  key={c.name}
+                  variant="row"
+                  name={c.name}
+                  on={c.on}
+                  onToggle={() => toggleCustom(i)}
+                  onRemove={() => removeCustom(i)}
+                />
+              ))}
+              <AddSubjectTile
+                variant="row"
+                open={adder.open}
+                full={custom.length >= CUSTOM_LIMIT}
+                count={`${custom.length} of ${CUSTOM_LIMIT}`}
+                onClick={() => adder.setOpen(true)}
+              />
+            </SubjectGrid>
+          ) : (
+            <div aria-busy="true" className="mt-3 h-[60px] bg-(--paper-sunk)" />
+          )}
+          {subjects.data && <SubjectAdderField adder={adder} className="mt-6" />}
+        </fieldset>
+
+        <div className="mt-12 flex flex-wrap items-center gap-x-7 gap-y-[14px]">
+          <Button type="submit" busy={saving} disabled={!canSave && !saving} className="max-md:w-full">
+            {saving ? "Saving" : save === "failed" && failure.retry ? "Try saving again" : "Save changes"}
+          </Button>
+          {/* The status region stays mounted so "Saved" is announced when it arrives. */}
+          <div className="min-w-0">
+            <p role="status" className="m-0 flex items-center gap-[6px] font-label text-[13px] text-(--correct)">
+              {save === "saved" && (
+                <>
+                  <CheckIcon size={13} strokeWidth={2.6} />
+                  Saved
+                </>
+              )}
+            </p>
+            {save === "failed" && (
+              <p
+                role="alert"
+                className="m-0 flex items-start gap-[6px] bg-(--incorrect-wash) px-3 py-[10px] text-[16px] leading-[1.4] text-(--ink)"
+              >
+                <CrossIcon size={14} strokeWidth={2.6} className="mt-1 flex-none text-(--incorrect)" />
+                {failure.message}
               </p>
             )}
           </div>
         </div>
-      </fieldset>
 
-      <div className="mt-10">
-        <TextField
-          label="Name"
-          name="name"
-          autoComplete="name"
-          maxLength={NAME_MAX}
-          help="Shown in the account menu"
-          value={currentName}
-          onValueChange={(value) => {
-            setName(value.slice(0, NAME_MAX));
-            setSave("idle");
-          }}
-        />
-      </div>
-
-      <fieldset className="m-0 mt-10 border-0 p-0">
-        <legend className={LEGEND}>Subjects for your daily lesson</legend>
-        {subjects.error ? (
-          <Notice
-            className="mt-3"
-            tone="error"
-            kicker="Couldn’t load"
-            title="Your subjects didn’t load."
-            body="It’s probably the connection. Nothing was lost."
-            primary={{ label: "Try again", onClick: subjects.reload }}
-            secondary={{ label: "or go to Today", href: "/today" }}
-          />
-        ) : subjects.data ? (
-          <SubjectGrid label="Subjects for your daily lesson" columns={3} className="mt-3">
-            {FIXED_SUBJECTS.map((subject) => (
-              <SubjectToggle
-                key={subject}
-                variant="row"
-                name={subject}
-                on={picked.includes(subject)}
-                onToggle={() => toggle(subject)}
-              />
-            ))}
-            {custom.map((c, i) => (
-              <SubjectToggle
-                key={c.name}
-                variant="row"
-                name={c.name}
-                on={c.on}
-                onToggle={() => toggleCustom(i)}
-                onRemove={() => removeCustom(i)}
-              />
-            ))}
-            <AddSubjectTile
-              variant="row"
-              open={adder.open}
-              full={custom.length >= CUSTOM_LIMIT}
-              count={`${custom.length} of ${CUSTOM_LIMIT}`}
-              onClick={() => adder.setOpen(true)}
-            />
-          </SubjectGrid>
-        ) : (
-          <div aria-busy="true" className="mt-3 h-[60px] bg-(--paper-sunk)" />
-        )}
-        {subjects.data && <SubjectAdderField adder={adder} className="mt-6" />}
-      </fieldset>
-
-      <div className="mt-12 flex flex-wrap items-center gap-x-7 gap-y-[14px]">
-        <Button type="submit" busy={saving} disabled={!canSave && !saving} className="max-md:w-full">
-          {saving ? "Saving" : save === "failed" && failure.retry ? "Try saving again" : "Save changes"}
-        </Button>
-        {/* The status region stays mounted so "Saved" is announced when it arrives. */}
-        <div className="min-w-0">
-          <p role="status" className="m-0 flex items-center gap-[6px] font-label text-[13px] text-(--correct)">
-            {save === "saved" && (
-              <>
-                <CheckIcon size={13} strokeWidth={2.6} />
-                Saved
-              </>
-            )}
-          </p>
-          {save === "failed" && (
-            <p
-              role="alert"
-              className="m-0 flex items-start gap-[6px] bg-(--incorrect-wash) px-3 py-[10px] text-[16px] leading-[1.4] text-(--ink)"
-            >
-              <CrossIcon size={14} strokeWidth={2.6} className="mt-1 flex-none text-(--incorrect)" />
-              {failure.message}
-            </p>
-          )}
+        <div className="mt-24">
+          <button
+            type="button"
+            onClick={signOut}
+            disabled={signingOut}
+            className={cx(ACCOUNT_LINK, "text-(--ink)")}
+          >
+            {signingOut && <Caret className="almanac-pulse h-[13px]" />}
+            {signingOut ? "Signing out" : "Sign out"}
+          </button>
         </div>
-      </div>
+        <div className="mt-2">
+          <button
+            type="button"
+            onClick={() => setRemoval({ ...DELETE_CLOSED, open: true })}
+            className={cx(ACCOUNT_LINK, "text-(--incorrect)")}
+          >
+            Delete account
+          </button>
+        </div>
+      </form>
 
-      <div className="mt-24">
-        <button
-          type="button"
-          onClick={signOut}
-          disabled={signingOut}
-          className="inline-flex min-h-11 cursor-pointer items-center gap-2 border-0 bg-transparent p-0 font-label text-[13px] text-(--ink) underline underline-offset-4 disabled:cursor-progress"
-        >
-          {signingOut && <Caret className="almanac-pulse h-[13px]" />}
-          {signingOut ? "Signing out" : "Sign out"}
-        </button>
-      </div>
-    </form>
+      {/* Outside the profile form, so Enter in the confirmation field doesn't save the profile. */}
+      <ConfirmDialog
+        open={removal.open}
+        title="Delete your account?"
+        body="This removes your streak, lessons, series and photo for good. It can’t be undone."
+        confirmLabel={removal.busy ? "Deleting account" : "Delete account"}
+        cancelLabel="Keep my account"
+        busy={removal.busy}
+        confirmDisabled={removal.typed !== DELETE_WORD}
+        onConfirm={deleteAccount}
+        onCancel={() => {
+          if (!removal.busy) setRemoval(DELETE_CLOSED);
+        }}
+      >
+        <TextField
+          label="Type DELETE to confirm"
+          name="confirm-delete"
+          autoComplete="off"
+          autoCapitalize="characters"
+          spellCheck={false}
+          value={removal.typed}
+          readOnly={removal.busy}
+          onValueChange={(typed) => setRemoval((current) => ({ ...current, typed, failed: false }))}
+        />
+        {removal.failed && (
+          <p
+            role="alert"
+            className="m-0 mt-4 flex items-start gap-[6px] bg-(--incorrect-wash) px-3 py-[10px] text-[16px] leading-[1.4] text-(--ink)"
+          >
+            <CrossIcon size={14} strokeWidth={2.6} className="mt-1 flex-none text-(--incorrect)" />
+            Couldn’t delete your account. Nothing was removed. Try again.
+          </p>
+        )}
+      </ConfirmDialog>
+    </>
   );
 }
