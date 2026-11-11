@@ -1,7 +1,14 @@
 import type { ComponentProps, ReactNode } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
+import rehypeHighlight from "rehype-highlight";
 import remarkGfm from "remark-gfm";
 import { cx } from "./cx";
+
+/**
+ * Colours code boxes that name their language (```python). A box without one,
+ * or with "text", stays plain, so prose never gets guessed at.
+ */
+const HIGHLIGHT: [typeof rehypeHighlight, { plainText: string[] }] = [rehypeHighlight, { plainText: ["text", "txt", "plain"] }];
 
 type MarkdownProps = {
   children: string;
@@ -19,7 +26,8 @@ type MarkdownProps = {
   className?: string;
 };
 
-const INLINE_ELEMENTS = ["p", "strong", "em", "code", "del", "pre"];
+// "span" is only ever the highlighter's colour spans: raw HTML is never rendered.
+const INLINE_ELEMENTS = ["p", "strong", "em", "code", "del", "pre", "span"];
 
 /** A heading inside a lesson reads as a strong line, so the reading column stays flat. */
 const Heading = ({ children }: { children?: ReactNode }) => <p className="m-0 font-medium text-(--ink)">{children}</p>;
@@ -132,14 +140,14 @@ function repairFences(text: string): string {
 export function Markdown({ children, mode = "block", streaming = false, dropCap = false, className }: MarkdownProps) {
   if (mode === "inline") {
     return (
-      <ReactMarkdown remarkPlugins={[remarkGfm]} allowedElements={INLINE_ELEMENTS} unwrapDisallowed components={inline}>
+      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[HIGHLIGHT]} allowedElements={INLINE_ELEMENTS} unwrapDisallowed components={inline}>
         {repairFences(children)}
       </ReactMarkdown>
     );
   }
   return (
     <div className={cx("md-block", dropCap && "md-drop-cap", streaming && "md-streaming", className)}>
-      <ReactMarkdown remarkPlugins={[remarkGfm]} components={block}>
+      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[HIGHLIGHT]} components={block}>
         {children}
       </ReactMarkdown>
     </div>

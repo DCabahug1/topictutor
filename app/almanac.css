@@ -21,6 +21,14 @@
   --danger: #B0201C;
   --danger-hover: #8E1714;
   --on-danger: #FFFFFF;
+  /* Syntax colours inside code boxes, all 5:1 or better on --paper-sunk. */
+  --code-keyword: #7B2D8E;
+  --code-string: #2D6A1F;
+  --code-number: #9A4300;
+  --code-comment: #5A5F64;
+  --code-function: #1F4E8C;
+  --code-type: #7A5200;
+  --code-attr: #8E2F4A;
   --focus: var(--accent);
 }
 
@@ -43,6 +51,13 @@
   --danger: #FF8A80;
   --danger-hover: #FFA9A1;
   --on-danger: #1E2124;
+  --code-keyword: #D6A8F2;
+  --code-string: #A6D98A;
+  --code-number: #F2B57A;
+  --code-comment: #A0A5AA;
+  --code-function: #8DB4F0;
+  --code-type: #E6C878;
+  --code-attr: #F2A0B4;
   --focus: var(--accent);
 }
 
@@ -118,6 +133,21 @@
 }
 /* Markdown from the writer and the tutor (components/almanac/Markdown.tsx). */
 .md-block > * + * { margin-top: 0.75em; }
+/* Syntax colours from highlight.js classes (rehype-highlight), in code boxes only. */
+:is(pre, .md-code) .hljs-keyword, :is(pre, .md-code) .hljs-literal, :is(pre, .md-code) .hljs-selector-tag,
+:is(pre, .md-code) .hljs-tag, :is(pre, .md-code) .hljs-name { color: var(--code-keyword); }
+:is(pre, .md-code) .hljs-string, :is(pre, .md-code) .hljs-regexp, :is(pre, .md-code) .hljs-char,
+:is(pre, .md-code) .hljs-template-variable, :is(pre, .md-code) .hljs-addition { color: var(--code-string); }
+:is(pre, .md-code) .hljs-number, :is(pre, .md-code) .hljs-symbol, :is(pre, .md-code) .hljs-bullet { color: var(--code-number); }
+:is(pre, .md-code) .hljs-comment, :is(pre, .md-code) .hljs-quote, :is(pre, .md-code) .hljs-deletion { color: var(--code-comment); font-style: italic; }
+:is(pre, .md-code) .hljs-title, :is(pre, .md-code) .hljs-section { color: var(--code-function); }
+:is(pre, .md-code) .hljs-title.class_, :is(pre, .md-code) .hljs-type, :is(pre, .md-code) .hljs-built_in,
+:is(pre, .md-code) .hljs-meta, :is(pre, .md-code) .hljs-selector-class, :is(pre, .md-code) .hljs-selector-id { color: var(--code-type); }
+:is(pre, .md-code) .hljs-attr, :is(pre, .md-code) .hljs-attribute, :is(pre, .md-code) .hljs-property,
+:is(pre, .md-code) .hljs-variable, :is(pre, .md-code) .hljs-selector-attr { color: var(--code-attr); }
+:is(pre, .md-code) .hljs-emphasis { font-style: italic; }
+:is(pre, .md-code) .hljs-strong { font-weight: 600; }
+
 /* Inline mode: one paragraph reads inline, a second one or one after a code box gets its own line. */
 .md-inline-p + .md-inline-p, .md-code + .md-inline-p { display: block; margin-top: 0.6em; }
 .md-drop-cap > p:first-child::first-letter {
