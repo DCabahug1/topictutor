@@ -2,8 +2,9 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 // Guests can read today's lesson, start one series and open the sample series.
+// Series pages are open: a guest's own series lives in their browser until they sign up.
 const PUBLIC_EXACT = ["/", "/today/lesson", "/login", "/register", "/reset"];
-const PUBLIC_PREFIXES = ["/auth/", "/welcome/", "/series/new", "/series/sample"];
+const PUBLIC_PREFIXES = ["/auth/", "/welcome/", "/series/"];
 
 // Signed-in learners never see these.
 const SIGNED_OUT_ONLY = ["/login", "/register", "/auth/login", "/auth/register"];
