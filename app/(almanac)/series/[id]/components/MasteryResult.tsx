@@ -215,8 +215,10 @@ export function MasteryResult({ mastery, focusHeading = false, onRetake, retakin
             ))}
           </ol>
           <p className="m-0 mt-5 text-[17px] italic text-(--ink-muted)">
-            The retake leans toward {lessonList(reviewNumbers)}. Your series stays at{" "}
-            {percentComplete(LESSONS_PER_SERIES, false)}% until you pass.
+            The retake leans toward {lessonList(reviewNumbers)}.{" "}
+            {mastery.everPassed
+              ? `Your series stays complete, and your best is still ${best} of ${total}.`
+              : `Your series stays at ${percentComplete(LESSONS_PER_SERIES, false)}% until you pass.`}
           </p>
         </Section>
       )}

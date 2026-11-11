@@ -84,7 +84,11 @@ export const placementSchema = z.object({
     .array(
       choice.extend({
         level: z.enum(["easy", "medium", "hard"]),
-        topic: z.string().describe("What the question is about in two to five lowercase words, like 'which CSS rule wins'."),
+        topic: z
+          .string()
+          .describe(
+            "What the question is about in two to five words, lowercase except names and acronyms, like 'which CSS rule wins' or 'how mRNA vaccines work'."
+          ),
       })
     )
     .length(5)
