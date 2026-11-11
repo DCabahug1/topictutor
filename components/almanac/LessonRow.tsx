@@ -55,7 +55,7 @@ export function LessonRow({ number, marker, title, why, status, sub, tag, muted 
         className
       )}
     >
-      <span className={cx("font-mono text-[13px]", upNext ? "text-(--accent)" : "text-(--ink-muted)")}>
+      <span className={cx("font-label text-[13px]", upNext ? "text-(--accent)" : "text-(--ink-muted)")}>
         {marker ?? String(number ?? 0).padStart(2, "0")}
       </span>
       <span className="min-w-0">
@@ -73,7 +73,7 @@ export function LessonRow({ number, marker, title, why, status, sub, tag, muted 
       </span>
       <span
         className={cx(
-          "col-start-2 whitespace-nowrap font-mono text-[12px] uppercase tracking-[0.06em] md:col-start-auto",
+          "col-start-2 whitespace-nowrap font-label text-[12px] uppercase tracking-[0.06em] md:col-start-auto",
           upNext && !tag ? "text-(--accent)" : "text-(--ink-muted)"
         )}
       >

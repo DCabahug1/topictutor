@@ -62,7 +62,7 @@ export const AnswerOption = forwardRef<HTMLButtonElement, AnswerOptionProps>(fun
       <span
         aria-hidden="true"
         className={cx(
-          "font-mono text-[13px] font-normal not-italic",
+          "font-label text-[13px] not-italic",
           selected && plain && !dimmed ? "text-(--accent)" : "text-(--ink-muted)"
         )}
       >
@@ -73,7 +73,7 @@ export const AnswerOption = forwardRef<HTMLButtonElement, AnswerOptionProps>(fun
       </span>
       <span
         className={cx(
-          "whitespace-nowrap font-mono text-[12px] font-normal uppercase not-italic tracking-[0.06em]",
+          "whitespace-nowrap font-label text-[12px] uppercase not-italic tracking-[0.06em]",
           correct ? "text-(--correct)" : "text-(--incorrect)"
         )}
       >

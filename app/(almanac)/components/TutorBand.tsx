@@ -52,7 +52,7 @@ export function TutorBand() {
         </div>
 
         <div className="min-w-0 flex-[1.5_1_440px] border border-solid border-(--ink) bg-(--paper-raised)">
-          <div className="flex flex-wrap justify-between gap-x-3 gap-y-1 border-0 border-b border-solid border-(--rule) px-[18px] py-4 font-mono text-[12px] uppercase tracking-[0.08em] md:px-7">
+          <div className="flex flex-wrap justify-between gap-x-3 gap-y-1 border-0 border-b border-solid border-(--rule) px-[18px] py-4 font-label text-[12px] uppercase tracking-[0.08em] md:px-7">
             <span className="text-(--ink-muted)">Asking about</span>
             <span>Why leap years exist</span>
           </div>
@@ -68,7 +68,7 @@ export function TutorBand() {
             </p>
             <p
               className={cx(
-                "m-0 mt-4 font-mono text-[12px] uppercase tracking-[0.08em] text-(--accent) transition-opacity duration-(--duration-step)",
+                "m-0 mt-4 font-label text-[12px] uppercase tracking-[0.08em] text-(--accent) transition-opacity duration-(--duration-step)",
                 typing ? "opacity-0" : "opacity-100"
               )}
             >

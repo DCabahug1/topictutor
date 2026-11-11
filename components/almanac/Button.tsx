@@ -21,9 +21,10 @@ export function Caret({ className, inText = false }: { className?: string; inTex
 type ButtonProps = {
   /**
    * primary: the one filled button on a screen, and it is the next step.
-   * outline: "Continue with Google" and a section's own action
-   *   when the screen's primary is something else (Today's "Start a series").
-   * quiet: the italic "or …" link for every other action.
+   * outline: "Continue with Google", a section's own action when the screen's primary
+   *   is something else (Today's "Start a series"), and a real second path next to the
+   *   primary (Finish's "Go deeper"). Never two quiet links side by side; promote one.
+   * quiet: the italic "or …" link for leaving, going back or looking again.
    * danger: red outline, for the one action that deletes something. Only in a confirm step,
    *   next to a filled safe choice.
    * secondary is the old name for outline.
@@ -46,7 +47,7 @@ type ButtonProps = {
 } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "disabled" | "children">;
 
 const solid =
-  "inline-flex items-center justify-center gap-[14px] font-mono font-medium no-underline transition-colors duration-(--duration-instant) ease-out";
+  "inline-flex items-center justify-center gap-[14px] font-label no-underline transition-colors duration-(--duration-instant) ease-out";
 
 const sizes = {
   default: "min-h-(--button-h) px-[30px] text-[15px] leading-5",

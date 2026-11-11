@@ -49,7 +49,7 @@ export function FormAlert({ kicker, children }: { kicker: string; children: Reac
       role="alert"
       className="mt-7 border-0 border-l-4 border-solid border-(--incorrect) bg-(--incorrect-wash) px-4 py-[14px]"
     >
-      <p className="m-0 flex items-center gap-[6px] font-mono text-[12px] uppercase tracking-[0.08em] text-(--incorrect)">
+      <p className="m-0 flex items-center gap-[6px] font-label text-[12px] uppercase tracking-[0.08em] text-(--incorrect)">
         <CrossIcon size={12} strokeWidth={2.8} />
         {kicker}
       </p>
@@ -88,7 +88,7 @@ export function GoogleSignIn({ fallback }: { fallback: string }) {
       )}
       <div
         aria-hidden="true"
-        className="t-label mt-5 grid grid-cols-[1fr_auto_1fr] items-center gap-3 font-normal! text-(--ink-muted)"
+        className="t-label mt-5 grid grid-cols-[1fr_auto_1fr] items-center gap-3 text-(--ink-muted)"
       >
         <span className="h-px bg-(--rule)" />
         or with email

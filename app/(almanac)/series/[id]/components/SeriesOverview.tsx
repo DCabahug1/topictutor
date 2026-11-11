@@ -164,7 +164,7 @@ export function SeriesOverview() {
           <button
             type="button"
             onClick={() => setConfirming(true)}
-            className="min-h-11 cursor-pointer border-0 bg-transparent p-0 font-mono text-[13px] text-(--danger) underline underline-offset-4 hover:text-(--danger-hover)"
+            className="min-h-11 cursor-pointer border-0 bg-transparent p-0 font-label text-[13px] text-(--danger) underline underline-offset-4 hover:text-(--danger-hover)"
           >
             Delete series
           </button>

@@ -81,7 +81,7 @@ export function LessonTeaser({ session, error, onRetry }: LessonTeaserProps) {
 
   return (
     <section aria-label="Today’s lesson" className={CARD}>
-      <div className="flex justify-between gap-3 font-mono text-[12px] uppercase tracking-[0.08em]">
+      <div className="flex justify-between gap-3 font-label text-[12px] uppercase tracking-[0.08em]">
         <span className="text-(--accent)">Today in {lesson.subject}</span>
         <span className="text-(--ink-muted)">{lesson.minutes} min</span>
       </div>
@@ -102,7 +102,7 @@ export function LessonTeaser({ session, error, onRetry }: LessonTeaserProps) {
         </span>
         <Link
           href={done ? "/today/lesson?read=1" : "/today/lesson"}
-          className="group inline-flex min-h-11 items-center gap-2 font-mono text-[14px] text-(--ink) underline-offset-4"
+          className="group inline-flex min-h-11 items-center gap-2 font-label text-[14px] text-(--ink) underline-offset-4"
         >
           {done ? "Read it again" : "Keep reading"}
           <ArrowIcon size={16} className="group-hover:text-(--accent)" />

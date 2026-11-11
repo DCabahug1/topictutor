@@ -67,7 +67,7 @@ export default function WelcomeAccountPage() {
         <aside aria-labelledby="comes-with-you" className="min-w-0 flex-[0_1_340px]">
           <h2
             id="comes-with-you"
-            className="m-0 border-0 border-b border-solid border-(--ink) pb-3 font-mono text-[12px] font-medium uppercase tracking-[0.1em] text-(--ink-muted)"
+            className="m-0 border-0 border-b border-solid border-(--ink) pb-3 font-label text-[12px] uppercase tracking-[0.1em] text-(--ink-muted)"
           >
             What comes with you
           </h2>

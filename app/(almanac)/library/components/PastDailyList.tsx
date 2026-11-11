@@ -44,7 +44,7 @@ export function PastDailyList({ lessons, today }: PastDailyListProps) {
       title="Past daily lessons"
       aside={
         lessons.length > 0 ? (
-          <span className="font-mono text-[12px] uppercase tracking-[0.06em] text-(--ink-muted)">{lessons.length} so far</span>
+          <span className="font-label text-[12px] uppercase tracking-[0.06em] text-(--ink-muted)">{lessons.length} so far</span>
         ) : undefined
       }
     >
@@ -72,7 +72,7 @@ export function PastDailyList({ lessons, today }: PastDailyListProps) {
                     <time
                       dateTime={lesson.date}
                       title={fullDate(lesson.date)}
-                      className="font-mono text-[12px] text-(--ink-muted)"
+                      className="font-label text-[12px] text-(--ink-muted)"
                     >
                       {shortDate(lesson.date)}
                     </time>
@@ -81,7 +81,7 @@ export function PastDailyList({ lessons, today }: PastDailyListProps) {
                       <span className="sr-only"> · {lesson.subject}</span>
                     </span>
                     {!lesson.done && (
-                      <span className="whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.06em] text-(--accent)">
+                      <span className="whitespace-nowrap font-label text-[11px] uppercase tracking-[0.06em] text-(--accent)">
                         ○ Not read
                       </span>
                     )}

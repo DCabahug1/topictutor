@@ -34,7 +34,7 @@ export function DeeperStaircase() {
               aria-pressed={i === topic}
               onClick={() => setTopic(i)}
               className={cx(
-                "min-h-11 cursor-pointer px-4 font-mono text-[14px] transition-colors duration-(--duration-instant) ease-out",
+                "min-h-11 cursor-pointer px-4 font-label text-[14px] transition-colors duration-(--duration-instant) ease-out",
                 i === topic
                   ? "border-2 border-solid border-(--ink) bg-(--paper-raised) text-(--ink)"
                   : "border-[1.5px] border-solid border-(--rule) bg-transparent text-(--ink-soft) hover:text-(--ink)"
@@ -65,7 +65,7 @@ export function DeeperStaircase() {
               <div className="min-w-0">
                 <p
                   className={cx(
-                    "m-0 font-mono text-[12px] uppercase tracking-[0.08em]",
+                    "m-0 font-label text-[12px] uppercase tracking-[0.08em]",
                     here ? "text-(--on-ink)" : skip ? "text-(--ink-muted)" : "text-(--accent)"
                   )}
                 >
@@ -86,7 +86,7 @@ export function DeeperStaircase() {
           );
         })}
       </ol>
-      <div className="mt-4 flex flex-wrap justify-between gap-x-4 gap-y-2 border-0 border-t border-solid border-(--ink) pt-[14px] font-mono text-[13px] uppercase tracking-[0.06em]">
+      <div className="mt-4 flex flex-wrap justify-between gap-x-4 gap-y-2 border-0 border-t border-solid border-(--ink) pt-[14px] font-label text-[13px] uppercase tracking-[0.06em]">
         <span className="text-(--accent)">↑ Placement starts you at lesson {current.start + 1}</span>
         <span className="text-(--ink-muted)">Then a Mastery Check</span>
       </div>

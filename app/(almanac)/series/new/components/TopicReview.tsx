@@ -89,7 +89,7 @@ export function TopicReview({ check, typed, starting, onUse, onEdit, autoFocus =
           />
           {check.suggestions.length > 0 && (
             <div className="mt-6">
-              <p className="t-label m-0 font-normal! text-(--ink-muted)">Or one of these</p>
+              <p className="t-label m-0 text-(--ink-muted)">Or one of these</p>
               <div className="mt-3">{others}</div>
             </div>
           )}
@@ -98,7 +98,7 @@ export function TopicReview({ check, typed, starting, onUse, onEdit, autoFocus =
         <>
           {check.suggestions.length > 0 && (
             <div className="mt-6">
-              <p className="t-label m-0 font-normal! text-(--ink-muted)">
+              <p className="t-label m-0 text-(--ink-muted)">
                 {check.verdict === "refused" ? "We could teach one of these instead" : "Did you mean one of these?"}
               </p>
               <div className="mt-3">{others}</div>

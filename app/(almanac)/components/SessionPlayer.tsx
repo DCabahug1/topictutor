@@ -15,7 +15,7 @@ const STEPS = [
   { name: "Finish", line: "Your streak goes up" },
 ];
 
-const KICKER = "m-0 font-mono text-[12px] uppercase tracking-[0.08em]";
+const KICKER = "m-0 font-label text-[12px] uppercase tracking-[0.08em]";
 
 /**
  * "Watch a whole session": the four steps play on their own, with a pause
@@ -70,7 +70,7 @@ export function SessionPlayer() {
                 i === step ? "bg-(--paper)" : "bg-transparent"
               )}
             >
-              <span className={cx("font-mono text-[13px] leading-7", i === step ? "text-(--accent)" : "text-(--ink-muted)")}>
+              <span className={cx("font-label text-[13px] leading-7", i === step ? "text-(--accent)" : "text-(--ink-muted)")}>
                 0{i + 1}
               </span>
               <span>
@@ -98,7 +98,7 @@ export function SessionPlayer() {
                   <span className="border-[1.5px] border-solid border-(--rule) px-[18px] py-4 text-(--ink-muted)">The same</span>
                   <span className="flex justify-between gap-3 border-[1.5px] border-solid border-(--correct) bg-(--correct-wash) px-[18px] py-4">
                     Slightly higher
-                    <span className="font-mono text-[12px] text-(--correct)">✓ CORRECT</span>
+                    <span className="font-label text-[12px] text-(--correct)">✓ CORRECT</span>
                   </span>
                 </div>
               </>
@@ -123,11 +123,11 @@ export function SessionPlayer() {
                 <div className="mt-[22px] grid grid-cols-2 gap-[10px]">
                   <span className="flex flex-wrap items-center justify-between gap-2 border-[1.5px] border-solid border-(--incorrect) bg-(--incorrect-wash) px-5 py-[18px] text-[28px] font-medium md:text-[34px]">
                     1900
-                    <span className="font-mono text-[12px] font-normal text-(--incorrect)">✕ YOUR PICK</span>
+                    <span className="font-label text-[12px] text-(--incorrect)">✕ YOUR PICK</span>
                   </span>
                   <span className="flex flex-wrap items-center justify-between gap-2 border-[1.5px] border-solid border-(--correct) bg-(--correct-wash) px-5 py-[18px] text-[28px] font-medium md:text-[34px]">
                     2000
-                    <span className="font-mono text-[12px] font-normal text-(--correct)">✓ ANSWER</span>
+                    <span className="font-label text-[12px] text-(--correct)">✓ ANSWER</span>
                   </span>
                 </div>
                 <p className="m-0 mt-[14px] text-[16px] italic text-(--ink-muted)">Wrong still counts. The lesson is finished.</p>

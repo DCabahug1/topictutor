@@ -144,7 +144,7 @@ export default function TodayPage() {
         title={series.length ? "Pick up your series" : "Go deeper on anything"}
         aside={
           series.length > 0 ? (
-            <Link href="/library" className="py-2 font-mono text-[13px] text-(--ink) underline-offset-4">
+            <Link href="/library" className="py-2 font-label text-[13px] text-(--ink) underline-offset-4">
               All series
             </Link>
           ) : undefined

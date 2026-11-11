@@ -11,7 +11,7 @@ type StepMeterProps = {
 };
 
 /**
- * Thin bars, done in ink, current in accent, upcoming in rule, with one mono
+ * Thin bars, done in ink, current in accent, upcoming in rule, with one label
  * line under them. The bars are hidden from screen readers: the line says it.
  */
 export function StepMeter({ steps, current, label, className }: StepMeterProps) {
@@ -25,7 +25,7 @@ export function StepMeter({ steps, current, label, className }: StepMeterProps) 
           />
         ))}
       </div>
-      <p className="m-0 mt-[10px] font-mono text-[12px] uppercase tracking-[0.08em] text-(--ink-muted)">{label}</p>
+      <p className="m-0 mt-[10px] font-label text-[12px] uppercase tracking-[0.08em] text-(--ink-muted)">{label}</p>
     </div>
   );
 }

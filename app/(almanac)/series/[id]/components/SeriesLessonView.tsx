@@ -185,7 +185,7 @@ function SeriesLesson({ id, number }: { id: string; number: number }) {
             className="mt-12 md:mt-16"
           />
           <section aria-labelledby="lesson-check" className="mt-14 border-0 border-t border-solid border-(--ink) pt-6 md:mt-16 md:pt-8">
-            <p className="m-0 font-mono text-[12px] uppercase tracking-[0.1em] text-(--ink-muted)">Check</p>
+            <p className="m-0 font-label text-[12px] uppercase tracking-[0.1em] text-(--ink-muted)">Check</p>
             <h2
               id="lesson-check"
               ref={checkHeading}

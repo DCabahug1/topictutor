@@ -30,7 +30,7 @@ const neverChanges = () => () => {};
 export function Dateline({ className }: { className?: string }) {
   // Blank on the server, which doesn't know the learner's date.
   const line = useSyncExternalStore(neverChanges, todayLine, () => " ");
-  return <p className={cx("t-label m-0 font-normal! text-(--ink-muted)", className)}>{line}</p>;
+  return <p className={cx("t-label m-0 text-(--ink-muted)", className)}>{line}</p>;
 }
 
 function AccountMenu({ user }: { user: SessionUser }) {
@@ -108,7 +108,7 @@ function AccountMenu({ user }: { user: SessionUser }) {
           >
             {display}
             {user.name && (
-              <small title={user.email} className="block truncate font-mono text-[12px] text-(--ink-muted)">
+              <small title={user.email} className="block truncate font-label text-[12px] text-(--ink-muted)">
                 {user.email}
               </small>
             )}
@@ -117,7 +117,7 @@ function AccountMenu({ user }: { user: SessionUser }) {
             role="menuitem"
             href="/stats?view=profile"
             onClick={() => setOpen(false)}
-            className="block px-4 py-3 font-mono text-[14px] text-(--ink) no-underline hover:bg-(--paper-sunk)"
+            className="block px-4 py-3 font-label text-[14px] text-(--ink) no-underline hover:bg-(--paper-sunk)"
           >
             Profile
           </Link>
@@ -125,7 +125,7 @@ function AccountMenu({ user }: { user: SessionUser }) {
             role="menuitem"
             type="button"
             onClick={signOut}
-            className="block w-full cursor-pointer border-0 bg-transparent px-4 py-3 text-left font-mono text-[14px] text-(--ink) hover:bg-(--paper-sunk)"
+            className="block w-full cursor-pointer border-0 bg-transparent px-4 py-3 text-left font-label text-[14px] text-(--ink) hover:bg-(--paper-sunk)"
           >
             Sign out
           </button>
@@ -161,7 +161,7 @@ export function Masthead({ current, dateline = false, user: userProp }: Masthead
         >
           TopicTutor
         </Link>
-        <nav aria-label="Main" className="flex items-center gap-[2px] font-mono text-[14px]">
+        <nav aria-label="Main" className="flex items-center gap-[2px] font-label text-[14px]">
           {user ? (
             <>
               {SECTIONS.map((section) => (
@@ -210,7 +210,7 @@ export function BottomTabs({ current }: { current?: MainSection }) {
   return (
     <nav
       aria-label="Main"
-      className="fixed inset-x-0 bottom-0 z-10 grid grid-cols-3 border-0 border-t border-solid border-(--ink) bg-(--paper) font-mono text-[12px] uppercase tracking-[0.04em] md:hidden"
+      className="fixed inset-x-0 bottom-0 z-10 grid grid-cols-3 border-0 border-t border-solid border-(--ink) bg-(--paper) font-label text-[12px] uppercase tracking-[0.04em] md:hidden"
     >
       {SECTIONS.map((section) => {
         const isCurrent = current === section.id;

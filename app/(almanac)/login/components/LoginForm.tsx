@@ -96,7 +96,7 @@ export function LoginForm() {
             {/* Sits on the label's line. TextField has no slot there, so it is placed over it. */}
             <Link
               href="/reset"
-              className="absolute -top-[15px] right-0 inline-flex min-h-11 items-center font-mono text-[12px] text-(--ink) underline underline-offset-4"
+              className="absolute -top-[15px] right-0 inline-flex min-h-11 items-center font-label text-[12px] text-(--ink) underline underline-offset-4"
             >
               Forgot password?
             </Link>

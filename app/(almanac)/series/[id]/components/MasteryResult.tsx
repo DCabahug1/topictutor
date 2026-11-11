@@ -132,17 +132,17 @@ export function MasteryResult({ mastery, focusHeading = false, onRetake, retakin
                 </Button>
               )
             }
-            quiet={
-              <>
-                <Button variant="quiet" onClick={reviewAnswers}>
-                  or review your answers
+            secondary={
+              best < total && (
+                <Button variant="outline" busy={retaking} onClick={onRetake}>
+                  Retake to beat {best}/{total}
                 </Button>
-                {best < total && (
-                  <Button variant="quiet" busy={retaking} onClick={onRetake}>
-                    or retake to beat {best}/{total}
-                  </Button>
-                )}
-              </>
+              )
+            }
+            quiet={
+              <Button variant="quiet" onClick={reviewAnswers}>
+                or review your answers
+              </Button>
             }
           >
             {nextSeries && (

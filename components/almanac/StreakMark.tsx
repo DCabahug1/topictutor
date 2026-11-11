@@ -51,7 +51,7 @@ export function FourWeekGrid({ days, count, todayDone, celebrate = false, classN
     return i >= runStart ? "border-solid border-(--ink) bg-(--ink)" : "border-solid border-(--ink-muted) bg-(--ink-muted)";
   }
 
-  const meta = "font-mono text-[length:var(--meta,11px)]";
+  const meta = "font-label text-[length:var(--meta,11px)]";
 
   return (
     <div role="img" aria-label={label} className={cx("w-fit", className)}>

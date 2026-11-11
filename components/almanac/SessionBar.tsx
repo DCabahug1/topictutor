@@ -35,7 +35,7 @@ export function SessionBar({ leaveHref = "/", onLeave, leaveLabel = "Leave lesso
     </>
   );
   const classes =
-    "inline-flex min-h-11 cursor-pointer items-center gap-2 whitespace-nowrap border-0 bg-transparent p-0 font-mono text-[14px] text-(--ink) no-underline hover:text-(--accent)";
+    "inline-flex min-h-11 cursor-pointer items-center gap-2 whitespace-nowrap border-0 bg-transparent p-0 font-label text-[14px] text-(--ink) no-underline hover:text-(--accent)";
 
   return (
     <header className="mx-auto flex w-full max-w-(--content-max) items-center justify-between gap-3 pb-[10px] pt-2 md:pb-4 md:pt-5">

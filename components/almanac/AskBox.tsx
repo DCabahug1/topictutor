@@ -70,7 +70,7 @@ function AskBoxForLesson({ onAsk, onExplainDifferently, hint, className }: AskBo
     >
       <h2
         id={`${id}-label`}
-        className="m-0 font-mono text-[12px] font-medium uppercase tracking-[0.1em] text-(--ink-muted)"
+        className="m-0 font-label text-[12px] uppercase tracking-[0.1em] text-(--ink-muted)"
       >
         Ask the tutor
       </h2>
@@ -100,7 +100,7 @@ function AskBoxForLesson({ onAsk, onExplainDifferently, hint, className }: AskBo
                 )}
               </div>
               {status === "done" && source !== null && (
-                <p className="m-0 mt-[14px] font-mono text-[12px] uppercase tracking-[0.08em] text-(--accent)">
+                <p className="m-0 mt-[14px] font-label text-[12px] uppercase tracking-[0.08em] text-(--accent)">
                   ↳ From paragraph {source}
                 </p>
               )}
@@ -144,7 +144,7 @@ function AskBoxForLesson({ onAsk, onExplainDifferently, hint, className }: AskBo
           type="submit"
           aria-label="Ask"
           disabled={answering}
-          className="min-h-11 flex-none cursor-pointer border-0 bg-transparent px-1 font-mono text-[12px] uppercase text-(--ink-muted) hover:text-(--ink) disabled:cursor-progress"
+          className="min-h-11 flex-none cursor-pointer border-0 bg-transparent px-1 font-label text-[12px] uppercase text-(--ink-muted) hover:text-(--ink) disabled:cursor-progress"
         >
           Enter
         </button>

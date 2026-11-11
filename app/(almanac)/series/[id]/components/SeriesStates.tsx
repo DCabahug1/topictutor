@@ -12,7 +12,7 @@ export function BackLink({ href, children }: { href: string; children: ReactNode
   return (
     <Link
       href={href}
-      className="mt-4 inline-flex min-h-11 items-center gap-2 font-mono text-[13px] text-(--ink) no-underline hover:text-(--accent) md:mt-5"
+      className="mt-4 inline-flex min-h-11 items-center gap-2 font-label text-[13px] text-(--ink) no-underline hover:text-(--accent) md:mt-5"
     >
       <BackIcon size={16} />
       {children}

@@ -136,12 +136,12 @@ export function SeriesShelf({ series, onDeleted }: SeriesShelfProps) {
             <p className="m-0 text-[24px] font-medium leading-[1.2] md:text-[28px]">
               {needle ? `No series match “${query.trim()}”.` : "No series with this status."}
             </p>
-            <div className="mt-2 flex flex-wrap gap-x-6">
-              <Button variant="quiet" onClick={clearAll}>
-                Clear search and filters
+            <div className="mt-6 flex flex-col items-stretch gap-x-7 gap-y-[14px] md:flex-row md:flex-wrap md:items-center">
+              <Button variant="outline" href={needle ? `/series/new?topic=${encodeURIComponent(query.trim())}` : "/series/new"}>
+                {needle ? `Start a series on “${query.trim()}”` : "Start a series"}
               </Button>
-              <Button variant="quiet" href={needle ? `/series/new?topic=${encodeURIComponent(query.trim())}` : "/series/new"}>
-                {needle ? `or start a series on “${query.trim()}”` : "or start a series"}
+              <Button variant="quiet" className="max-md:justify-center" onClick={clearAll}>
+                or clear search and filters
               </Button>
             </div>
           </div>

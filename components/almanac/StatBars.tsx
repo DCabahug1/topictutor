@@ -45,7 +45,7 @@ export function StatBars({ title, bars, layout, max, className }: StatBarsProps)
             <span className="h-3 bg-(--paper-sunk)">
               <span className="block h-full bg-(--ink-muted)" style={{ width: `${Math.round((bar.value / full) * 100)}%` }} />
             </span>
-            <span className="text-right font-mono text-[13px]">{bar.value}</span>
+            <span className="text-right font-label text-[13px]">{bar.value}</span>
           </div>
         ))}
       </div>
@@ -58,7 +58,7 @@ export function StatBars({ title, bars, layout, max, className }: StatBarsProps)
       <div className="grid h-[180px] items-end gap-2 border-0 border-b border-solid border-(--ink) md:gap-4" style={columns}>
         {bars.map((bar) => (
           <div key={bar.label} className="flex h-full flex-col items-center justify-end gap-[6px]">
-            <span className="font-mono text-[12px] text-(--ink-muted)">{bar.value || (bar.current ? "·" : "0")}</span>
+            <span className="font-label text-[12px] text-(--ink-muted)">{bar.value || (bar.current ? "·" : "0")}</span>
             <span
               className={cx(
                 "box-border w-full",
@@ -70,7 +70,7 @@ export function StatBars({ title, bars, layout, max, className }: StatBarsProps)
           </div>
         ))}
       </div>
-      <div className="mt-2 grid gap-2 text-center font-mono text-[11px] text-(--ink-muted) md:gap-4" style={columns}>
+      <div className="mt-2 grid gap-2 text-center font-label text-[11px] text-(--ink-muted) md:gap-4" style={columns}>
         {bars.map((bar) => (
           <span key={bar.label} className={cx(bar.current && "font-medium text-(--ink)")}>
             {bar.label}

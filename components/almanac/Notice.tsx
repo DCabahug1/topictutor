@@ -8,7 +8,7 @@ type NoticeAction = { label: string; href?: string; onClick?: () => void; busy?:
 type NoticeProps = {
   /** error: something went wrong. info: a limit, a missing page, an expired link. */
   tone: "error" | "info";
-  /** The mono line on top, for example "Didn’t finish writing". */
+  /** The label line on top, for example "Didn’t finish writing". */
   kicker: string;
   /** What happened, in plain words. No error codes. */
   title: string;

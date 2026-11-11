@@ -32,7 +32,7 @@ export default function LandingPage() {
         {/* The primary button the other way round, for the ink ground. */}
         <Link
           href={ctaHref}
-          className="inline-flex min-h-(--button-h) items-center gap-[14px] bg-(--on-ink) px-[30px] font-mono text-[15px] font-medium text-(--ink) no-underline transition-colors duration-(--duration-instant) ease-out hover:bg-(--accent) hover:text-(--on-ink) max-md:w-full max-md:justify-center"
+          className="inline-flex min-h-(--button-h) items-center gap-[14px] bg-(--on-ink) px-[30px] font-label text-[15px] text-(--ink) no-underline transition-colors duration-(--duration-instant) ease-out hover:bg-(--accent) hover:text-(--on-ink) max-md:w-full max-md:justify-center"
         >
           {cta}
           <ArrowIcon />
@@ -58,7 +58,7 @@ export default function LandingPage() {
       }
     >
       <section className="pt-16 text-center md:pt-[140px]">
-        <Dateline className="font-mono! text-[12px]! tracking-[0.1em]!" />
+        <Dateline className="font-label! text-[12px]! tracking-[0.1em]!" />
         <h1 className="mx-auto mt-[22px] max-w-[900px] text-[54px] font-medium leading-[0.95] tracking-[-0.03em] md:text-[108px]">
           Learn one thing <em className="font-normal">well</em>, every day.
         </h1>

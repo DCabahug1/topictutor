@@ -64,7 +64,7 @@ function StatsScreenInner() {
               tabIndex={selected ? 0 : -1}
               onClick={() => show(v.id)}
               className={cx(
-                "min-h-11 cursor-pointer border-0 border-b-2 border-solid bg-transparent px-0 font-mono text-[13px] text-(--ink) transition-colors duration-(--duration-instant) ease-out",
+                "min-h-11 cursor-pointer border-0 border-b-2 border-solid bg-transparent px-0 font-label text-[13px] text-(--ink) transition-colors duration-(--duration-instant) ease-out",
                 selected ? "border-(--accent)" : "border-transparent hover:text-(--accent)"
               )}
             >

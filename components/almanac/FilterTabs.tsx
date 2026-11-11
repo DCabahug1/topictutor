@@ -24,7 +24,7 @@ export function FilterTabs<T extends string>({ tabs, value, onChange, label, cla
             aria-pressed={on}
             onClick={() => onChange(tab.value)}
             className={cx(
-              "min-h-11 cursor-pointer border-0 border-b-2 border-solid bg-transparent px-0 font-mono text-[13px] transition-colors duration-(--duration-instant) ease-out",
+              "min-h-11 cursor-pointer border-0 border-b-2 border-solid bg-transparent px-0 font-label text-[13px] transition-colors duration-(--duration-instant) ease-out",
               on ? "border-(--accent) text-(--ink)" : "border-transparent text-(--ink-muted) hover:text-(--ink)"
             )}
           >

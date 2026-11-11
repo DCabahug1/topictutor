@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { cx } from "./cx";
 
 type LeadBlockProps = {
-  /** One mono line in accent, for example "Science · about 3 minutes". */
+  /** One label line in accent, for example "Science · about 3 minutes". */
   eyebrow?: ReactNode;
   title: ReactNode;
   /** lg for the first screen of a section, sm for long titles and inner pages. */
@@ -15,7 +15,12 @@ type LeadBlockProps = {
   children?: ReactNode;
   /** The one primary button. */
   primary?: ReactNode;
-  /** Quiet "or …" links beside the primary. */
+  /**
+   * One outline button for a real second path (go deeper, retake). Use it instead of
+   * a second quiet link, so the two choices don't look alike.
+   */
+  secondary?: ReactNode;
+  /** Quiet "or …" links beside the primary: leaving, going back, looking again. */
   quiet?: ReactNode;
   /** Id for the heading, so a section can be labelled by it. */
   headingId?: string;
@@ -36,6 +41,7 @@ export function LeadBlock({
   numeral,
   children,
   primary,
+  secondary,
   quiet,
   headingId,
   focusRef,
@@ -59,18 +65,23 @@ export function LeadBlock({
       </h1>
       {line && <p className="t-lead m-0 mt-[22px] max-w-[560px]">{line}</p>}
       {children && <div className="mt-7">{children}</div>}
-      {(primary || quiet) && <LeadActions primary={primary} quiet={quiet} />}
+      {(primary || secondary || quiet) && <LeadActions primary={primary} secondary={secondary} quiet={quiet} />}
     </div>
   );
 }
 
-/** The primary button with its quiet links. Full width on phones, a row from 768px. */
+/**
+ * The primary button, an optional outline button, then quiet links.
+ * Buttons are full width on phones; a row from 768px.
+ */
 export function LeadActions({
   primary,
+  secondary,
   quiet,
   className,
 }: {
   primary?: ReactNode;
+  secondary?: ReactNode;
   quiet?: ReactNode;
   className?: string;
 }) {
@@ -78,11 +89,12 @@ export function LeadActions({
     <div
       className={cx(
         "mt-(--action-gap) flex flex-col items-stretch gap-x-7 gap-y-[14px] md:flex-row md:flex-wrap md:items-center",
-        "max-md:[&>a:first-child]:w-full max-md:[&>button:first-child]:w-full",
+        "max-md:[&>a]:w-full max-md:[&>button]:w-full",
         className
       )}
     >
       {primary}
+      {secondary}
       {quiet && <div className="flex flex-wrap items-center gap-x-6 gap-y-1 max-md:justify-center">{quiet}</div>}
     </div>
   );

@@ -20,7 +20,7 @@ import {
 } from "@/lib/almanac";
 
 const MASTERY_QUESTIONS = 5;
-const LABEL = "m-0 font-mono text-[12px] uppercase tracking-[0.08em] text-(--ink-muted)";
+const LABEL = "m-0 font-label text-[12px] uppercase tracking-[0.08em] text-(--ink-muted)";
 const BIG = "after-eyebrow big-numeral m-0 font-serif text-[80px] font-medium leading-[0.9] tracking-[-0.04em] md:text-[112px]";
 
 const lessons = (n: number) => `${n} ${n === 1 ? "lesson" : "lessons"}`;
@@ -185,12 +185,12 @@ export function StatsView() {
                   >
                     <span className="text-[17px] leading-[1.3]">{score.title}</span>
                     {passed ? (
-                      <span className="font-mono text-[13px]">
+                      <span className="font-label text-[13px]">
                         {score.best}/{MASTERY_QUESTIONS}
                         <span className="sr-only">, passed</span>
                       </span>
                     ) : (
-                      <span className="font-mono text-[13px] text-(--accent)">
+                      <span className="font-label text-[13px] text-(--accent)">
                         Retake ready<span className="sr-only">, best {score.best} of {MASTERY_QUESTIONS}</span>
                       </span>
                     )}
@@ -221,7 +221,7 @@ function SubjectSection({ stats, picked }: { stats: Stats; picked: Subject[] }) 
         <h2 id="st-cat" className="t-section m-0">
           By subject
         </h2>
-        <span className="font-mono text-[12px] uppercase tracking-[0.06em] text-(--ink-muted)">
+        <span className="font-label text-[12px] uppercase tracking-[0.06em] text-(--ink-muted)">
           {stats.totalLessons ? lessons(stats.totalLessons) : "No lessons yet"}
         </span>
       </div>

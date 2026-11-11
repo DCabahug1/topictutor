@@ -21,7 +21,7 @@ export function ProgressMeter({ lessonsDone, size = "lg", label, className }: Pr
   return (
     <span
       className={cx(
-        "inline-flex items-center font-mono text-[12px] uppercase tracking-[0.06em] text-(--ink-muted)",
+        "inline-flex items-center font-label text-[12px] uppercase tracking-[0.06em] text-(--ink-muted)",
         size === "lg" ? "gap-[14px]" : "gap-3",
         className
       )}

@@ -43,7 +43,7 @@ export function TextField({
 
   return (
     <div>
-      <label htmlFor={id} className="block font-mono text-[12px] uppercase tracking-[0.08em] text-(--ink-muted)">
+      <label htmlFor={id} className="block font-label text-[12px] uppercase tracking-[0.08em] text-(--ink-muted)">
         {label}
       </label>
       <div
@@ -78,7 +78,7 @@ export function TextField({
             type="button"
             aria-pressed={shown}
             onClick={() => setShown((s) => !s)}
-            className="h-[54px] flex-none cursor-pointer border-0 bg-transparent px-4 font-mono text-[13px] text-(--ink-soft) hover:text-(--ink)"
+            className="h-[54px] flex-none cursor-pointer border-0 bg-transparent px-4 font-label text-[13px] text-(--ink-soft) hover:text-(--ink)"
           >
             {shown ? "Hide" : "Show"}
             <span className="sr-only"> password</span>
@@ -92,7 +92,7 @@ export function TextField({
         </p>
       )}
       {maxLength ? (
-        <p id={`${id}-help`} className="mt-2 flex justify-between gap-3 font-mono text-[12px] text-(--ink-muted)">
+        <p id={`${id}-help`} className="mt-2 flex justify-between gap-3 font-label text-[12px] text-(--ink-muted)">
           <span>{help}</span>
           <span>
             {value.length} / {maxLength}

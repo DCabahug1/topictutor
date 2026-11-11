@@ -76,17 +76,17 @@ export function Finish({ session, headingRef }: { session: DailySession; heading
     </Button>
   );
 
+  // Going deeper is a real second path, so it gets a button; stopping is the quiet way out.
+  const secondary = (series || pickSubjects) && (
+    <Button variant="outline" href={deeper}>
+      Go deeper on {lesson.deeperTopic}
+    </Button>
+  );
+
   const quiet = (
-    <>
-      {(series || pickSubjects) && (
-        <Button variant="quiet" href={deeper}>
-          or go deeper on {lesson.deeperTopic}
-        </Button>
-      )}
-      <Button variant="quiet" href={stopHref}>
-        or stop for today
-      </Button>
-    </>
+    <Button variant="quiet" href={stopHref}>
+      or stop for today
+    </Button>
   );
 
   const slide = "absolute bottom-0 left-0 transition-[transform,opacity] duration-(--duration-moment) ease-(--ease-enter)";
@@ -96,10 +96,11 @@ export function Finish({ session, headingRef }: { session: DailySession; heading
       <div className="min-w-0">
         <p className="t-eyebrow m-0">Lesson finished · {lesson.subject}</p>
         <div className="mt-(--eyebrow-gap) flex items-baseline gap-4 md:gap-5">
-          <div className="relative h-[1em] w-fit min-w-[1.1em] shrink-0 overflow-hidden text-[120px] font-medium leading-none tracking-[-0.05em] md:text-[160px]">
-            {/* Reserves the width of the widest number. */}
-            <span aria-hidden="true" className="invisible">
-              {to}
+          <div className="relative h-[1em] w-fit shrink-0 overflow-hidden text-[120px] font-medium leading-none tracking-[-0.05em] md:text-[160px]">
+            {/* Reserves the width of the wider number, so "0" fits when it flips to a narrow "1". */}
+            <span aria-hidden="true" className="invisible grid">
+              <span className="col-start-1 row-start-1">{from}</span>
+              <span className="col-start-1 row-start-1">{to}</span>
             </span>
             <span
               aria-hidden="true"
@@ -128,7 +129,7 @@ export function Finish({ session, headingRef }: { session: DailySession; heading
         <p className="t-lead m-0 mt-5 max-w-[560px]">
           {checkLine(correct, lesson.check.length)} {next}
         </p>
-        <LeadActions primary={primary} quiet={quiet} />
+        <LeadActions primary={primary} secondary={secondary} quiet={quiet} />
       </div>
       {/* Today's square fills in accent as the number flips. Phones keep just the number. */}
       <FourWeekGrid

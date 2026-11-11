@@ -57,7 +57,7 @@ const block: Components = {
     </ul>
   ),
   ol: ({ children, start }) => (
-    <ol start={start} className="m-0 list-decimal pl-6 marker:font-mono marker:text-[0.8em] marker:text-(--ink-muted)">
+    <ol start={start} className="m-0 list-decimal pl-6 marker:font-label marker:text-[0.8em] marker:text-(--ink-muted)">
       {children}
     </ol>
   ),
@@ -70,11 +70,11 @@ const block: Components = {
   ),
   hr: () => <hr className="m-0 border-0 border-t border-solid border-(--rule)" />,
   pre: ({ children }) => (
-    <pre className="m-0 overflow-x-auto bg-(--paper-sunk) p-4 font-mono text-[14px] leading-[1.6] text-(--ink) [&_code]:bg-transparent [&_code]:p-0 [&_code]:text-[length:inherit]">
+    <pre className="m-0 overflow-x-auto bg-(--paper-sunk) p-4 font-code text-[14px] leading-[1.6] text-(--ink) [&_code]:bg-transparent [&_code]:p-0 [&_code]:text-[length:inherit]">
       {children}
     </pre>
   ),
-  code: ({ children }) => <code className="bg-(--paper-sunk) px-[0.3em] font-mono text-[0.86em] text-(--ink)">{children}</code>,
+  code: ({ children }) => <code className="bg-(--paper-sunk) px-[0.3em] font-code text-[0.86em] text-(--ink)">{children}</code>,
   table: ({ children }) => (
     <div className="max-w-full overflow-x-auto">
       <table className="w-full border-collapse text-[0.88em] leading-[1.45]">{children}</table>
@@ -101,11 +101,11 @@ const inline: Components = {
   // paragraph, or one after a code box, starts on its own line (almanac.css).
   p: ({ children }) => <span className="md-inline-p">{children}</span>,
   strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
-  code: ({ children }) => <code className="bg-(--paper-sunk) px-[0.25em] font-mono text-[0.86em]">{children}</code>,
+  code: ({ children }) => <code className="bg-(--paper-sunk) px-[0.25em] font-code text-[0.86em]">{children}</code>,
   // A code box made of a span for the same reason. Fixed type, so it never
   // takes on a 48px heading or an italic line.
   pre: ({ children }) => (
-    <span className="md-code mt-3 block overflow-x-auto whitespace-pre bg-(--paper-sunk) p-3 text-left font-mono text-[14px] font-normal not-italic leading-[1.6] tracking-normal text-(--ink) md:p-4 md:text-[15px] [&_code]:bg-transparent [&_code]:p-0 [&_code]:text-[length:inherit]">
+    <span className="md-code mt-3 block overflow-x-auto whitespace-pre bg-(--paper-sunk) p-3 text-left font-code text-[14px] font-normal not-italic leading-[1.6] tracking-normal text-(--ink) md:p-4 md:text-[15px] [&_code]:bg-transparent [&_code]:p-0 [&_code]:text-[length:inherit]">
       {children}
     </span>
   ),

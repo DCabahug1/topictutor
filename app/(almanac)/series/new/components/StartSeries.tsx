@@ -177,7 +177,7 @@ function StartSeriesInner() {
         />
 
         <div className="mt-10 max-w-[860px] md:mt-12">
-          <label htmlFor="series-topic" className="t-label block font-normal! text-(--ink-muted)">
+          <label htmlFor="series-topic" className="t-label block text-(--ink-muted)">
             Topic
           </label>
           <input
@@ -208,7 +208,7 @@ function StartSeriesInner() {
 
           {showFocus && (
             <div className="mt-6">
-              <label htmlFor="series-focus" className="t-label block font-normal! text-(--ink-muted)">
+              <label htmlFor="series-focus" className="t-label block text-(--ink-muted)">
                 Anything specific · optional
               </label>
               <textarea
@@ -254,7 +254,7 @@ function StartSeriesInner() {
         <ol className="m-0 mt-4 grid list-none grid-cols-1 gap-x-8 gap-y-6 border-0 border-t border-solid border-(--rule) p-0 pt-6 sm:grid-cols-2 md:grid-cols-4">
           {HOW_IT_WORKS.map((step, i) => (
             <li key={step.title}>
-              <span aria-hidden="true" className="font-mono text-[13px] text-(--ink-muted)">
+              <span aria-hidden="true" className="font-label text-[13px] text-(--ink-muted)">
                 0{i + 1}
               </span>
               <span className="mt-1 block text-[21px] font-medium">{step.title}</span>

@@ -29,7 +29,7 @@ export function SubjectToggle({ name, on, onToggle, variant = "tile", className 
       >
         {on && <span aria-hidden="true" className="absolute inset-y-0 -left-px w-1 bg-(--accent)" />}
         <span>{name}</span>
-        <span aria-hidden="true" className={cx("font-mono text-[12px]", on ? "text-(--accent)" : "text-(--ink-muted)")}>
+        <span aria-hidden="true" className={cx("font-label text-[12px]", on ? "text-(--accent)" : "text-(--ink-muted)")}>
           {on ? "✓" : "+"}
         </span>
       </button>
@@ -50,7 +50,7 @@ export function SubjectToggle({ name, on, onToggle, variant = "tile", className 
       {on && <span aria-hidden="true" className="absolute inset-x-0 -top-px h-1 bg-(--accent)" />}
       <span
         aria-hidden="true"
-        className={cx("font-mono text-[11px] uppercase tracking-[0.08em]", on ? "text-(--accent)" : "text-(--ink-muted)")}
+        className={cx("font-label text-[11px] uppercase tracking-[0.08em]", on ? "text-(--accent)" : "text-(--ink-muted)")}
       >
         {on ? "✓ In" : "+ Add"}
       </span>

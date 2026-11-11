@@ -15,7 +15,7 @@ import { authService } from "@/lib/auth";
 import { updateProfile, uploadProfileImage } from "@/lib/profiles";
 
 const NAME_MAX = 25;
-const LEGEND = "m-0 p-0 font-mono text-[12px] uppercase tracking-[0.08em] text-(--ink-muted)";
+const LEGEND = "m-0 p-0 font-label text-[12px] uppercase tracking-[0.08em] text-(--ink-muted)";
 const AVATAR = "h-[72px] w-[72px] rounded-(--radius-full)";
 
 type SaveState = "idle" | "saving" | "saved" | "failed";
@@ -264,7 +264,7 @@ export function ProfileView({ user }: { user: SessionUser }) {
         </Button>
         {/* The status region stays mounted so "Saved" is announced when it arrives. */}
         <div className="min-w-0">
-          <p role="status" className="m-0 flex items-center gap-[6px] font-mono text-[13px] text-(--correct)">
+          <p role="status" className="m-0 flex items-center gap-[6px] font-label text-[13px] text-(--correct)">
             {save === "saved" && (
               <>
                 <CheckIcon size={13} strokeWidth={2.6} />
@@ -289,7 +289,7 @@ export function ProfileView({ user }: { user: SessionUser }) {
           type="button"
           onClick={signOut}
           disabled={signingOut}
-          className="min-h-11 cursor-pointer border-0 bg-transparent p-0 font-mono text-[13px] text-(--ink) underline underline-offset-4"
+          className="min-h-11 cursor-pointer border-0 bg-transparent p-0 font-label text-[13px] text-(--ink) underline underline-offset-4"
         >
           {signingOut ? "Signing out" : "Sign out"}
         </button>
