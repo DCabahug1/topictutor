@@ -1,11 +1,11 @@
 # TopicTutor 🎓
 
-An AI-powered personalized learning platform that creates custom courses based on placement test results and generates interactive content using OpenAI.
+An AI-powered personalized learning platform that creates custom courses based on placement test results and generates interactive content using Claude.
 
 ## Features
 
 - **Personalized Learning**: Takes a placement test to assess your knowledge level
-- **AI-Generated Content**: Creates custom courses and chapters using OpenAI GPT-4
+- **AI-Generated Content**: Creates custom courses and chapters using Claude
 - **Interactive Tests**: Placement tests and final assessments for each topic
 - **Progress Tracking**: Monitor your learning progress and completion streaks
 - **User Authentication**: Secure login with email/password or Google OAuth
@@ -18,7 +18,7 @@ An AI-powered personalized learning platform that creates custom courses based o
 - **Styling**: Tailwind CSS, Radix UI components
 - **Authentication**: Supabase Auth (Email/Password + Google OAuth)
 - **Database**: Supabase (PostgreSQL)
-- **AI Integration**: OpenAI GPT-4.1-mini
+- **AI Integration**: Claude Opus 5.5 (Anthropic API)
 - **File Storage**: Supabase Storage
 - **Animations**: Motion (Framer Motion)
 - **Icons**: Lucide React
@@ -30,7 +30,7 @@ An AI-powered personalized learning platform that creates custom courses based o
 - Node.js 18+ 
 - npm, yarn, or pnpm
 - Supabase account
-- OpenAI API account
+- Anthropic API account
 
 ### Environment Variables
 
@@ -41,8 +41,8 @@ Create a `.env.local` file in the root directory:
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
-# OpenAI Configuration
-OPENAI_API_KEY=your_openai_api_key
+# Anthropic Configuration
+ANTHROPIC_API_KEY=your_anthropic_api_key
 ```
 
 ### Installation
@@ -140,8 +140,8 @@ topictutor/
 
 ## API Integration
 
-### OpenAI Integration
-The app uses OpenAI's GPT-4.1-mini model for:
+### Claude Integration
+The app uses Anthropic's Claude Opus 5.5 model for:
 - Generating placement test questions
 - Creating personalized course content
 - Generating final assessments
@@ -154,7 +154,7 @@ All AI interactions use structured output with Zod validation for type safety.
 Ensure all environment variables are configured in your deployment platform:
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` 
-- `OPENAI_API_KEY`
+- `ANTHROPIC_API_KEY`
 
 ### Recommended Platforms
 - **Vercel** (recommended for Next.js)
@@ -166,6 +166,6 @@ Ensure all environment variables are configured in your deployment platform:
 
 - Built with [Next.js](https://nextjs.org/)
 - Powered by [Supabase](https://supabase.com/)
-- AI capabilities by [OpenAI](https://openai.com/)
+- AI capabilities by [Anthropic](https://www.anthropic.com/)
 - UI components from [Radix UI](https://www.radix-ui.com/)
 - Styled with [Tailwind CSS](https://tailwindcss.com/)

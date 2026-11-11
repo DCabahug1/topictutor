@@ -1,7 +1,6 @@
 "use server";
 import { z } from "zod";
-import { OpenAI } from "openai";
-import { zodTextFormat } from "openai/helpers/zod";
+import { generateStructured } from "./claude";
 import { Chapter, TestResults } from "./models";
 
 // 1. Generate Placement Test
@@ -34,33 +33,19 @@ const topicTestSchema = z.object({
 });
 
 export const generateTopicTest = async (Topic: string, chapters: Chapter[], placementTestResults: TestResults) => {
-  console.log("Generating final test using GPT-4.1-mini...");
-  const openaiClient = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  console.log("Generating final test using Claude...");
 
   try {
-    const response = await openaiClient.responses.parse({
-      model: "gpt-4.1-mini",
-      input: [
-        {
-          role: "system",
-          content:
-            "You are a helpful assistant that generates a final test for a course. You are to generate a final test for the course. The final test should have 10 multiple choice questions with 4 UNIQUE options each, one correct answer. The questions should be limited to the contents of the chapters provided. Analyze the question format, phrasing style, answer option structure, and difficulty progression from the provided placement test results, then apply the same patterns to create a consistent testing experience for the final test.",
-        },
-        {
-          role: "user",
-          content: JSON.stringify({ 
-            Topic, 
-            chapters, 
-            placementTestResults 
-          }),
-        },
-      ],
-      text: {
-        format: zodTextFormat(topicTestSchema, "topicTestData"),
-      },
+    const topicTestData = await generateStructured({
+      system:
+        "You are a helpful assistant that generates a final test for a course. You are to generate a final test for the course. The final test should have 10 multiple choice questions with 4 UNIQUE options each, one correct answer. The questions should be limited to the contents of the chapters provided. Analyze the question format, phrasing style, answer option structure, and difficulty progression from the provided placement test results, then apply the same patterns to create a consistent testing experience for the final test.",
+      user: JSON.stringify({
+        Topic,
+        chapters,
+        placementTestResults,
+      }),
+      schema: topicTestSchema,
     });
-
-    const topicTestData = response.output_parsed;
     console.log("Topic test generated:", topicTestData);
 
     return { data: topicTestData, error: null };
