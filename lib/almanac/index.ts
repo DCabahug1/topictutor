@@ -1,12 +1,12 @@
-// The one place screens get data from. NEXT_PUBLIC_ALMANAC_SOURCE=remote uses
-// the real data layer; anything else uses the sample source. The /dev pages
-// always use the sample source, so their forced failures keep working.
+// The one place screens get data from: the real data layer, unless
+// NEXT_PUBLIC_ALMANAC_SOURCE=fixture asks for the sample source instead. The
+// /dev pages always use the sample source, so their forced failures keep working.
 
 import { fixtureSource } from "./fixture-source";
 import { remoteSource } from "./remote-source";
 import type { AlmanacSource } from "./source";
 
-const useRemote = process.env.NEXT_PUBLIC_ALMANAC_SOURCE === "remote";
+const useRemote = process.env.NEXT_PUBLIC_ALMANAC_SOURCE !== "fixture";
 
 function current(): AlmanacSource {
   if (!useRemote) return fixtureSource;

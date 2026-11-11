@@ -1,0 +1,5 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "regions": ["sfo1"],
+  "crons": [{ "path": "/api/almanac/cron", "schedule": "0 9 * * *" }]
+}
