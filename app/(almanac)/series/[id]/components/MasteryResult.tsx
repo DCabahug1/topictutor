@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { Button } from "@/components/almanac/Button";
 import { LeadBlock } from "@/components/almanac/LeadBlock";
 import { LessonRow } from "@/components/almanac/LessonRow";
 import { PaperPage } from "@/components/almanac/Page";
 import { ScoreNumeral } from "@/components/almanac/ScoreNumeral";
 import { Section } from "@/components/almanac/Section";
-import { LESSONS_PER_SERIES, percentComplete, type Mastery } from "@/lib/almanac";
+import { LESSONS_PER_SERIES, percentComplete, prefersReducedMotion, type Mastery } from "@/lib/almanac";
 import { lessonList, passHeadline, shortTitle } from "./copy";
 import { BackLink } from "./SeriesStates";
 
@@ -40,6 +41,20 @@ export function MasteryResult({ mastery, focusHeading = false, onRetake, retakin
   const missedCount = total - score;
   const reviewNumbers = mastery.review.map((lesson) => lesson.number);
   const [nextSeries, ...others] = mastery.suggestions;
+
+  /** Opens the answers and takes the reader there, every time it's pressed. */
+  const reviewAnswers = () => {
+    flushSync(() => setShowAnswers(true));
+    // Focus first: moving focus during a smooth scroll can cut the scroll short.
+    const answersHeading = document.getElementById("answers-heading");
+    if (answersHeading) {
+      answersHeading.tabIndex = -1;
+      answersHeading.focus({ preventScroll: true });
+    }
+    document
+      .getElementById("answers")
+      ?.scrollIntoView({ block: "start", behavior: prefersReducedMotion() ? "auto" : "smooth" });
+  };
 
   const retakeAlert = retakeFailed && (
     <p role="alert" className="m-0 mt-4 text-[16px] text-(--incorrect)">
@@ -118,7 +133,7 @@ export function MasteryResult({ mastery, focusHeading = false, onRetake, retakin
             }
             quiet={
               <>
-                <Button variant="quiet" onClick={() => setShowAnswers(true)}>
+                <Button variant="quiet" onClick={reviewAnswers}>
                   or review your answers
                 </Button>
                 {best < total && (
