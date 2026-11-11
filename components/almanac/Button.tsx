@@ -19,12 +19,18 @@ export function Caret({ className, inText = false }: { className?: string; inTex
 }
 
 type ButtonProps = {
-  variant?: "primary" | "secondary" | "quiet";
-  /** default is 52px tall, compact 44px for toolbars, large 56px for the main action of a page. */
+  /**
+   * primary: the one filled button on a screen, and it is the next step.
+   * outline: only for "Continue with Google" and inside dialogs.
+   * quiet: the italic "or …" link for every other action.
+   * secondary is the old name for outline.
+   */
+  variant?: "primary" | "outline" | "quiet" | "secondary";
+  /** default is 58px tall. compact is 44px, for dialogs and tools. large is the old name for default. */
   size?: "default" | "compact" | "large";
   /** Shows the writing caret and blocks clicks. The label should say what is happening. */
   busy?: boolean;
-  /** Dashed outline. The label must say why, for example "Submit · answer 2 more". */
+  /** Dashed outline. The label must say why, for example "Pick an answer". */
   disabled?: boolean;
   /** Trailing arrow. */
   icon?: boolean;
@@ -36,21 +42,21 @@ type ButtonProps = {
   children: ReactNode;
 } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "disabled" | "children">;
 
-const base =
-  "inline-flex items-center justify-center gap-3 font-mono font-medium no-underline transition-colors duration-(--duration-instant) ease-out";
+const solid =
+  "inline-flex items-center justify-center gap-[14px] font-mono font-medium no-underline transition-colors duration-(--duration-instant) ease-out";
 
 const sizes = {
-  default: "min-h-[52px] px-6 text-[15px] leading-5",
+  default: "min-h-(--button-h) px-[30px] text-[15px] leading-5",
   compact: "min-h-11 px-4 text-[13px] leading-5",
-  large: "min-h-14 px-[26px] text-[15px] leading-5",
 };
 
 const variants = {
-  primary:
-    "border-[1.5px] border-(--ink) bg-(--ink) text-(--on-ink) hover:border-(--accent) hover:bg-(--accent)",
-  secondary: "border-[1.5px] border-(--ink) bg-transparent text-(--ink) hover:bg-(--paper-sunk)",
-  quiet: "border-0 bg-transparent px-2! text-(--ink) underline decoration-1 underline-offset-4",
+  primary: "border-[1.5px] border-(--ink) bg-(--ink) text-(--on-ink) hover:border-(--accent) hover:bg-(--accent)",
+  outline: "border-[1.5px] border-(--ink) bg-transparent text-(--ink) hover:bg-(--paper-sunk)",
 };
+
+const quietLook =
+  "inline-flex min-h-11 items-center bg-transparent p-0 border-0 font-serif text-[18px] italic text-(--ink-soft) underline decoration-1 underline-offset-[5px] transition-colors duration-(--duration-instant) ease-out hover:text-(--ink)";
 
 const disabledLook =
   "cursor-not-allowed border-[1.5px] border-dashed border-(--ink-muted) bg-transparent text-(--ink-muted)";
@@ -70,10 +76,12 @@ export function Button({
   type = "button",
   ...rest
 }: ButtonProps) {
+  const kind = variant === "secondary" ? "outline" : variant;
+  const quiet = kind === "quiet";
   const classes = cx(
-    base,
-    sizes[size],
-    disabled ? disabledLook : variants[variant],
+    quiet
+      ? cx(quietLook, disabled && "cursor-not-allowed no-underline text-(--ink-muted)")
+      : cx(solid, sizes[size === "large" ? "default" : size], disabled ? disabledLook : variants[kind]),
     !disabled && (busy ? "cursor-progress" : "cursor-pointer"),
     fullWidth && "w-full",
     className

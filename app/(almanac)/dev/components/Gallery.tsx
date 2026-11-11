@@ -4,6 +4,10 @@ import { useState, useSyncExternalStore, type ReactNode } from "react";
 import { AskBox } from "@/components/almanac/AskBox";
 import { Button } from "@/components/almanac/Button";
 import { ConfirmDialog } from "@/components/almanac/ConfirmDialog";
+import { FilterTabs } from "@/components/almanac/FilterTabs";
+import { LeadBlock } from "@/components/almanac/LeadBlock";
+import { ProgressMeter as SegmentMeter } from "@/components/almanac/ProgressMeter";
+import { StepMeter } from "@/components/almanac/StepMeter";
 import { LessonBody } from "@/components/almanac/LessonBody";
 import { LessonRow } from "@/components/almanac/LessonRow";
 import { BottomTabs, Masthead } from "@/components/almanac/Masthead";
@@ -17,7 +21,7 @@ import type { SessionUser } from "@/components/almanac/SessionProvider";
 import { StatBars } from "@/components/almanac/StatBars";
 import { ProgressMeter, StatusLabel } from "@/components/almanac/StatusLabel";
 import { StreakMark } from "@/components/almanac/StreakMark";
-import { SubjectToggle } from "@/components/almanac/SubjectToggle";
+import { SubjectGrid, SubjectToggle } from "@/components/almanac/SubjectToggle";
 import { TextField } from "@/components/almanac/TextField";
 import { ThemeButton } from "@/components/almanac/ThemeButton";
 import {
@@ -181,7 +185,7 @@ function Fields() {
 function Subjects() {
   const [picked, setPicked] = useState<string[]>(["Science"]);
   return (
-    <div role="group" aria-label="Subjects" className="grid max-w-[420px] grid-cols-2 gap-2">
+    <SubjectGrid label="Subjects">
       {["Math", "Science", "Technology", "Health and Wellness"].map((name) => (
         <SubjectToggle
           key={name}
@@ -190,7 +194,24 @@ function Subjects() {
           onToggle={() => setPicked((p) => (p.includes(name) ? p.filter((n) => n !== name) : [...p, name]))}
         />
       ))}
-    </div>
+    </SubjectGrid>
+  );
+}
+
+function Filters() {
+  const [value, setValue] = useState<"all" | "inProgress" | "notStarted" | "done">("all");
+  return (
+    <FilterTabs
+      label="Show series"
+      value={value}
+      onChange={setValue}
+      tabs={[
+        { value: "all", label: "All", count: 6 },
+        { value: "inProgress", label: "In progress", count: 3 },
+        { value: "notStarted", label: "Not started", count: 1 },
+        { value: "done", label: "Done", count: 2 },
+      ]}
+    />
   );
 }
 
@@ -270,11 +291,13 @@ function SampleData() {
             type="button"
             aria-pressed={flags.includes(flag)}
             onClick={() => toggle(flag)}
-            className={`min-h-11 cursor-pointer border-[1.5px] border-solid border-(--ink) px-3 font-mono text-[13px] ${
-              flags.includes(flag) ? "bg-(--ink) text-(--on-ink)" : "bg-transparent text-(--ink)"
+            className={`min-h-11 cursor-pointer border border-solid border-(--ink) px-3 font-mono text-[13px] ${
+              flags.includes(flag)
+                ? "border-t-4 border-t-(--accent) bg-(--paper-raised) text-(--ink)"
+                : "bg-transparent text-(--ink-muted)"
             }`}
           >
-            {flag}
+            {flags.includes(flag) ? `✓ ${flag}` : flag}
           </button>
         ))}
       </div>
@@ -318,23 +341,84 @@ export function Gallery() {
         <SampleData />
       </Section>
 
-      <Section title="Button" note="One primary per view. Disabled says why. Busy shows the caret.">
+      <Section title="LeadBlock" note="Every screen opens with one: eyebrow, heading, one sentence, one button.">
         <Both>
-          <div className="flex flex-wrap items-center gap-4">
+          <State name="Large, with a quiet link">
+            <LeadBlock
+              eyebrow="Good evening, Duane · Today in Science"
+              title="Why leap years exist"
+              line="One question from Monday, a short lesson, then a quick check. About three minutes."
+              primary={
+                <Button href="#" icon>
+                  Start today’s lesson
+                </Button>
+              }
+              quiet={
+                <Button variant="quiet" href="#">
+                  or read it again
+                </Button>
+              }
+            />
+          </State>
+          <State name="Small, with a numeral and a meter">
+            <LeadBlock
+              size="sm"
+              numeral={<p className="m-0 font-serif text-[96px] font-medium leading-[0.8] tracking-[-0.04em]">3/5</p>}
+              eyebrow="Technology · in progress"
+              title="How a Web Page Gets Built"
+              line="Up next is lesson 3, on which CSS rule wins."
+              primary={
+                <Button href="#" icon>
+                  Continue with lesson 3
+                </Button>
+              }
+            >
+              <SegmentMeter lessonsDone={2} />
+            </LeadBlock>
+          </State>
+        </Both>
+      </Section>
+
+      <Section title="Button" note="One primary per screen. Outline only for Google and dialogs. Everything else is quiet.">
+        <Both>
+          <div className="flex flex-wrap items-center gap-x-7 gap-y-4">
             <Button icon>Start today’s lesson</Button>
-            <Button variant="secondary">Go deeper</Button>
-            <Button variant="quiet">Stop for today</Button>
-            <Button disabled>Submit · 3 of 5 answered</Button>
-            <Button variant="secondary" busy>
-              Writing your outline
-            </Button>
-            <Button size="compact" variant="secondary">
-              Compact
-            </Button>
-            <Button size="large" href="#" icon>
-              Link as a button
+            <Button variant="quiet">or stop for today</Button>
+            <Button variant="outline">Continue with Google</Button>
+            <Button disabled>Pick an answer</Button>
+            <Button busy>Writing the lesson</Button>
+            <Button size="compact" variant="outline">
+              Keep it
             </Button>
           </div>
+        </Both>
+      </Section>
+
+      <Section title="StepMeter" note="Daily session, placement test and Mastery Check. The line carries the progress.">
+        <Both>
+          <State name="Returning learner, on the lesson">
+            <StepMeter steps={4} current={1} label="Lesson · step 2 of 4" />
+          </State>
+          <State name="Placement test, question 3 of 5">
+            <StepMeter steps={5} current={2} label="Question 3 of 5" />
+          </State>
+        </Both>
+      </Section>
+
+      <Section title="ProgressMeter" note="Five segments plus text. The Mastery Check is its own row, not a sixth cell.">
+        <Both>
+          <div className="flex flex-col gap-5">
+            <SegmentMeter lessonsDone={0} />
+            <SegmentMeter lessonsDone={2} />
+            <SegmentMeter lessonsDone={5} />
+            <SegmentMeter size="sm" lessonsDone={3} label="Lesson 4 of 5" />
+          </div>
+        </Both>
+      </Section>
+
+      <Section title="FilterTabs">
+        <Both>
+          <Filters />
         </Both>
       </Section>
 
@@ -415,8 +499,8 @@ export function Gallery() {
             <State name="Not yet today">
               <StreakMark count={12} week={sixDone} todayDone={false} />
             </State>
-            <State name="Done today">
-              <StreakMark count={13} week={allDone} todayDone note="Tomorrow: History." />
+            <State name="Finish · celebrate">
+              <StreakMark count={13} week={allDone} todayDone celebrate note="Tomorrow: History." />
             </State>
             <State name="Zero">
               <StreakMark count={0} todayDone={false} />
@@ -493,8 +577,8 @@ export function Gallery() {
 
       <Section title="SeriesRow" note="Today and Library. Titles wrap and are never cut short.">
         <Both>
-          <State name="Series first, with the updated stamp">
-            <SeriesRow series={WEB_SERIES} today={today} href="#" />
+          <State name="Series first (Library)">
+            <SeriesRow series={WEB_SERIES} href="#" />
           </State>
           <State name="Next lesson first">
             <SeriesRow series={WEB_SERIES} lead="nextLesson" href="#" />
@@ -530,6 +614,14 @@ export function Gallery() {
             focus={false}
             status="notStarted"
             href="#"
+          />
+          <LessonRow
+            marker="◇"
+            title="Mastery Check"
+            sub="Opens when every lesson check is answered."
+            tag="5 questions · pass with 4"
+            status="notStarted"
+            muted
           />
         </Both>
       </Section>

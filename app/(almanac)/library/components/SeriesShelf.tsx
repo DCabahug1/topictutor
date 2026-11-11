@@ -200,7 +200,6 @@ export function SeriesShelf({ series, today, onDeleted }: SeriesShelfProps) {
                 <li key={s.id} className="border-0 border-t border-solid border-(--rule)">
                   <SeriesRow
                     series={s}
-                    today={today}
                     actions={
                       <button
                         type="button"

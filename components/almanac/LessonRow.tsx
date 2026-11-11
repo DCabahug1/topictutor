@@ -1,82 +1,84 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { cx } from "./cx";
-import { ArrowIcon } from "./icons";
-import { StatusLabel } from "./StatusLabel";
 
 export type LessonRowStatus = "done" | "upNext" | "notStarted";
 
 type LessonRowProps = {
-  /** 1 to 5, shown as 01 to 05. */
-  number: number;
+  /** 1 to 5, shown as 01 to 05. Pass `marker` instead for a row that isn't a lesson. */
+  number?: number;
+  /** Replaces the number, for example "◇" on the Mastery Check row. */
+  marker?: ReactNode;
   title: string;
-  description: string;
-  /** Why this lesson is in the learner's series, from the placement answers. */
-  why: string;
-  /** True when the lesson is here because its placement question was missed: the why line turns accent. */
-  focus: boolean;
-  /**
-   * done: the check is answered, right or wrong.
-   * upNext: the lesson the main action opens. From 768px the row is lifted onto raised paper.
-   */
+  /** Kept for callers; lists no longer show descriptions. */
+  description?: string;
+  /** Why this lesson is in the learner's series. Shown only on the next lesson. */
+  why?: string;
+  /** True when the lesson is here because its placement question was missed. */
+  focus?: boolean;
+  /** done: the check is answered, right or wrong. upNext: the lesson the main action opens. */
   status: LessonRowStatus;
-  /** Where the lesson opens. The title is the link and the whole row is its target. */
-  href: string;
+  /** An italic line shown whatever the status, for rows like the Mastery Check. */
+  sub?: string;
+  /** Replaces the status glyph and word, for example "5 questions · pass with 4". */
+  tag?: ReactNode;
+  /** Muted title and tag, for a row that is closed for now. */
+  muted?: boolean;
+  /** Where the row opens. Without it the row is plain text. */
+  href?: string;
   className?: string;
 };
 
+const TAGS: Record<LessonRowStatus, string> = {
+  done: "✓ Done",
+  upNext: "○ Up next",
+  notStarted: "○ Not started",
+};
+
 /**
- * One lesson in a series overview. Use it inside an `ol`.
- * On phones the text stacks beside the number; from 768px the title, the
- * why line and the status sit in a wrapping row.
+ * One lesson in a series overview, as a ruled row: number, title, and a glyph
+ * plus word. The "why it's here" line shows only on the next lesson. Use inside an `ol`.
  */
-export function LessonRow({ number, title, description, why, focus, status, href, className }: LessonRowProps) {
+export function LessonRow({ number, marker, title, why, status, sub, tag, muted = false, href, className }: LessonRowProps) {
   const upNext = status === "upNext";
+  const done = status === "done";
+  const line = sub ?? (upNext ? why : undefined);
+  const titleClass = cx(
+    "block text-[21px] font-medium leading-[1.2] md:text-[25px]",
+    done || muted ? "text-(--ink-muted)" : "text-(--ink)"
+  );
+
   return (
     <li
       className={cx(
-        "group relative grid grid-cols-[30px_minmax(0,1fr)_18px] gap-[10px] border-0 border-b border-solid border-(--rule) py-4 md:flex md:flex-wrap md:items-start md:gap-x-6 md:gap-y-2 md:py-[22px]",
-        upNext && "md:-mx-4 md:bg-(--paper-raised) md:px-4",
+        "group relative grid grid-cols-[36px_minmax(0,1fr)] items-baseline gap-x-5 gap-y-[6px] border-0 border-b border-solid border-(--rule) py-[22px] md:grid-cols-[48px_minmax(0,1fr)_auto]",
         className
       )}
     >
-      <span
-        className={cx(
-          "font-mono text-[13px] leading-6 md:flex-[0_0_40px] md:text-[14px]",
-          upNext ? "text-(--accent)" : "text-(--ink-muted)"
-        )}
-      >
-        {String(number).padStart(2, "0")}
+      <span className={cx("font-mono text-[13px]", upNext ? "text-(--accent)" : "text-(--ink-muted)")}>
+        {marker ?? String(number ?? 0).padStart(2, "0")}
       </span>
-      {/* One column on phones. From 768px its children join the row. */}
-      <span className="min-w-0 md:contents">
-        <span className="block min-w-0 md:flex-[999_1_380px]">
+      <span className="min-w-0">
+        {href ? (
           <Link
             href={href}
-            className="block text-[19px] font-medium leading-[1.25] text-(--ink) no-underline after:absolute after:inset-0 group-hover:text-(--accent) md:text-[24px] md:leading-[1.2]"
+            className={cx(titleClass, "no-underline after:absolute after:inset-0 group-hover:text-(--accent)")}
           >
             {title}
           </Link>
-          <span className="mt-[3px] block text-[15px] leading-[1.4] text-(--ink-soft) md:mt-1 md:text-[17px]">
-            {description}
-          </span>
-        </span>
-        {why && (
-          <span
-            className={cx(
-              "mt-[6px] block min-w-0 text-[14px] italic leading-[1.45] md:mt-0 md:flex-[1_1_240px] md:text-[16px]",
-              focus ? "text-(--accent)" : "text-(--ink-muted)"
-            )}
-          >
-            {why}
-          </span>
+        ) : (
+          <span className={titleClass}>{title}</span>
         )}
-        <StatusLabel
-          status={status === "done" ? "done" : "notStarted"}
-          label={status === "done" ? "Done" : upNext ? "Up next" : "Not started"}
-          className={cx("mt-2 md:mt-[3px] md:flex-[0_0_130px]", upNext && "text-(--ink)!")}
-        />
+        {line && <span className="mt-[6px] block max-w-[620px] text-[17px] italic leading-[1.45] text-(--ink-muted)">{line}</span>}
       </span>
-      <ArrowIcon size={16} className="mt-[5px] group-hover:text-(--accent) md:hidden" />
+      <span
+        className={cx(
+          "col-start-2 whitespace-nowrap font-mono text-[12px] uppercase tracking-[0.06em] md:col-start-auto",
+          upNext && !tag ? "text-(--accent)" : "text-(--ink-muted)"
+        )}
+      >
+        {tag ?? TAGS[status]}
+      </span>
     </li>
   );
 }

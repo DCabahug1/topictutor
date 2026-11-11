@@ -1,42 +1,46 @@
 import { cx } from "./cx";
-import { CheckIcon } from "./icons";
 
 type SubjectToggleProps = {
   name: string;
   on: boolean;
   onToggle: () => void;
+  className?: string;
 };
 
-/** One subject in the picker. A toggle button: check when picked, plus when not. */
-export function SubjectToggle({ name, on, onToggle }: SubjectToggleProps) {
+/**
+ * One subject tile in a picker. Selected is raised paper with a 4px accent bar
+ * and "✓ In"; not selected is transparent with muted text and "+ Add". Never the
+ * ink fill. Place tiles in a `SubjectGrid` so their hairlines meet.
+ */
+export function SubjectToggle({ name, on, onToggle, className }: SubjectToggleProps) {
   return (
     <button
       type="button"
       aria-pressed={on}
       onClick={onToggle}
       className={cx(
-        "flex min-h-[52px] cursor-pointer items-center justify-between gap-2 border-[1.5px] border-solid border-(--ink) px-[14px] text-left font-serif text-[17px] leading-[1.2] md:min-h-[60px] md:px-[18px] md:text-[20px] transition-colors duration-(--duration-instant) ease-out",
-        on ? "bg-(--ink) text-(--on-ink)" : "bg-transparent text-(--ink) hover:bg-(--paper-sunk)"
+        "relative -mb-px -mr-px flex min-h-[92px] cursor-pointer flex-col justify-between gap-4 border border-solid border-(--ink) px-[18px] pb-4 pt-[18px] text-left font-serif transition-colors duration-(--duration-instant) ease-out md:min-h-[120px] md:pb-5",
+        on ? "bg-(--paper-raised) text-(--ink)" : "bg-transparent text-(--ink-muted) hover:text-(--ink)",
+        className
       )}
     >
-      <span>{name}</span>
-      {on ? (
-        <CheckIcon size={16} className="flex-none" />
-      ) : (
-        <svg
-          aria-hidden="true"
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-          className="flex-none"
-        >
-          <path d="M12 6v12M6 12h12" />
-        </svg>
-      )}
+      {on && <span aria-hidden="true" className="absolute inset-x-0 -top-px h-1 bg-(--accent)" />}
+      <span
+        aria-hidden="true"
+        className={cx("font-mono text-[11px] uppercase tracking-[0.08em]", on ? "text-(--accent)" : "text-(--ink-muted)")}
+      >
+        {on ? "✓ In" : "+ Add"}
+      </span>
+      <span className="text-[22px] leading-[1.15] md:text-[26px]">{name}</span>
     </button>
+  );
+}
+
+/** Lays tiles out so their hairlines meet: two columns on phones, four from 768px. */
+export function SubjectGrid({ label, children, className }: { label: string; children: React.ReactNode; className?: string }) {
+  return (
+    <div role="group" aria-label={label} className={cx("grid grid-cols-2 pb-px pr-px md:grid-cols-4", className)}>
+      {children}
+    </div>
   );
 }
