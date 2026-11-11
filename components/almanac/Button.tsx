@@ -21,7 +21,7 @@ export function Caret({ className, inText = false }: { className?: string; inTex
 type ButtonProps = {
   /**
    * primary: the one filled button on a screen, and it is the next step.
-   * outline: "Continue with Google", inside dialogs, and a section's own action
+   * outline: "Continue with Google" and a section's own action
    *   when the screen's primary is something else (Today's "Start a series").
    * quiet: the italic "or …" link for every other action.
    * danger: red outline, for the one action that deletes something. Only in a confirm step,

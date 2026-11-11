@@ -8,7 +8,9 @@ Follow the [installation steps in the README](README.md#installation) to install
 
 ## Supabase Setup
 
-The repository does not include migrations. The tables below are derived from what the code reads and writes, so treat them as the minimum the app needs.
+The Almanac tables (`daily_lessons`, `series`, `series_lessons`, `mastery`, `placements` and the rest) are created by the migrations in `supabase/migrations/`. Apply them in order, for example with `supabase db push`, and add a new migration for every schema change.
+
+The tables below belong to the older topic and chapter screens, which have no migrations. They are derived from what the code reads and writes, so treat them as the minimum those screens need.
 
 ### Tables
 
@@ -105,7 +107,7 @@ In your Supabase project's Auth settings:
 
 - Call Claude through `generateStructured` in `lib/claude.ts`, and pass a Zod schema describing the output.
 - Only import `lib/claude.ts` from `"use server"` modules, so the API key stays on the server.
-- The model is set once, by the `MODEL` constant in `lib/claude.ts`.
+- Name models with the `SONNET` and `HAIKU` constants in `lib/claude.ts`. Calls default to Sonnet; pass `model: HAIKU` where a cheaper model writes well enough (lesson prose, tutor answers, check retries).
 
 ### UI
 

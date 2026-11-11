@@ -10,13 +10,14 @@ import {
   localDate,
   masteryPassed,
   parseLocalDate,
+  runLength,
   shiftDate,
+  spellOut,
   useAlmanac,
   type Stats,
   type Streak,
   type Subject,
 } from "@/lib/almanac";
-import { runLength, spellOut } from "../../today/lesson/components/copy";
 
 const MASTERY_QUESTIONS = 5;
 const LABEL = "m-0 font-mono text-[12px] uppercase tracking-[0.08em] text-(--ink-muted)";

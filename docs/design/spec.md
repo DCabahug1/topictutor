@@ -60,7 +60,7 @@ The first version had too much text and too many elements that looked alike, so 
 
 | Component | Props | States | Notes |
 | --- | --- | --- | --- |
-| `Button` | `variant` primary, outline, quiet · `busy` · `disabled` · `href` | default, hover (primary turns accent), focus, busy, disabled | One primary per screen. `quiet` is the italic "or …" link. `outline` is only for Google sign-in and dialogs. Disabled is a dashed muted outline and says why ("Pick an answer"). |
+| `Button` | `variant` primary, outline, quiet · `busy` · `disabled` · `href` | default, hover (primary turns accent), focus, busy, disabled | One primary per screen. `quiet` is the italic "or …" link. `outline` is only for Google sign-in and a section's own action. In a confirm dialog the safe choice is the filled button and the delete is `danger`, a red outline. Disabled is a dashed muted outline and says why ("Pick an answer"). |
 | `LeadBlock` | `eyebrow` · `title` · `size` lg or sm · `line` · `primary` · `quiet[]` · `numeral` | | The opening of every screen (rule 3). `numeral` adds a hero number above the title (streak, score). |
 | `AnswerOption` | `letter` · `text` · `selected` · `result` none, correct, incorrect, dimmed · `unsure` · `onSelect` | default, selected, correct, incorrect, dimmed, Not sure | `role="radio"` inside a `radiogroup`. Tags "Selected", "Your answer", "Correct answer" are required text. Not sure: dashed border, italic, "?" marker. |
 | `Question` | `prompt` · `options` · `mode` instant or deferred · `explanation` | unanswered, answered, revealed | `instant` for recall and checks (reveal on select), `deferred` for tests (reveal after submit). Explanation leads with a mono verdict: "Correct." or "Not quite." |
@@ -71,7 +71,7 @@ The first version had too much text and too many elements that looked alike, so 
 | `TextField` | `label` · `type` · `error` · `help` · `maxLength` · `readOnly` · `revealable` | default, error, read-only, counted | Errors appear in context after submit, linked with `aria-describedby`. Password has a Show/Hide toggle with `aria-pressed`. |
 | `StatusLabel` | `status` notStarted, inProgress, completed, done | | Ring, half ring or check, plus a word. |
 | `ProgressMeter` | `lessonsDone` · `size` | | Five small segments plus "2 of 5 done" as text. The Mastery Check is its own row in the lesson list, not a sixth cell. |
-| `StreakMark` | `count` · `week` · `todayDone` · `size` · `celebrate` | active, done today, zero | Newsreader numeral in ink, set aside from the lead. Accent only with `celebrate` (Finish). Today undone is a dashed ring with "Today still counts until midnight." Zero is muted, never a warning. |
+| `StreakMark` | `count` · `days` · `todayDone` · `longest` | active, done today, zero | A raised card set aside from the lead: Newsreader numeral in ink, "day streak", a 4 x 7 grid of the last 28 days (`FourWeekGrid`) and one italic note. Current run ink, older done days ink-muted, missed days a rule outline. Today undone is a dashed square with "Today still counts until midnight." No accent on the card. "Longest so far" only when it beats the current run. Zero is muted, never a warning. The Finish screen shows `FourWeekGrid` large with `celebrate`, where today's square fills in accent. |
 | `Masthead` | `user` · `guestProgress` · `current` | signed out, guest with progress, signed in | Account button shows photo or initial; menu shows name (or email), email, Profile, Sign out. |
 | `SessionBar` | `onLeave` · `leaveLabel` | | Replaces the masthead in sessions and tests: close, name, theme. |
 | `Notice` | `tone` error or info · `title` · `body` · `kept` · `primary` · `secondary` | | Every failure has a retry and a way to leave. `kept` names what was saved. |
@@ -106,7 +106,7 @@ Rules:
 
 - Percent complete = (lessons with their check answered, plus 1 if the Mastery Check is passed) / 6. All five lessons without a pass is 83%.
 - Streak = consecutive days, in the learner's timezone, with any lesson finished. Not having finished one yet today never breaks it. Finishing a past daily lesson counts.
-- A lesson is finished once its check is answered, right or wrong.
+- A lesson is finished once its check is answered right. A wrong pick is shown with the right answer, then the check can be asked again, rephrased with new specifics and the right answer in a new place.
 - The Mastery Check opens when all five lesson checks are answered. Passing is 4 of 5. A retake leans toward missed questions and wrong lesson checks.
 - Placement tests and Mastery Checks save answers on every change. A refresh restores the test and answers. "Not sure" is stored as its own value and scored as wrong.
 - Outline writing starts automatically on submit.

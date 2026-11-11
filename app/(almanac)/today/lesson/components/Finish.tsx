@@ -6,8 +6,8 @@ import { cx } from "@/components/almanac/cx";
 import { LeadActions } from "@/components/almanac/LeadBlock";
 import { useSession } from "@/components/almanac/SessionProvider";
 import { FourWeekGrid } from "@/components/almanac/StreakMark";
-import { almanac, prefersReducedMotion, useAlmanac, type DailySession } from "@/lib/almanac";
-import { deeperHref, runLength } from "./copy";
+import { almanac, prefersReducedMotion, runLength, useAlmanac, type DailySession } from "@/lib/almanac";
+import { deeperHref } from "./copy";
 
 /** The subject picker is offered once, after the first lesson. */
 function useSubjectsPrompted(): boolean | null {
@@ -135,6 +135,7 @@ export function Finish({ session, headingRef }: { session: DailySession; heading
         days={streak.month}
         count={flipped ? to : from}
         todayDone={flipped}
+        celebrate
         className="hidden shrink-0 [--cell:28px] [--gap:6px] [--meta:12px] md:block lg:[--cell:44px] lg:[--gap:8px] lg:[--meta:13px]"
       />
     </div>

@@ -26,5 +26,6 @@ export const almanac: AlmanacSource = new Proxy({} as AlmanacSource, {
 export type { AlmanacSource, TutorContext } from "./source";
 export * from "./types";
 export * from "./rules";
+export * from "./copy";
 export { useAlmanac } from "./use-almanac";
 export { useTextStream, prefersReducedMotion, type StreamStatus } from "./use-stream";

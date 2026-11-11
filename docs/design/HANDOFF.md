@@ -57,7 +57,7 @@ Build or rework these, per the Components table in `design/spec.md`:
 - `ProgressMeter` (five segments plus text)
 - `SubjectToggle` (raised with an accent bar when selected)
 - `FilterTabs`
-- `StreakMark` (ink by default, accent only on Finish)
+- `StreakMark` (a four-week card in ink; accent only on Finish, where today's square in `FourWeekGrid` fills in accent)
 - Ruled `SeriesRow` and `LessonRow`
 
 Show them on a dev-only `/dev/components` page in both themes.

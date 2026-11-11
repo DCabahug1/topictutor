@@ -134,7 +134,6 @@ export default function TodayPage() {
             days={streak.month}
             todayDone={streak.todayDone}
             longest={streak.longest}
-            size="auto"
             className="min-w-0 flex-[1_1_100%] md:flex-[0_1_300px]"
           />
         )}

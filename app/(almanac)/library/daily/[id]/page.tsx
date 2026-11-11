@@ -5,8 +5,7 @@ import { Button } from "@/components/almanac/Button";
 import { LessonBody } from "@/components/almanac/LessonBody";
 import { Notice } from "@/components/almanac/Notice";
 import { PaperPage, SessionPage } from "@/components/almanac/Page";
-import { lessonDate } from "@/app/(almanac)/today/lesson/components/copy";
-import { almanac, useAlmanac } from "@/lib/almanac";
+import { almanac, lessonDate, useAlmanac } from "@/lib/almanac";
 
 /** A mistyped link can carry a broken escape, which should read as not found rather than crash. */
 function decode(value: string): string {
