@@ -44,7 +44,8 @@ export function LeadBlock({
   return (
     <div className={cx("min-w-0", className)}>
       {eyebrow && <p className="t-eyebrow m-0">{eyebrow}</p>}
-      {numeral && <div className={eyebrow ? "mt-2" : undefined}>{numeral}</div>}
+      {/* The numeral's tight leading lets its glyphs rise above the box, so it needs more room than text. */}
+      {numeral && <div className={eyebrow ? "mt-6 md:mt-10" : undefined}>{numeral}</div>}
       <h1
         id={headingId}
         ref={focusRef}
