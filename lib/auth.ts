@@ -130,7 +130,8 @@ const signInWithGoogle = async (next?: string | null) => {
 const signOut = async () => {
   const supabase = createClient();
 
-  const { error } = await supabase.auth.signOut();
+  // This device only: signing out here shouldn't end the learner's session everywhere else.
+  const { error } = await supabase.auth.signOut({ scope: "local" });
 
   if (error) {
     return { success: false, error };
