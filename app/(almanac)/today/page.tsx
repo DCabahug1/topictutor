@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/almanac/Button";
-import { LeadBlock } from "@/components/almanac/LeadBlock";
+import { LeadActions, LeadBlock } from "@/components/almanac/LeadBlock";
 import { Notice } from "@/components/almanac/Notice";
 import { PaperPage } from "@/components/almanac/Page";
 import { Section } from "@/components/almanac/Section";
@@ -170,16 +170,21 @@ export default function TodayPage() {
                 ? "Every series you started is finished. Start another whenever a lesson grabs you."
                 : "Name any topic and get five lessons that start where you are."}
             </p>
-            <div className="mt-2 flex flex-wrap gap-x-6">
-              <Button variant="quiet" href="/series/new">
-                Start a series
-              </Button>
-              {!series.length && (
-                <Button variant="quiet" href="/series/sample">
-                  or look at a sample series
+            <LeadActions
+              className="mt-6!"
+              primary={
+                <Button variant="outline" icon href="/series/new">
+                  Start a series
                 </Button>
-              )}
-            </div>
+              }
+              quiet={
+                series.length ? undefined : (
+                  <Button variant="quiet" href="/series/sample">
+                    or look at a sample series
+                  </Button>
+                )
+              }
+            />
           </div>
         )}
       </Section>

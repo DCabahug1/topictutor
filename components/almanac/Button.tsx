@@ -21,7 +21,8 @@ export function Caret({ className, inText = false }: { className?: string; inTex
 type ButtonProps = {
   /**
    * primary: the one filled button on a screen, and it is the next step.
-   * outline: only for "Continue with Google" and inside dialogs.
+   * outline: "Continue with Google", inside dialogs, and a section's own action
+   *   when the screen's primary is something else (Today's "Start a series").
    * quiet: the italic "or …" link for every other action.
    * secondary is the old name for outline.
    */
