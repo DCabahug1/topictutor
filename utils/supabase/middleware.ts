@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 // Guests can read today's lesson, start one series and open the sample series.
-// Series pages are open: a guest's own series lives in their browser until they sign up.
+// Series pages are open: a guest's series belongs to their anonymous session until they sign up.
 const PUBLIC_EXACT = ["/", "/today/lesson", "/login", "/register", "/reset"];
 const PUBLIC_PREFIXES = ["/auth/", "/welcome/", "/series/"];
 
@@ -59,9 +59,13 @@ export async function updateSession(request: NextRequest) {
   // IMPORTANT: Don't remove getClaims()
   const { data } = await supabase.auth.getClaims();
 
-  const user = data?.claims;
+  // An anonymous guest has a session but no account: treat them as signed out here.
+  const user = data?.claims && !data.claims.is_anonymous ? data.claims : null;
 
   const { pathname } = request.nextUrl;
+
+  // The data layer's routes answer with their own errors instead of a redirect.
+  if (pathname.startsWith("/api/almanac/")) return supabaseResponse;
 
   if (!user && !isPublicPath(pathname)) {
     // no user, potentially respond by redirecting the user to the login page
