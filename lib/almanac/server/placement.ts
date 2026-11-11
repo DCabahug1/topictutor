@@ -13,7 +13,7 @@ import {
 import { claim, once, release } from "./claims";
 import { check, db, requireUser, type Learner } from "./context";
 import { ArrayScanner } from "./json-scan";
-import { outlinePrompt, outlineSchema, placementPrompt, placementSchema, type OutlineLesson } from "./prompts";
+import { finishChoice, outlinePrompt, outlineSchema, placementPrompt, placementSchema, type OutlineLesson } from "./prompts";
 import { writeAhead, type SeriesRow } from "./series";
 import { CAPS, LIMITS, countUse, used } from "./usage";
 
@@ -125,7 +125,13 @@ export async function writePlacementTest(learner: Learner): Promise<Placement> {
         schema: placementSchema,
         effort: "medium",
       });
-      check(await db().from("placements").update({ questions }).eq("id", start.id).is("questions", null));
+      check(
+        await db()
+          .from("placements")
+          .update({ questions: questions.map(finishChoice) })
+          .eq("id", start.id)
+          .is("questions", null)
+      );
       const written = await byId(start.id);
       if (!written?.questions) throw new AlmanacError("writeFailed");
       return written;
@@ -198,7 +204,7 @@ async function createSeries(row: PlacementRow, outline: { title: string; categor
           why: whyLine(questions, row.answers, i),
           focus: row.answers[i] !== questions[i]?.correctIndex,
           key_points: lesson.keyPoints,
-          check_question: lesson.check,
+          check_question: finishChoice(lesson.check),
           ask_hint: lesson.askHint,
         }))
       )

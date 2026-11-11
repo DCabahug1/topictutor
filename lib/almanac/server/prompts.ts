@@ -9,7 +9,8 @@ const VOICE = `Write for a curious adult reading on a phone. Plain, warm and a l
 Sentence case in titles. No em dashes, no exclamation marks, no emoji, no headings.
 Be accurate. If something is uncertain or debated, say so plainly.
 Titles, descriptions, topics, hints and suggestions are plain text, with no markdown at all.
-Questions, options and explanations are plain text too, with **bold**, *italic* or \`code\` only where it truly helps.`;
+Questions, options and explanations are plain text too, with **bold**, *italic* or \`code\` only where it truly helps.
+Code a question shows goes in its code field, never in the question sentence.`;
 
 /** Markdown for prose: the lesson and the tutor's answers. */
 const MARKDOWN = `Write in markdown, but only where it helps a reader take it in:
@@ -29,11 +30,55 @@ const EASY = `The reader has a short attention span and is reading on a phone. M
 - End the last section on one concrete example or takeaway they will remember, not in a section of its own.`;
 
 const choice = z.object({
-  prompt: z.string().describe("The question, one sentence."),
-  options: z.array(z.string()).length(4).describe("Four short answers. Exactly one is right."),
+  prompt: z
+    .string()
+    .describe("The question, one sentence. Any code it asks about goes in `code`, never in this sentence."),
+  code: z
+    .string()
+    .describe(
+      "The code the question shows, exactly as in an editor, with real line breaks and indentation. No fences. Empty when the question has no code."
+    ),
+  language: z.string().describe("The code's language in lowercase, like 'python' or 'css'. Empty when there is no code."),
+  options: z
+    .array(z.string())
+    .length(4)
+    .describe(
+      "Four short answers. Exactly one is right. Code in an answer goes in `backticks`. The app letters them A to D, so never start one with a letter, and never refer to code by letter: number versions instead (version 1, version 2)."
+    ),
   correctIndex: z.number().int().min(0).max(3),
-  explanation: z.string().describe("One or two sentences saying why the right answer is right."),
+  explanation: z.string().describe("One or two sentences saying why the right answer is right. Code goes in `backticks`."),
 });
+
+type WrittenChoice = z.output<typeof choice>;
+
+/**
+ * Turns a question as written into the stored shape: its code goes under the
+ * sentence as a fenced block, and the options are shuffled, since the writer
+ * tends to put the right answer first.
+ */
+export function finishChoice<T extends WrittenChoice>(question: T): Omit<T, "code" | "language"> {
+  const { code, language, ...rest } = question;
+  const body = code.replace(/\s+$/, "");
+  const fence = body.includes("```") ? "````" : "```";
+  const lang = language.trim().toLowerCase().replace(/[^a-z0-9+#-]/g, "");
+  const prompt = body.trim() ? `${rest.prompt.trim()}\n\n${fence}${lang}\n${body}\n${fence}` : rest.prompt;
+
+  // Options that point at each other or at a lettered list only make sense where they were written.
+  const ordered = rest.options.some(
+    (o) =>
+      /^\s*\(?[A-D][.,:)\s]/.test(o) ||
+      /^\s*(version|option|snippet|example|line)\s+\d/i.test(o) ||
+      /\b(all|none|both) of (the )?(above|these)\b/i.test(o)
+  );
+  if (ordered) return { ...rest, prompt };
+
+  const order = [0, 1, 2, 3];
+  for (let i = order.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return { ...rest, prompt, options: order.map((i) => rest.options[i]), correctIndex: order.indexOf(rest.correctIndex) };
+}
 
 // ---- Daily lesson ----
 

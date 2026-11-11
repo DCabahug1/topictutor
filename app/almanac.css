@@ -111,6 +111,8 @@
 }
 /* Markdown from the writer and the tutor (components/almanac/Markdown.tsx). */
 .md-block > * + * { margin-top: 0.75em; }
+/* Inline mode: one paragraph reads inline, a second one or one after a code box gets its own line. */
+.md-inline-p + .md-inline-p, .md-code + .md-inline-p { display: block; margin-top: 0.6em; }
 .md-drop-cap > p:first-child::first-letter {
   float: left; padding: 6px 10px 0 0; font-size: 60px; line-height: 0.82; font-weight: 500; color: var(--ink);
 }

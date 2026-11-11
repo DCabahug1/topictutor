@@ -7,8 +7,9 @@ type MarkdownProps = {
   children: string;
   /**
    * block: lesson sections and tutor answers. Lists, tables, code and quotes.
-   * inline: questions, options and explanations. Bold, italic, code and
-   * strikethrough only, rendered inline, so nothing nests inside a button.
+   * inline: questions, options and explanations. Bold, italic, code,
+   * strikethrough and code boxes, all as spans, so it is valid inside a
+   * heading or a button.
    */
   mode?: "block" | "inline";
   /** Shows the writing caret after the last word. */
@@ -18,7 +19,7 @@ type MarkdownProps = {
   className?: string;
 };
 
-const INLINE_ELEMENTS = ["p", "strong", "em", "code", "del"];
+const INLINE_ELEMENTS = ["p", "strong", "em", "code", "del", "pre"];
 
 /** A heading inside a lesson reads as a strong line, so the reading column stays flat. */
 const Heading = ({ children }: { children?: ReactNode }) => <p className="m-0 font-medium text-(--ink)">{children}</p>;
@@ -88,10 +89,40 @@ const block: Components = {
 };
 
 const inline: Components = {
-  p: ({ children }) => <>{children}</>,
+  // Spans, not blocks, so this can sit inside a heading or a button. A second
+  // paragraph, or one after a code box, starts on its own line (almanac.css).
+  p: ({ children }) => <span className="md-inline-p">{children}</span>,
   strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
   code: ({ children }) => <code className="bg-(--paper-sunk) px-[0.25em] font-mono text-[0.86em]">{children}</code>,
+  // A code box made of a span for the same reason. Fixed type, so it never
+  // takes on a 48px heading or an italic line.
+  pre: ({ children }) => (
+    <span className="md-code mt-3 block overflow-x-auto whitespace-pre bg-(--paper-sunk) p-3 text-left font-mono text-[14px] font-normal not-italic leading-[1.6] tracking-normal text-(--ink) md:p-4 md:text-[15px] [&_code]:bg-transparent [&_code]:p-0 [&_code]:text-[length:inherit]">
+      {children}
+    </span>
+  ),
 };
+
+const LANGUAGES =
+  "python|py|javascript|js|typescript|ts|jsx|tsx|html|css|scss|json|sql|bash|sh|shell|java|kotlin|swift|go|rust|ruby|rb|php|c|cpp|csharp|cs|r|yaml|text";
+
+/**
+ * Some questions were written with a code fence on one line, like
+ * "What does this print? ```python print(x) ```", which markdown reads as
+ * text. This moves the fence onto its own lines so it shows as a code box.
+ * The original line breaks are gone, so statements that plainly follow one
+ * another, like "print(a) print(b)", are put back on lines of their own.
+ */
+function repairFences(text: string): string {
+  if (!text.includes("```")) return text;
+  const lang = new RegExp(`^(${LANGUAGES})\\s+`, "i");
+  return text.replace(/(^|[^\n])```([^\n`][^`]*?)```/g, (_, before: string, inner: string) => {
+    const match = inner.match(lang);
+    let code = (match ? inner.slice(match[0].length) : inner).trim();
+    if (!code.includes("\n")) code = code.replace(/\)\s+(?=[A-Za-z_][\w.]*\()/g, ")\n");
+    return `${before}\n\n\`\`\`${match ? match[1].toLowerCase() : ""}\n${code}\n\`\`\`\n\n`;
+  });
+}
 
 /**
  * Markdown from the writer and the tutor, in the Almanac's own type. Raw HTML
@@ -102,7 +133,7 @@ export function Markdown({ children, mode = "block", streaming = false, dropCap 
   if (mode === "inline") {
     return (
       <ReactMarkdown remarkPlugins={[remarkGfm]} allowedElements={INLINE_ELEMENTS} unwrapDisallowed components={inline}>
-        {children}
+        {repairFences(children)}
       </ReactMarkdown>
     );
   }

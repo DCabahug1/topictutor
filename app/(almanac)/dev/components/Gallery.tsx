@@ -10,6 +10,7 @@ import { ProgressMeter } from "@/components/almanac/ProgressMeter";
 import { StepMeter } from "@/components/almanac/StepMeter";
 import { LessonBody } from "@/components/almanac/LessonBody";
 import { LessonRow } from "@/components/almanac/LessonRow";
+import { Markdown } from "@/components/almanac/Markdown";
 import { BottomTabs, Masthead } from "@/components/almanac/Masthead";
 import { Notice } from "@/components/almanac/Notice";
 import { Question, type Answer } from "@/components/almanac/Question";
@@ -32,6 +33,7 @@ import {
 } from "@/lib/almanac";
 import { getForced, resetFixture, setForced, subscribeForced } from "@/lib/almanac/fixture-source";
 import { DAILY } from "@/lib/almanac/fixtures/content";
+import { QUESTION_HEADING } from "../../series/new/components/parts";
 
 const WEB_SERIES: SeriesSummary = {
   id: "web",
@@ -46,6 +48,16 @@ const WEB_SERIES: SeriesSummary = {
   updatedAt: new Date().toISOString(),
   isSample: false,
   nextLesson: { number: 3, title: "How the browser decides which CSS rule wins" },
+};
+
+/** A question about code, written the way the prompts now ask for it. */
+const CODE_QUESTION = {
+  prompt:
+    "What does this print?\n\n```python\ndef add(x, items=[]):\n    items.append(x)\n    return items\n\nprint(add(1), add(2))\n```",
+  options: ["`[1] [2]`", "`[1, 2] [1, 2]`", "`[1] [1, 2]`", "It raises a `TypeError`"],
+  correctIndex: 1,
+  explanation:
+    "The default list is made once, when `def` runs, so both calls append to the same list and print it twice after both calls.",
 };
 
 /** Everything the writer and the tutor may use, in one lesson. */
@@ -99,6 +111,7 @@ function State({ name, children }: { name: string; children: ReactNode }) {
 function Questions() {
   const [instant, setInstant] = useState<Answer | null>(null);
   const [deferred, setDeferred] = useState<Answer | null>(1);
+  const [codeAnswer, setCodeAnswer] = useState<Answer | null>(null);
   const leap = DAILY.check[1];
   return (
     <>
@@ -141,6 +154,28 @@ function Questions() {
           explanation={leap.explanation}
           allowUnsure
         />
+      </State>
+      <State name="Code · a fenced prompt, inline-code options, revealed">
+        <h1 className={QUESTION_HEADING}>
+          <Markdown mode="inline">{CODE_QUESTION.prompt}</Markdown>
+        </h1>
+        <Question
+          className="mt-8"
+          label={CODE_QUESTION.prompt}
+          options={CODE_QUESTION.options}
+          value={codeAnswer}
+          onChange={setCodeAnswer}
+          mode="instant"
+          pageShortcuts={false}
+          correctIndex={CODE_QUESTION.correctIndex}
+          explanation={CODE_QUESTION.explanation}
+          allowUnsure
+        />
+      </State>
+      <State name="Code · an older question with its fence on one line">
+        <h1 className={QUESTION_HEADING}>
+          <Markdown mode="inline">{"What does the code print? ```python print(isinstance(True, int)) print(True + 1) ```"}</Markdown>
+        </h1>
       </State>
       <State name="Deferred · revealed, correct answer">
         <Question

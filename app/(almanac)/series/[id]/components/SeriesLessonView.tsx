@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { AskBox } from "@/components/almanac/AskBox";
 import { Button } from "@/components/almanac/Button";
 import { LessonBody } from "@/components/almanac/LessonBody";
+import { Markdown } from "@/components/almanac/Markdown";
 import { Notice } from "@/components/almanac/Notice";
 import { SessionPage } from "@/components/almanac/Page";
 import { Question } from "@/components/almanac/Question";
@@ -158,7 +159,7 @@ function SeriesLesson({ id, number }: { id: string; number: number }) {
           <section aria-labelledby="lesson-check" className="mt-14 border-0 border-t border-solid border-(--ink) pt-6 md:mt-16 md:pt-8">
             <p className="m-0 font-mono text-[12px] uppercase tracking-[0.1em] text-(--ink-muted)">Check</p>
             <h2 id="lesson-check" className="after-eyebrow m-0 text-[26px] font-medium leading-[1.15] tracking-[-0.015em] md:text-[36px]">
-              {lesson.check.prompt}
+              <Markdown mode="inline">{lesson.check.prompt}</Markdown>
             </h2>
             <Question
               className="mt-7"

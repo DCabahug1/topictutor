@@ -4,7 +4,7 @@ import { LESSONS_PER_SERIES, masteryPassed, scoreAnswers } from "../rules";
 import { AlmanacError, type Answer, type ChoiceQuestion, type Mastery } from "../types";
 import { claim, release, waitFor } from "./claims";
 import { check, db, requireUser, type Learner } from "./context";
-import { masteryPrompt, masterySchema } from "./prompts";
+import { finishChoice, masteryPrompt, masterySchema } from "./prompts";
 import { resolveSeries, type LessonRow, type SeriesRow } from "./series";
 
 type MasteryRow = {
@@ -72,7 +72,7 @@ async function generate(series: SeriesRow, lessons: LessonRow[], leanOn: number[
     schema: masterySchema,
     effort: "medium",
   });
-  const questions: ChoiceQuestion[] = result.questions.map((q, i) => ({ ...q, lessonNumber: q.lessonNumber ?? i + 1 }));
+  const questions: ChoiceQuestion[] = result.questions.map((q, i) => ({ ...finishChoice(q), lessonNumber: q.lessonNumber ?? i + 1 }));
   return { questions, suggestions: result.suggestions };
 }
 

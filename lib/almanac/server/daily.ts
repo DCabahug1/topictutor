@@ -15,7 +15,7 @@ import {
 import { Channel, paragraphsOf } from "./channel";
 import { claim, once, release, waitFor } from "./claims";
 import { check, db, isUuid, requireUser, type Learner } from "./context";
-import { dailyMetaPrompt, dailyMetaSchema, dailyProsePrompt } from "./prompts";
+import { dailyMetaPrompt, dailyMetaSchema, dailyProsePrompt, finishChoice } from "./prompts";
 import { continueSeriesFor } from "./series";
 
 type LessonRow = {
@@ -132,7 +132,7 @@ export async function ensureDailyLesson(date: string, subject: Subject): Promise
               title: meta.title,
               minutes: 3,
               key_points: meta.keyPoints,
-              check_questions: meta.check,
+              check_questions: meta.check.map(finishChoice),
               deeper_topic: meta.deeperTopic,
               ask_hint: meta.askHint,
             },
