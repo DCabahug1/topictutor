@@ -6,11 +6,22 @@ import { Button, Caret } from "@/components/almanac/Button";
 import { cx } from "@/components/almanac/cx";
 import { CheckIcon, CrossIcon } from "@/components/almanac/icons";
 import { Notice } from "@/components/almanac/Notice";
+import { SubjectAdderField, useSubjectAdder } from "@/components/almanac/CustomSubjects";
 import type { SessionUser } from "@/components/almanac/SessionProvider";
 import { LeadBlock } from "@/components/almanac/LeadBlock";
-import { SubjectGrid, SubjectToggle } from "@/components/almanac/SubjectToggle";
+import { AddSubjectTile, SubjectGrid, SubjectToggle } from "@/components/almanac/SubjectToggle";
 import { TextField } from "@/components/almanac/TextField";
-import { SUBJECTS, almanac, joinList, useAlmanac, type Subject } from "@/lib/almanac";
+import {
+  CUSTOM_LIMIT,
+  FIXED_SUBJECTS,
+  addCustom,
+  almanac,
+  joinList,
+  sameCustom,
+  useAlmanac,
+  type CustomSubject,
+  type Subject,
+} from "@/lib/almanac";
 import { authService } from "@/lib/auth";
 import { updateProfile, uploadProfileImage } from "@/lib/profiles";
 
@@ -28,6 +39,7 @@ export function ProfileView({ user }: { user: SessionUser }) {
   const subjects = useAlmanac(() => almanac.getSubjects(), []);
   const [name, setName] = useState<string | null>(null);
   const [chosen, setChosen] = useState<Subject[] | null>(null);
+  const [customChosen, setCustomChosen] = useState<CustomSubject[] | null>(null);
   const [photo, setPhoto] = useState<Photo | null>(null);
   const [notAnImage, setNotAnImage] = useState(false);
   const [save, setSave] = useState<SaveState>("idle");
@@ -43,7 +55,20 @@ export function ProfileView({ user }: { user: SessionUser }) {
   }, [previewUrl]);
 
   const currentName = name ?? user.name;
-  const picked = chosen ?? subjects.data ?? [];
+  const picked = chosen ?? subjects.data?.subjects ?? [];
+  const custom = customChosen ?? subjects.data?.custom ?? [];
+  const savedSubjects = subjects.data?.subjects ?? [];
+  const adder = useSubjectAdder((added) => {
+    setCustomChosen(addCustom(custom, added));
+    setSave("idle");
+  });
+  // The fixed picks (in any order), the learner's own subjects, or a name still
+  // in the add field differ from what's saved.
+  const subjectsChanged =
+    picked.length !== savedSubjects.length ||
+    picked.some((s) => !savedSubjects.includes(s)) ||
+    !sameCustom(custom, subjects.data?.custom ?? []) ||
+    adder.name !== "";
   const initial = (currentName.trim() || user.email)[0]?.toUpperCase();
   const saving = save === "saving";
 
@@ -66,9 +91,24 @@ export function ProfileView({ user }: { user: SessionUser }) {
     setSave("idle");
   };
 
-  const saveChanges = async (event: FormEvent) => {
-    event.preventDefault();
-    if (saving) return;
+  const toggleCustom = (index: number) => {
+    setCustomChosen(custom.map((c, i) => (i === index ? { ...c, on: !c.on } : c)));
+    setSave("idle");
+  };
+  const removeCustom = (index: number) => {
+    setCustomChosen(custom.filter((_, i) => i !== index));
+    setSave("idle");
+  };
+
+  const saveChanges = async () => {
+    if (saving || adder.checking) return;
+    // A name still in the add field is checked and added first. Its review stops the save.
+    let list = custom;
+    if (adder.name) {
+      const added = await adder.submit();
+      if (!added) return;
+      list = addCustom(custom, added);
+    }
     setSave("saving");
 
     const trimmed = currentName.trim();
@@ -78,12 +118,13 @@ export function ProfileView({ user }: { user: SessionUser }) {
     let tried = 0;
     let accountChanged = false;
 
-    if (chosen) {
+    if (subjectsChanged) {
       tried += 1;
       try {
-        await almanac.saveSubjects(chosen);
-        subjects.setData(chosen);
+        await almanac.saveSubjects(picked, list);
+        subjects.setData({ subjects: FIXED_SUBJECTS.filter((s) => picked.includes(s)), custom: list });
         setChosen(null);
+        setCustomChosen(null);
       } catch {
         failed.push("subjects");
       }
@@ -93,7 +134,7 @@ export function ProfileView({ user }: { user: SessionUser }) {
     const profileId = user.profileId;
     if (!profileId && (wantsName || file)) {
       const parts = joinList([wantsName && "name", file && "photo"].filter((part): part is string => Boolean(part)));
-      const rest = chosen ? (failed.length ? " Your subjects didn’t save either." : " Your subjects were saved.") : "";
+      const rest = subjectsChanged ? (failed.length ? " Your subjects didn’t save either." : " Your subjects were saved.") : "";
       setFailure({
         message: `Your ${parts} can’t be saved, because this account has no profile to keep ${wantsName && file ? "them" : "it"} in.${rest}`,
         retry: false,
@@ -145,7 +186,14 @@ export function ProfileView({ user }: { user: SessionUser }) {
   };
 
   return (
-    <form noValidate onSubmit={saveChanges} className="mt-(--lead-top) max-w-[760px]">
+    <form
+      noValidate
+      onSubmit={(event: FormEvent) => {
+        event.preventDefault();
+        void saveChanges();
+      }}
+      className="mt-(--lead-top) max-w-[760px]"
+    >
       <LeadBlock
         size="sm"
         eyebrow="Profile"
@@ -243,7 +291,7 @@ export function ProfileView({ user }: { user: SessionUser }) {
           />
         ) : subjects.data ? (
           <SubjectGrid label="Subjects for your daily lesson" columns={3} className="mt-3">
-            {SUBJECTS.map((subject) => (
+            {FIXED_SUBJECTS.map((subject) => (
               <SubjectToggle
                 key={subject}
                 variant="row"
@@ -252,10 +300,28 @@ export function ProfileView({ user }: { user: SessionUser }) {
                 onToggle={() => toggle(subject)}
               />
             ))}
+            {custom.map((c, i) => (
+              <SubjectToggle
+                key={c.name}
+                variant="row"
+                name={c.name}
+                on={c.on}
+                onToggle={() => toggleCustom(i)}
+                onRemove={() => removeCustom(i)}
+              />
+            ))}
+            <AddSubjectTile
+              variant="row"
+              open={adder.open}
+              full={custom.length >= CUSTOM_LIMIT}
+              count={`${custom.length} of ${CUSTOM_LIMIT}`}
+              onClick={() => adder.setOpen(true)}
+            />
           </SubjectGrid>
         ) : (
           <div aria-busy="true" className="mt-3 h-[60px] bg-(--paper-sunk)" />
         )}
+        {subjects.data && <SubjectAdderField adder={adder} className="mt-6" />}
       </fieldset>
 
       <div className="mt-12 flex flex-wrap items-center gap-x-7 gap-y-[14px]">

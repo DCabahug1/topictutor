@@ -189,9 +189,16 @@ export const topicCheckSchema = z.object({
     .describe("Up to three other topics to offer, each a short title in sentence case. Can be empty."),
 });
 
-export function topicCheckPrompt(topic: string, focus: string) {
+/** What the checked topic is for: a five-lesson series, or a subject for the daily lesson. */
+export type TopicPurpose = "series" | "subject";
+
+export function topicCheckPrompt(topic: string, focus: string, purpose: TopicPurpose = "series") {
+  const reading =
+    purpose === "series"
+      ? "the topic a learner typed to start a five-lesson TopicTutor course"
+      : "the subject a learner typed for their TopicTutor daily lesson, a new short lesson on it every few days. Treat it as the course topic below";
   return {
-    system: `You read the topic a learner typed to start a five-lesson TopicTutor course, before anything is written, and decide whether to go ahead.
+    system: `You read ${reading}, before anything is written, and decide whether to go ahead.
 Verdicts:
 - clear: an understandable topic a course can teach. Most topics are clear. Tidy it lightly (spacing, capitals, an obvious missing word) but keep what they asked for. A broad or casual topic is still clear.
 - suggest: a likely misspelling ("photosinthesis"), or a term with more than one common meaning where you can't tell which they want ("python", "mercury"). topic is your best reading. suggestions holds the other readings, if any.

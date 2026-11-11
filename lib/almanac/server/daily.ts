@@ -3,26 +3,33 @@ import { GenerationError, HAIKU, generateStructured, streamText } from "@/lib/cl
 import { SECTION_BREAK, lastSevenDays, longestStreak, parseLocalDate, recentDays, shiftDate, streakCount } from "../rules";
 import {
   AlmanacError,
-  SUBJECTS,
   type ChoiceQuestion,
   type DailyLesson,
   type DailySession,
   type PastDailyLesson,
   type RecallPrompt,
   type Streak,
+  type CustomSubject,
   type Subject,
+  type SubjectChoice,
 } from "../types";
 import { askDailyQuestionAgain, dailyCheckPassed } from "../lesson-check";
+import { FIXED_SUBJECTS, rotationOf, tidyCustom, type RotationEntry } from "../other-subject";
 import { Channel, paragraphsOf } from "./channel";
 import { claim, once, release, waitFor } from "./claims";
 import { check, db, isUuid, requireUser, type Learner } from "./context";
 import { dailyMetaPrompt, dailyMetaSchema, dailyProsePrompt, finishChoice, keepKeyPoints } from "./prompts";
 import { continueSeriesFor } from "./series";
+import { CAPS, countUse } from "./usage";
 
 type LessonRow = {
   id: string;
   lesson_date: string;
   subject: Subject;
+  /** Normalized custom subject name the lesson is shared under. Empty for fixed subjects. */
+  custom_key: string;
+  /** The custom subject's name as first typed. Null for fixed subjects. */
+  custom_name: string | null;
   title: string;
   minutes: number;
   key_points: string[];
@@ -46,28 +53,38 @@ type ProgressRow = {
 
 type Finish = { local_date: string; subject: Subject; kind: "daily" | "series"; ref: string };
 
-const LESSON_COLUMNS = "id, lesson_date, subject, title, minutes, key_points, check_questions, deeper_topic, ask_hint, paragraphs";
+const LESSON_COLUMNS = "id, lesson_date, subject, custom_key, custom_name, title, minutes, key_points, check_questions, deeper_topic, ask_hint, paragraphs";
 
 // ---- Subjects ----
 
-/** The learner's subjects in the canonical order, or every subject when none are picked. */
-export async function subjectsOf(userId: string | null): Promise<{ subjects: Subject[]; prompted: boolean }> {
-  if (!userId) return { subjects: [], prompted: false };
+/**
+ * The learner's fixed subjects in the canonical order, and their own subjects in
+ * theirs. An "Other" left in `subjects` by older builds is ignored.
+ */
+export async function subjectsOf(userId: string | null): Promise<SubjectChoice & { prompted: boolean }> {
+  if (!userId) return { subjects: [], custom: [], prompted: false };
   const row = check(
-    await db().from("learner_settings").select("subjects, subjects_prompted").eq("user_id", userId).maybeSingle()
+    await db().from("learner_settings").select("subjects, custom_subjects, subjects_prompted").eq("user_id", userId).maybeSingle()
   );
   const picked = (row?.subjects ?? []) as string[];
-  return { subjects: SUBJECTS.filter((s) => picked.includes(s)), prompted: Boolean(row?.subjects_prompted) };
+  return {
+    subjects: FIXED_SUBJECTS.filter((s) => picked.includes(s)),
+    custom: tidyCustom(Array.isArray(row?.custom_subjects) ? row.custom_subjects : []),
+    prompted: Boolean(row?.subjects_prompted),
+  };
 }
 
-export async function saveSubjects(learner: Learner, subjects: Subject[]) {
+/** `custom` replaces the learner's own subjects; null keeps the saved ones. */
+export async function saveSubjects(learner: Learner, subjects: Subject[], custom: CustomSubject[] | null) {
   const userId = requireUser(learner);
   check(
     await db()
       .from("learner_settings")
       .upsert({
         user_id: userId,
-        subjects: SUBJECTS.filter((s) => subjects.includes(s)),
+        subjects: FIXED_SUBJECTS.filter((s) => subjects.includes(s)),
+        // Left out, the saved list stays as it is.
+        ...(custom === null ? {} : { custom_subjects: tidyCustom(custom) }),
         subjects_prompted: true,
         updated_at: new Date().toISOString(),
       })
@@ -76,17 +93,42 @@ export async function saveSubjects(learner: Learner, subjects: Subject[]) {
 
 const dayNumber = (date: string) => Math.floor(parseLocalDate(date).getTime() / 86_400_000 + 0.5);
 
-/** Today's subject rotates through the learner's subjects, one a day. */
-function subjectFor(subjects: Subject[], date: string): Subject {
-  const list = subjects.length ? subjects : SUBJECTS;
+function onDay<T>(list: readonly T[], date: string): T {
   return list[((dayNumber(date) % list.length) + list.length) % list.length];
+}
+
+/** The day's subject: the learner's picks, fixed and custom, rotate one a day. */
+function entryFor(choice: SubjectChoice, date: string): RotationEntry {
+  return onDay(rotationOf(choice), date);
+}
+
+/** Where a day goes when its custom subject can't be planned: one of the learner's fixed subjects, or any. */
+function fixedFallback(choice: SubjectChoice, date: string): Subject {
+  return onDay(choice.subjects.length ? choice.subjects : FIXED_SUBJECTS, date);
 }
 
 // ---- Shared lessons ----
 
-async function readLesson(date: string, subject: Subject): Promise<LessonRow | null> {
+/** Which shared lesson a subject means: a fixed subject, or a custom one under Other. */
+type LessonKey = { subject: Subject; key: string; name: string | null };
+
+const plainKey = (subject: Subject): LessonKey => ({ subject, key: "", name: null });
+
+const keyOf = (entry: RotationEntry): LessonKey =>
+  entry.key ? { subject: entry.subject, key: entry.key, name: entry.name } : plainKey(entry.subject);
+
+/** Thrown when a learner's custom subjects have planned as many new lessons as they may today. */
+class OverBudget extends Error {}
+
+async function readLesson(date: string, lesson: LessonKey): Promise<LessonRow | null> {
   return check(
-    await db().from("daily_lessons").select(LESSON_COLUMNS).eq("lesson_date", date).eq("subject", subject).maybeSingle()
+    await db()
+      .from("daily_lessons")
+      .select(LESSON_COLUMNS)
+      .eq("lesson_date", date)
+      .eq("subject", lesson.subject)
+      .eq("custom_key", lesson.key)
+      .maybeSingle()
   ) as LessonRow | null;
 }
 
@@ -96,18 +138,29 @@ async function lessonById(id: string): Promise<LessonRow | null> {
 
 /**
  * The lesson for `subject` on `date`, planned on first request and then shared
- * by everyone. Only one request plans it; the rest wait for it.
+ * by everyone. Only one request plans it; the rest wait for it. A custom
+ * subject is shared by everyone who gave it the same name. `budget` runs only when a
+ * new lesson would be planned, and stops it with OverBudget when it says no.
  */
-export async function ensureDailyLesson(date: string, subject: Subject): Promise<LessonRow> {
+export async function ensureDailyLesson(
+  date: string,
+  subject: Subject,
+  lesson: LessonKey = plainKey(subject),
+  budget?: () => Promise<boolean>
+): Promise<LessonRow> {
   return once(
-    `daily-meta:${date}:${subject}`,
-    () => readLesson(date, subject),
+    `daily-meta:${date}:${subject}${lesson.key ? `:${lesson.key}` : ""}`,
+    () => readLesson(date, lesson),
     async () => {
+      if (budget && !(await budget())) throw new OverBudget();
+      // The writer sees a custom subject's name, so it plans a lesson in that subject.
+      const topic = lesson.name ?? subject;
       const recent = check(
         await db()
           .from("daily_lessons")
           .select("title")
           .eq("subject", subject)
+          .eq("custom_key", lesson.key)
           .lt("lesson_date", date)
           .order("lesson_date", { ascending: false })
           .limit(30)
@@ -115,13 +168,13 @@ export async function ensureDailyLesson(date: string, subject: Subject): Promise
       const titles = recent.map((r) => r.title);
       let meta;
       try {
-        meta = await generateStructured({ ...dailyMetaPrompt(subject, titles), schema: dailyMetaSchema, route: "daily-meta", effort: "low" });
+        meta = await generateStructured({ ...dailyMetaPrompt(topic, titles), schema: dailyMetaSchema, route: "daily-meta", effort: "low" });
       } catch (cause) {
         // A refusal blocks one topic, not the subject: ask once more for something else.
         if (!(cause instanceof GenerationError)) throw cause;
         meta = await generateStructured({
-          ...dailyMetaPrompt(subject, titles),
-          user: `${dailyMetaPrompt(subject, titles).user}\nChoose a different, everyday idea.`,
+          ...dailyMetaPrompt(topic, titles),
+          user: `${dailyMetaPrompt(topic, titles).user}\nChoose a different, everyday idea.`,
           schema: dailyMetaSchema,
           route: "daily-meta-retry",
           effort: "low",
@@ -134,6 +187,8 @@ export async function ensureDailyLesson(date: string, subject: Subject): Promise
             {
               lesson_date: date,
               subject,
+              custom_key: lesson.key,
+              custom_name: lesson.key ? lesson.name : null,
               title: meta.title,
               minutes: 3,
               key_points: keepKeyPoints(meta.keyPoints),
@@ -141,10 +196,10 @@ export async function ensureDailyLesson(date: string, subject: Subject): Promise
               deeper_topic: meta.deeperTopic,
               ask_hint: meta.askHint,
             },
-            { onConflict: "lesson_date,subject", ignoreDuplicates: true }
+            { onConflict: "lesson_date,subject,custom_key", ignoreDuplicates: true }
           )
       );
-      const row = await readLesson(date, subject);
+      const row = await readLesson(date, lesson);
       if (!row) throw new AlmanacError("writeFailed");
       return row;
     }
@@ -156,6 +211,7 @@ function toDailyLesson(row: LessonRow): DailyLesson {
     id: row.id,
     date: row.lesson_date,
     subject: row.subject,
+    subjectName: row.custom_name ?? row.subject,
     title: row.title,
     minutes: row.minutes,
     paragraphs: row.paragraphs,
@@ -202,13 +258,30 @@ export function streakFrom(finishes: Finish[], today: string): Streak {
   };
 }
 
-/** Today's lesson for this learner: the one they started, or today's subject. */
-async function lessonForToday(learner: Learner, subjects: Subject[], progress: ProgressRow | null): Promise<LessonRow> {
+/**
+ * Today's lesson for this learner: the one they started, or today's subject.
+ * A custom subject plans a new lesson only within the learner's daily
+ * allowance, and the day falls back to a fixed subject past it or if it can't
+ * be planned.
+ */
+async function lessonForToday(learner: Learner, choice: SubjectChoice, progress: ProgressRow | null): Promise<LessonRow> {
   if (progress) {
     const pinned = await lessonById(progress.lesson_id);
     if (pinned) return pinned;
   }
-  return ensureDailyLesson(learner.today, subjectFor(subjects, learner.today));
+  const entry = entryFor(choice, learner.today);
+  if (!entry.key) return ensureDailyLesson(learner.today, entry.subject);
+  const userId = learner.userId;
+  if (userId) {
+    try {
+      return await ensureDailyLesson(learner.today, entry.subject, keyOf(entry), () =>
+        countUse(`other-plan:${userId}`, CAPS.otherPlansPerDay)
+      );
+    } catch (cause) {
+      if (!(cause instanceof OverBudget)) console.error(`[almanac] daily ${learner.today} ${entry.key}:`, cause);
+    }
+  }
+  return ensureDailyLesson(learner.today, fixedFallback(choice, learner.today));
 }
 
 /** "Monday" within the last week, otherwise "November 3". */
@@ -238,19 +311,24 @@ async function recallFor(finishes: Finish[], today: string, progress: ProgressRo
   if (!lesson || !question) return null;
   return {
     lessonId,
-    prompt: { fromDay: dayLabel(lesson.lesson_date, today), subject: lesson.subject, question },
+    prompt: {
+      fromDay: dayLabel(lesson.lesson_date, today),
+      subject: lesson.subject,
+      subjectName: lesson.custom_name ?? lesson.subject,
+      question,
+    },
   };
 }
 
 export async function getDailySession(learner: Learner): Promise<DailySession> {
   const userId = learner.userId;
-  const [{ subjects }, progress, finishes] = await Promise.all([
+  const [choice, progress, finishes] = await Promise.all([
     subjectsOf(userId),
     userId ? progressOf(userId, learner.today) : Promise.resolve(null),
     finishesOf(userId),
   ]);
   const [lesson, recall, continueSeries] = await Promise.all([
-    lessonForToday(learner, subjects, progress),
+    lessonForToday(learner, choice, progress),
     recallFor(finishes, learner.today, progress),
     // Series need an account, so a guest is never offered one to continue.
     continueSeriesFor(learner.isGuest ? null : userId),
@@ -263,7 +341,7 @@ export async function getDailySession(learner: Learner): Promise<DailySession> {
     checkAnswers: lesson.check_questions.map((_, i) => progress?.check_answers?.[i] ?? null),
     finishedAt: progress?.finished_at ?? null,
     streak: streakFrom(finishes, learner.today),
-    tomorrowSubject: subjectFor(subjects, shiftDate(learner.today, 1)),
+    tomorrowSubject: entryFor(choice, shiftDate(learner.today, 1)).name,
     continueSeries,
   };
 }
@@ -272,8 +350,8 @@ export async function getDailySession(learner: Learner): Promise<DailySession> {
 async function ensureProgress(learner: Learner): Promise<{ userId: string; progress: ProgressRow; lesson: LessonRow }> {
   const userId = requireUser(learner);
   const existing = await progressOf(userId, learner.today);
-  const { subjects } = await subjectsOf(userId);
-  const lesson = await lessonForToday(learner, subjects, existing);
+  const choice = await subjectsOf(userId);
+  const lesson = await lessonForToday(learner, choice, existing);
   if (existing) return { userId, progress: existing, lesson };
   check(
     await db()
@@ -372,7 +450,7 @@ export async function retryDailyCheck(learner: Learner, index: number): Promise<
 
 async function writeProse(lesson: LessonRow, onText: (text: string) => void): Promise<string[]> {
   let text = "";
-  for await (const chunk of streamText({ ...dailyProsePrompt(lesson.subject, lesson.title, lesson.key_points), route: "daily-prose", model: HAIKU, effort: "medium" })) {
+  for await (const chunk of streamText({ ...dailyProsePrompt(lesson.custom_name ?? lesson.subject, lesson.title, lesson.key_points), route: "daily-prose", model: HAIKU, effort: "medium" })) {
     text += chunk;
     onText(chunk);
   }
@@ -398,11 +476,11 @@ async function writeProse(lesson: LessonRow, onText: (text: string) => void): Pr
  */
 export async function* streamDailyLesson(learner: Learner): AsyncGenerator<string> {
   const userId = learner.userId;
-  const [{ subjects }, progress] = await Promise.all([
+  const [choice, progress] = await Promise.all([
     subjectsOf(userId),
     userId ? progressOf(userId, learner.today) : Promise.resolve(null),
   ]);
-  const lesson = await lessonForToday(learner, subjects, progress);
+  const lesson = await lessonForToday(learner, choice, progress);
   if (lesson.paragraphs) {
     yield lesson.paragraphs.join(SECTION_BREAK);
     return;
@@ -436,14 +514,14 @@ export async function getPastDailyLessons(learner: Learner): Promise<PastDailyLe
   const rows = check(
     await db()
       .from("daily_progress")
-      .select("lesson_date, finished_at, daily_lessons!daily_progress_lesson_id_fkey(id, subject, title, paragraphs)")
+      .select("lesson_date, finished_at, daily_lessons!daily_progress_lesson_id_fkey(id, subject, custom_name, title, paragraphs)")
       .eq("user_id", learner.userId)
       .order("lesson_date", { ascending: false })
       .limit(120)
   ) as unknown as Array<{
     lesson_date: string;
     finished_at: string | null;
-    daily_lessons: { id: string; subject: Subject; title: string; paragraphs: string[] | null } | null;
+    daily_lessons: { id: string; subject: Subject; custom_name: string | null; title: string; paragraphs: string[] | null } | null;
   }>;
   return rows
     .filter((r) => r.daily_lessons?.paragraphs)
@@ -451,6 +529,7 @@ export async function getPastDailyLessons(learner: Learner): Promise<PastDailyLe
       id: r.daily_lessons!.id,
       date: r.lesson_date,
       subject: r.daily_lessons!.subject,
+      subjectName: r.daily_lessons!.custom_name ?? r.daily_lessons!.subject,
       title: r.daily_lessons!.title,
       done: r.finished_at !== null,
     }));
@@ -466,11 +545,11 @@ export async function getPastDailyLesson(learner: Learner, id: string): Promise<
 /** Today's lesson text and title, for the tutor. */
 export async function todaysLessonText(learner: Learner): Promise<{ title: string; paragraphs: string[] }> {
   const userId = learner.userId;
-  const [{ subjects }, progress] = await Promise.all([
+  const [choice, progress] = await Promise.all([
     subjectsOf(userId),
     userId ? progressOf(userId, learner.today) : Promise.resolve(null),
   ]);
-  const lesson = await lessonForToday(learner, subjects, progress);
+  const lesson = await lessonForToday(learner, choice, progress);
   if (!lesson.paragraphs) throw new AlmanacError("notFound");
   return { title: lesson.title, paragraphs: lesson.paragraphs };
 }

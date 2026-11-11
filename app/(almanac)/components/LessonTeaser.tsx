@@ -82,7 +82,7 @@ export function LessonTeaser({ session, error, onRetry }: LessonTeaserProps) {
   return (
     <section aria-label="Today’s lesson" className={CARD}>
       <div className="flex justify-between gap-3 font-label text-[12px] uppercase tracking-[0.08em]">
-        <span className="text-(--accent)">Today in {lesson.subject}</span>
+        <span className="text-(--accent)">Today in {lesson.subjectName}</span>
         <span className="text-(--ink-muted)">{lesson.minutes} min</span>
       </div>
       <h2 className="m-0 mt-4 text-[34px] font-medium leading-[1.02] tracking-[-0.02em] md:text-[52px]">{lesson.title}</h2>

@@ -8,7 +8,7 @@ import { CheckIcon } from "@/components/almanac/icons";
 import { LeadBlock } from "@/components/almanac/LeadBlock";
 import { PaperPage } from "@/components/almanac/Page";
 import { useSession } from "@/components/almanac/SessionProvider";
-import { almanac, joinList, useAlmanac } from "@/lib/almanac";
+import { almanac, joinList, subjectNames, useAlmanac } from "@/lib/almanac";
 import { authService } from "@/lib/auth";
 
 const ROW = "flex items-baseline justify-between gap-4 border-0 border-b border-solid border-(--rule) py-[14px] text-[17px]";
@@ -87,7 +87,7 @@ export default function WelcomeAccountPage() {
             </li>
             <li className={ROW}>
               <span className="text-(--ink-muted)">Your subjects</span>
-              <span className="text-right">{subjects?.length ? joinList(subjects) : "None yet"}</span>
+              <span className="text-right">{subjects && subjectNames(subjects).length ? joinList(subjectNames(subjects)) : "None yet"}</span>
             </li>
           </ul>
         </aside>

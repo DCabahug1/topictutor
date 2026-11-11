@@ -78,7 +78,7 @@ export function PastDailyList({ lessons, today }: PastDailyListProps) {
                     </time>
                     <span className="text-[18px] leading-[1.3] decoration-1 underline-offset-4 group-hover:underline">
                       {lesson.title}
-                      <span className="sr-only"> · {lesson.subject}</span>
+                      <span className="sr-only"> · {lesson.subjectName}</span>
                     </span>
                     {!lesson.done && (
                       <span className="whitespace-nowrap font-label text-[11px] uppercase tracking-[0.06em] text-(--accent)">

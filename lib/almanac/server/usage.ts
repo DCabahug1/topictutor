@@ -12,6 +12,14 @@ export const CAPS = {
   memberQuestionsPerDay: 200,
   /** Topic checks before a series starts, per learner, per day. Past this, topics go through unchecked. */
   memberTopicChecksPerDay: 100,
+  /** Checks of a custom subject's name, per learner (guests too), per day. Past this, names go through unchecked. */
+  subjectChecksPerDay: 30,
+  /**
+   * New daily lessons a learner's custom subjects can cause to be planned, per
+   * day. A name someone else already has today costs nothing. Past this, the
+   * day falls back to one of the fixed subjects.
+   */
+  otherPlansPerDay: 3,
 };
 
 export const LIMITS = {

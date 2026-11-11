@@ -1,5 +1,6 @@
 import type {
   Answer,
+  CustomSubject,
   DailyLesson,
   DailySession,
   GuestState,
@@ -14,6 +15,7 @@ import type {
   SeriesSummary,
   Stats,
   Subject,
+  SubjectChoice,
   TopicCheck,
   TutorChunk,
 } from "./types";
@@ -51,8 +53,15 @@ export interface AlmanacSource {
   askTutor(context: TutorContext, question: string | null): AsyncIterable<TutorChunk>;
 
   // Subjects
-  getSubjects(): Promise<Subject[]>;
-  saveSubjects(subjects: Subject[]): Promise<void>;
+  getSubjects(): Promise<SubjectChoice>;
+  /** `custom` replaces the learner's own subjects. Null keeps the ones already saved. */
+  saveSubjects(subjects: Subject[], custom?: CustomSubject[] | null): Promise<void>;
+  /**
+   * Reads a name typed for a custom subject, as checkTopic does for a series topic: a likely
+   * typo, something it can't make sense of, or something it won't teach. Open
+   * to guests. Answers "clear" whenever it can't tell.
+   */
+  checkSubject(name: string): Promise<TopicCheck>;
 
   // Guests
   getGuestState(): Promise<GuestState>;

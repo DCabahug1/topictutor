@@ -28,5 +28,6 @@ export * from "./types";
 export * from "./rules";
 export * from "./copy";
 export * from "./lesson-check";
+export * from "./other-subject";
 export { useAlmanac } from "./use-almanac";
 export { useTextStream, prefersReducedMotion, type StreamStatus } from "./use-stream";

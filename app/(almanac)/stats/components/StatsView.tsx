@@ -13,10 +13,10 @@ import {
   runLength,
   shiftDate,
   spellOut,
+  subjectNames,
   useAlmanac,
   type Stats,
   type Streak,
-  type Subject,
 } from "@/lib/almanac";
 
 const MASTERY_QUESTIONS = 5;
@@ -209,12 +209,12 @@ export function StatsView() {
         </section>
       </div>
 
-      <SubjectSection stats={stats} picked={subjects ?? []} />
+      <SubjectSection stats={stats} picked={subjects ? subjectNames(subjects) : []} />
     </>
   );
 }
 
-function SubjectSection({ stats, picked }: { stats: Stats; picked: Subject[] }) {
+function SubjectSection({ stats, picked }: { stats: Stats; picked: string[] }) {
   return (
     <section aria-labelledby="st-cat" className="mt-(--section-gap)">
       <div className="flex flex-wrap items-baseline justify-between gap-3">

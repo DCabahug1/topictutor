@@ -298,7 +298,7 @@ function DailySessionInner() {
       >
         <section>
           <p className="t-eyebrow m-0">
-            Recall · from {recall.fromDay} · {recall.subject}
+            Recall · from {recall.fromDay} · {recall.subjectName}
           </p>
           <h1 ref={heading} tabIndex={-1} className={QUESTION_HEADING}>
             <Markdown mode="inline">{recall.question.prompt}</Markdown>
@@ -455,7 +455,7 @@ function LessonHeader({
   return (
     <header>
       <p className="t-eyebrow m-0">
-        {daily.subject} · about {daily.minutes} minutes
+        {daily.subjectName} · about {daily.minutes} minutes
       </p>
       <h1 ref={headingRef} tabIndex={-1} className="t-lead-h1-sm after-eyebrow m-0 [overflow-wrap:anywhere]">
         {daily.title}

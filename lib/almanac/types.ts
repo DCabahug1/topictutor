@@ -17,6 +17,18 @@ export const SUBJECTS = [
 
 export type Subject = (typeof SUBJECTS)[number];
 
+/** A subject the learner named. `on` puts it in the rotation, like a picked fixed subject. */
+export type CustomSubject = {
+  name: string;
+  on: boolean;
+};
+
+/** The learner's picks: fixed subjects (never Other), and up to five of their own, in their order. */
+export type SubjectChoice = {
+  subjects: Subject[];
+  custom: CustomSubject[];
+};
+
 /** An option index, or "unsure" for the Not sure option in tests. Not sure is scored as wrong. */
 export type Answer = number | "unsure";
 
@@ -64,6 +76,8 @@ export type DailyLesson = {
   /** Local date, YYYY-MM-DD. */
   date: string;
   subject: Subject;
+  /** What to call the subject: the custom subject's name for Other, otherwise the subject. */
+  subjectName: string;
   title: string;
   minutes: number;
   /** Set once the lesson has been written. Three paragraphs. */
@@ -80,6 +94,7 @@ export type RecallPrompt = {
   /** For example "Monday". */
   fromDay: string;
   subject: Subject;
+  subjectName: string;
   question: ChoiceQuestion;
 };
 
@@ -93,7 +108,8 @@ export type DailySession = {
   /** ISO time the last check question was answered, or null. */
   finishedAt: string | null;
   streak: Streak;
-  tomorrowSubject: Subject;
+  /** What to call tomorrow's subject, a custom subject by its name. */
+  tomorrowSubject: string;
   /** A series to continue, offered on the finish screen. */
   continueSeries: SeriesSummary | null;
 };
@@ -102,6 +118,7 @@ export type PastDailyLesson = {
   id: string;
   date: string;
   subject: Subject;
+  subjectName: string;
   title: string;
   done: boolean;
 };

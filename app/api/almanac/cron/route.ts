@@ -19,15 +19,18 @@ function authorized(request: Request): boolean {
 }
 
 /**
- * Run by Vercel Cron each morning: plans tomorrow's lesson in every subject,
- * so the first reader of the day doesn't wait for it. The prose is still
- * written on first open. A subject that fails here is planned on demand.
+ * Run by Vercel Cron each morning: plans tomorrow's lesson in every fixed
+ * subject, so the first reader of the day doesn't wait for it. The prose is
+ * still written on first open. A subject that fails here is planned on demand.
+ * Other is left out: learners name it, and each name is planned on demand, so
+ * no lesson is paid for that nobody reads.
  */
 export async function GET(request: Request) {
   if (!authorized(request)) return NextResponse.json({ ok: false }, { status: 401 });
 
   const date = shiftDate(new Date().toISOString().slice(0, 10), 1);
-  const queue: Subject[] = [...SUBJECTS];
+  const queue: Subject[] = SUBJECTS.filter((s) => s !== "Other");
+  const total = queue.length;
   const failed: Subject[] = [];
 
   await Promise.all(
@@ -43,5 +46,5 @@ export async function GET(request: Request) {
     })
   );
 
-  return NextResponse.json({ ok: failed.length === 0, date, planned: SUBJECTS.length - failed.length, failed });
+  return NextResponse.json({ ok: failed.length === 0, date, planned: total - failed.length, failed });
 }

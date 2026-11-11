@@ -89,7 +89,7 @@ export default function PastDailyLessonPage() {
       <article>
         <header>
           <p className="t-eyebrow m-0">
-            {lesson.subject} · {lessonDate(lesson.date)}
+            {lesson.subjectName} · {lessonDate(lesson.date)}
           </p>
           <h1 className="t-lead-h1-sm after-eyebrow m-0 [overflow-wrap:anywhere]">{lesson.title}</h1>
         </header>

@@ -9,7 +9,7 @@ import { useSession } from "@/components/almanac/SessionProvider";
 import { almanac, useAlmanac, type TopicCheck } from "@/lib/almanac";
 import { BackLink } from "../../[id]/components/SeriesStates";
 import { InlineAlert, LoadingLines } from "./parts";
-import { TopicReview } from "./TopicReview";
+import { TopicReview } from "@/components/almanac/TopicReview";
 
 const HOW_IT_WORKS = [
   { title: "Placement test", text: "Five questions, easy to hard." },

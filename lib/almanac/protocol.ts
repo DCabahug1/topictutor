@@ -18,6 +18,7 @@ export const RPC_METHODS = [
   "getPastDailyLesson",
   "getSubjects",
   "saveSubjects",
+  "checkSubject",
   "getGuestState",
   "listSeries",
   "getSeries",

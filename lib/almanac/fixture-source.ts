@@ -32,6 +32,7 @@ import {
   moveRightAnswer,
   type LessonCheck,
 } from "./lesson-check";
+import { FIXED_SUBJECTS, cleanCustomName, subjectNames, tidyCustom } from "./other-subject";
 import {
   LESSONS_PER_SERIES,
   focusLine,
@@ -53,9 +54,9 @@ import type { AlmanacSource, TutorContext } from "./source";
 import {
   AlmanacError,
   FORCE_FLAGS,
-  SUBJECTS,
   type Answer,
   type ChoiceQuestion,
+  type CustomSubject,
   type DailyLesson,
   type DailySession,
   type ForceFlag,
@@ -74,6 +75,7 @@ import {
   type TopicCheck,
   type Streak,
   type Subject,
+  type SubjectChoice,
 } from "./types";
 
 // ---- Stored shapes ----
@@ -136,6 +138,10 @@ type Store = {
   v: 1;
   seed: "new" | "established";
   subjects: Subject[];
+  /** The learner's own subjects. Missing in stores saved before they existed. */
+  custom?: CustomSubject[];
+  /** One Other name, from before custom subjects. Read once into `custom`. */
+  other?: string | null;
   subjectsPrompted: boolean;
   daily: Record<string, StoredDaily>;
   finished: Finished[];
@@ -306,7 +312,12 @@ function adoptGuestProgress(store: Store) {
   for (const entry of guest.finished) {
     if (entry.date === today) store.finished.push(entry);
   }
-  if (guest.subjects.length) store.subjects = guest.subjects;
+  const picks = choiceOf(guest);
+  if (picks.subjects.length || picks.custom.length) {
+    store.subjects = picks.subjects;
+    store.custom = picks.custom;
+    store.other = null;
+  }
   store.subjectsPrompted = store.subjectsPrompted || guest.subjectsPrompted;
   for (const series of guest.series) {
     if (series.content !== "sample" && !store.series.some((s) => s.id === series.id)) store.series.unshift(series);
@@ -566,11 +577,21 @@ function todayProgress(store: Store): StoredDaily {
   return store.daily[today];
 }
 
+/** The store's picks, reading an old single Other name as the first custom subject. */
+function choiceOf(store: Store): SubjectChoice {
+  const legacy = store.other ? [{ name: store.other, on: store.subjects.includes("Other") }] : [];
+  return {
+    subjects: FIXED_SUBJECTS.filter((s) => store.subjects.includes(s)),
+    custom: tidyCustom(store.custom ?? legacy),
+  };
+}
+
 function toDailySession(store: Store): DailySession {
   const today = localDate();
   const progress = todayProgress(store);
   const hasHistory = store.finished.some((f) => f.date < today);
-  const others = store.subjects.filter((s) => s !== DAILY.subject);
+  const names = subjectNames(choiceOf(store));
+  const tomorrow = names.find((name) => name !== DAILY.subject) ?? (names.length ? DAILY.subject : "History");
   const continued = store.series.find((s) => s.content !== "sample" && summarize(s).status === "inProgress");
 
   return {
@@ -578,6 +599,7 @@ function toDailySession(store: Store): DailySession {
       id: `daily-${today}`,
       date: today,
       subject: DAILY.subject,
+      subjectName: DAILY.subject,
       title: DAILY.title,
       minutes: DAILY.minutes,
       paragraphs: dailyIsWritten(today) ? DAILY.paragraphs : null,
@@ -589,6 +611,7 @@ function toDailySession(store: Store): DailySession {
       ? {
           fromDay: parseLocalDate(shiftDate(today, -1)).toLocaleDateString("en-US", { weekday: "long" }),
           subject: RECALL.subject,
+          subjectName: RECALL.subject,
           question: RECALL.question,
         }
       : null,
@@ -596,9 +619,39 @@ function toDailySession(store: Store): DailySession {
     checkAnswers: progress.checkAnswers,
     finishedAt: progress.finishedAt,
     streak: streakOf(store),
-    tomorrowSubject: others[0] ?? (store.subjects.length ? DAILY.subject : "History"),
+    tomorrowSubject: tomorrow,
     continueSeries: continued ? summarize(continued) : null,
   };
+}
+
+/** The sample topic check: forced verdicts from /dev, gibberish is unclear, anything else is clear. */
+async function readSampleTopic(topic: string): Promise<TopicCheck> {
+  await wait(500);
+  if (forced("topicSuggest")) {
+    return {
+      verdict: "suggest",
+      topic: "Photosynthesis",
+      note: "That looks like a typo.",
+      suggestions: ["How plants make food from light"],
+    };
+  }
+  if (forced("topicUnclear") || topic.replace(/[^a-z]/gi, "").length < 3 || !/[aeiouy]/i.test(topic)) {
+    return {
+      verdict: "unclear",
+      topic: "",
+      note: "We couldn’t find a subject in that.",
+      suggestions: forced("topicUnclear") ? ["Basics of web development", "How vaccines work"] : [],
+    };
+  }
+  if (forced("topicRefused")) {
+    return {
+      verdict: "refused",
+      topic: "",
+      note: "We can’t help with getting into someone else’s account.",
+      suggestions: ["How email security works", "Protecting your own accounts"],
+    };
+  }
+  return { verdict: "clear", topic, note: "", suggestions: [] };
 }
 
 // ---- The source ----
@@ -668,6 +721,7 @@ export const fixtureSource: AlmanacSource = {
         id: `daily-${today}`,
         date: today,
         subject: DAILY.subject,
+        subjectName: DAILY.subject,
         title: DAILY.title,
         done: Boolean(progress?.finishedAt),
       });
@@ -678,6 +732,7 @@ export const fixtureSource: AlmanacSource = {
           id: `daily-${shiftDate(today, -past.daysAgo)}`,
           date: shiftDate(today, -past.daysAgo),
           subject: past.subject,
+          subjectName: past.subject,
           title: past.title,
           done: past.done,
         });
@@ -695,6 +750,7 @@ export const fixtureSource: AlmanacSource = {
         id,
         date,
         subject: DAILY.subject,
+        subjectName: DAILY.subject,
         title: DAILY.title,
         minutes: DAILY.minutes,
         paragraphs: DAILY.paragraphs,
@@ -710,6 +766,7 @@ export const fixtureSource: AlmanacSource = {
       id,
       date,
       subject: past.subject,
+      subjectName: past.subject,
       title: past.title,
       minutes: 3,
       paragraphs: body.paragraphs,
@@ -728,14 +785,22 @@ export const fixtureSource: AlmanacSource = {
   },
 
   async getSubjects() {
-    return load().subjects;
+    return choiceOf(load());
   },
 
-  async saveSubjects(subjects) {
+  async saveSubjects(subjects, custom) {
     const store = load();
-    store.subjects = SUBJECTS.filter((s) => subjects.includes(s));
+    const before = choiceOf(store);
+    store.subjects = FIXED_SUBJECTS.filter((s) => subjects.includes(s));
+    store.custom = custom ? tidyCustom(custom) : before.custom;
+    store.other = null;
     store.subjectsPrompted = true;
     save(store);
+  },
+
+  async checkSubject(name) {
+    // Open to guests, like the real one. The same forced verdicts as checkTopic.
+    return readSampleTopic(cleanCustomName(name));
   },
 
   async getGuestState() {
@@ -842,33 +907,7 @@ export const fixtureSource: AlmanacSource = {
 
   async checkTopic(request: SeriesRequest): Promise<TopicCheck> {
     requireMemberScope();
-    await wait(500);
-    const topic = request.topic.trim();
-    if (forced("topicSuggest")) {
-      return {
-        verdict: "suggest",
-        topic: "Photosynthesis",
-        note: "That looks like a typo.",
-        suggestions: ["How plants make food from light"],
-      };
-    }
-    if (forced("topicUnclear") || topic.replace(/[^a-z]/gi, "").length < 3 || !/[aeiouy]/i.test(topic)) {
-      return {
-        verdict: "unclear",
-        topic: "",
-        note: "We couldn’t find a subject in that.",
-        suggestions: forced("topicUnclear") ? ["Basics of web development", "How vaccines work"] : [],
-      };
-    }
-    if (forced("topicRefused")) {
-      return {
-        verdict: "refused",
-        topic: "",
-        note: "We can’t help with getting into someone else’s account.",
-        suggestions: ["How email security works", "Protecting your own accounts"],
-      };
-    }
-    return { verdict: "clear", topic, note: "", suggestions: [] };
+    return readSampleTopic(request.topic.trim());
   },
 
   async startPlacement(request: SeriesRequest) {

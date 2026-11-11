@@ -94,7 +94,7 @@ export function Finish({ session, headingRef }: { session: DailySession; heading
   return (
     <div className="md:flex md:items-center md:justify-between md:gap-12 lg:gap-20">
       <div className="min-w-0">
-        <p className="t-eyebrow m-0">Lesson finished · {lesson.subject}</p>
+        <p className="t-eyebrow m-0">Lesson finished · {lesson.subjectName}</p>
         <div className="mt-(--eyebrow-gap) flex items-baseline gap-4 md:gap-5">
           <div className="relative h-[1em] w-fit shrink-0 overflow-hidden text-[120px] font-medium leading-none tracking-[-0.05em] md:text-[160px]">
             {/* Reserves the width of the wider number, so "0" fits when it flips to a narrow "1". */}

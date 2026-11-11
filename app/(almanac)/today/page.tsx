@@ -85,7 +85,7 @@ export default function TodayPage() {
   const started = !done && (session.recallAnswer !== null || session.checkAnswers.some((a) => a !== null));
   const firstName = user?.name.trim().split(/\s+/)[0] ?? "";
   const greeting = `${isNew ? "Welcome" : timeOfDay(hour)}${firstName ? `, ${firstName}` : ""}`;
-  const eyebrow = done ? `✓ Done · Today in ${lesson.subject}` : `${greeting} · Today in ${lesson.subject}`;
+  const eyebrow = done ? `✓ Done · Today in ${lesson.subjectName}` : `${greeting} · Today in ${lesson.subjectName}`;
 
   // In progress first. A series that was started but never opened still belongs here.
   const open: SeriesSummary[] = [

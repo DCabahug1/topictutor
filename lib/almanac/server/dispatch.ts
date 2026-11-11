@@ -1,6 +1,7 @@
 import "server-only";
 import { z } from "zod";
 import type { RpcMethod, StreamMethod } from "../protocol";
+import { CUSTOM_LIMIT } from "../other-subject";
 import { AlmanacError, SUBJECTS, type OutlineRow, type TutorChunk } from "../types";
 import type { Learner } from "./context";
 import * as daily from "./daily";
@@ -8,7 +9,7 @@ import * as mastery from "./mastery";
 import * as placement from "./placement";
 import * as series from "./series";
 import * as stats from "./stats";
-import { checkTopic } from "./topic";
+import { checkSubject, checkTopic } from "./topic";
 import { askTutor } from "./tutor";
 
 // Every argument the browser sends is checked here before it reaches a query.
@@ -60,6 +61,9 @@ const option = z.number().int().min(0).max(7);
 const answer = z.union([option, z.literal("unsure")]);
 const index = z.number().int().min(0).max(4);
 const none = z.tuple([]);
+const subjectList = z.array(z.enum(SUBJECTS)).max(SUBJECTS.length);
+// A few spare rows: the server tidies the list (blanks, repeats) before keeping five.
+const customList = z.array(z.object({ name: z.string().max(200), on: z.boolean() })).max(CUSTOM_LIMIT * 2);
 const seriesRequest = z.object({ topic: z.string().min(1).max(200), focus: z.string().max(500).optional() });
 
 const RPC: Record<RpcMethod, Entry<Promise<unknown>>> = {
@@ -69,8 +73,18 @@ const RPC: Record<RpcMethod, Entry<Promise<unknown>>> = {
   retryDailyCheck: def(z.tuple([z.number().int().min(0).max(1)]), (l, [i]) => daily.retryDailyCheck(l, i)),
   getPastDailyLessons: def(none, (l) => daily.getPastDailyLessons(l)),
   getPastDailyLesson: def(z.tuple([id]), (l, [lessonId]) => daily.getPastDailyLesson(l, lessonId)),
-  getSubjects: def(none, async (l) => (await daily.subjectsOf(l.userId)).subjects),
-  saveSubjects: def(z.tuple([z.array(z.enum(SUBJECTS)).max(SUBJECTS.length)]), (l, [s]) => daily.saveSubjects(l, s)),
+  getSubjects: def(none, async (l) => {
+    const { subjects, custom } = await daily.subjectsOf(l.userId);
+    return { subjects, custom };
+  }),
+  // The custom list is optional, so a page loaded before it existed still saves.
+  // A single Other name from such a page is ignored: the saved list stays.
+  saveSubjects: def(
+    z.union([z.tuple([subjectList]), z.tuple([subjectList, z.union([customList, z.string().max(200)]).nullable()])]),
+    (l, [s, custom]) => daily.saveSubjects(l, s, Array.isArray(custom) ? custom : null)
+  ),
+  // Open to guests: they pick subjects after their first lesson.
+  checkSubject: def(z.tuple([z.string().min(1).max(200)]), (l, [name]) => checkSubject(l, name)),
   getGuestState: def(none, (l) => stats.getGuestState(l)),
   listSeries: member(none, (l) => series.listSeries(l)),
   getSeries: member(z.tuple([id]), (l, [s]) => series.getSeries(l, s)),
