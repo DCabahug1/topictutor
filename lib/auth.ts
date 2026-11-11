@@ -77,6 +77,10 @@ const signUpWithEmailAndPasswordServer = async (email: string, password: string,
 const signInWithEmailAndPassword = async (email: string, password: string) => {
   const supabase = createClient();
 
+  // A guest signed in on this device: their token proves it to the server after the log-in.
+  const { data: current } = await supabase.auth.getSession();
+  const guestToken = current.session?.user.is_anonymous ? current.session.access_token : null;
+
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -85,6 +89,13 @@ const signInWithEmailAndPassword = async (email: string, password: string) => {
   if (error) {
     return { success: false, error };
   }
+
+  // Moves the guest's progress into the account. A failure never blocks the log-in.
+  await fetch("/api/almanac/adopt", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ guestToken }),
+  }).catch(() => undefined);
 
   return { success: true, data };
 };

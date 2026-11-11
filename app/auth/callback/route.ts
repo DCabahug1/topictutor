@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 // The client you created from the Server-Side Auth instructions
 import { createClient } from '@/utils/supabase/server'
 import { ensureProfileExists } from '@/lib/profiles'
+import { adoptAfterSignIn } from '@/lib/almanac/server/adopt'
 
 export async function GET(request: Request) {
   console.log("callback", request.url )
@@ -17,11 +18,19 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = await createClient()
+    // The guest signed in on this device, read before the exchange replaces their session.
+    const { data: before } = await supabase.auth.getClaims()
+    const guestId =
+      before?.claims?.is_anonymous && typeof before.claims.sub === 'string' ? before.claims.sub : null
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
       // Get the user after successful session exchange
       const { data: userData, error: userError } = await supabase.auth.getUser()
-      
+
+      if (!userError && userData?.user && !userData.user.is_anonymous) {
+        await adoptAfterSignIn(userData.user.id, guestId)
+      }
+
       if (!userError && userData?.user) {
         // Create profile before redirect
         try {

@@ -63,7 +63,7 @@ export function RegisterForm() {
 
     setBusy(true);
     const result = await signUpWithEmailAndPasswordAction(email, values.password, name, window.location.origin).catch(
-      () => ({ success: false as const, error: null })
+      () => ({ success: false as const, error: { code: "", message: "" } })
     );
 
     if (result.success) {
