@@ -48,6 +48,14 @@ const WEB_SERIES: SeriesSummary = {
   nextLesson: { number: 3, title: "How the browser decides which CSS rule wins" },
 };
 
+/** Everything the writer and the tutor may use, in one lesson. */
+const MARKDOWN_SAMPLE = [
+  "**Specificity** decides which CSS rule wins when two rules target the same element. Higher specificity wins, whatever the order.",
+  "It is counted in three parts:\n\n1. IDs, like `#nav`\n2. Classes and attributes, like `.button`\n3. Element names, like `p`",
+  "| Selector | IDs | Classes | Elements |\n| --- | --- | --- | --- |\n| `p` | 0 | 0 | 1 |\n| `.note p` | 0 | 1 | 1 |\n| `#main .note` | 1 | 1 | 0 |",
+  "> A tie goes to whichever rule comes last.\n\n```css\n.note { color: gray; }\n.note { color: black; } /* this one wins */\n```\n\nSee [MDN on specificity](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity) for the full rules.",
+];
+
 const DUANE: SessionUser = {
   id: "dev",
   email: "duane@example.com",
@@ -409,6 +417,9 @@ export function Gallery() {
           </State>
           <State name="Written">
             <LessonBody dropCap paragraphs={DAILY.paragraphs} />
+          </State>
+          <State name="Markdown">
+            <LessonBody dropCap paragraphs={MARKDOWN_SAMPLE} />
           </State>
         </Both>
       </Section>

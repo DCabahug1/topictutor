@@ -1,5 +1,6 @@
 import { forwardRef } from "react";
 import { cx } from "./cx";
+import { Markdown } from "./Markdown";
 
 export type AnswerResult = "none" | "correct" | "incorrect" | "dimmed";
 
@@ -67,7 +68,9 @@ export const AnswerOption = forwardRef<HTMLButtonElement, AnswerOptionProps>(fun
       >
         {unsure ? "?" : letter}
       </span>
-      <span>{text}</span>
+      <span>
+        <Markdown mode="inline">{text}</Markdown>
+      </span>
       <span
         className={cx(
           "whitespace-nowrap font-mono text-[12px] font-normal uppercase not-italic tracking-[0.06em]",

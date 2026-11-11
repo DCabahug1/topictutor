@@ -10,7 +10,8 @@ import { SessionPage } from "@/components/almanac/Page";
 import { Question } from "@/components/almanac/Question";
 import { useSession } from "@/components/almanac/SessionProvider";
 import { StepMeter } from "@/components/almanac/StepMeter";
-import { almanac, useAlmanac, useTextStream, type DailySession as Session } from "@/lib/almanac";
+import { Markdown } from "@/components/almanac/Markdown";
+import { almanac, splitSections, useAlmanac, useTextStream, type DailySession as Session } from "@/lib/almanac";
 import { DoneForToday } from "./DoneForToday";
 import { Finish } from "./Finish";
 
@@ -86,8 +87,8 @@ function DailySessionInner() {
     if (sendToToday) router.replace("/today");
   }, [sendToToday, router]);
 
-  const paragraphs = session?.lesson.paragraphs ?? (lesson.text ? lesson.text.split("\n\n") : []);
   const writing = needsWriting && lesson.status !== "done" && lesson.status !== "failed";
+  const paragraphs = session?.lesson.paragraphs ?? (lesson.text ? splitSections(lesson.text, { streaming: true }) : []);
   const writeFailed = needsWriting && lesson.status === "failed";
   const checkCount = session?.lesson.check.length ?? 0;
   const checkAnswered = session ? session.checkAnswers[checkIndex] !== null : false;
@@ -247,7 +248,7 @@ function DailySessionInner() {
             Recall · from {recall.fromDay} · {recall.subject}
           </p>
           <h1 ref={heading} tabIndex={-1} className={QUESTION_HEADING}>
-            {recall.question.prompt}
+            <Markdown mode="inline">{recall.question.prompt}</Markdown>
           </h1>
           <Question
             className="mt-7 md:mt-10"
@@ -352,7 +353,7 @@ function DailySessionInner() {
             Question {checkIndex + 1} of {checkCount}
           </p>
           <h1 ref={heading} tabIndex={-1} className={QUESTION_HEADING}>
-            {question.prompt}
+            <Markdown mode="inline">{question.prompt}</Markdown>
           </h1>
           <Question
             className="mt-7 md:mt-10"

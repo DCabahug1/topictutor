@@ -109,6 +109,21 @@
 @supports not (text-box: trim-start cap alphabetic) {
   .after-eyebrow .big-numeral, .after-eyebrow.big-numeral { padding-top: 0.12em; }
 }
+/* Markdown from the writer and the tutor (components/almanac/Markdown.tsx). */
+.md-block > * + * { margin-top: 0.75em; }
+.md-drop-cap > p:first-child::first-letter {
+  float: left; padding: 6px 10px 0 0; font-size: 60px; line-height: 0.82; font-weight: 500; color: var(--ink);
+}
+@media (min-width: 768px) { .md-drop-cap > p:first-child::first-letter { font-size: 76px; } }
+/* The writing caret, after the last word of whatever block is last. */
+.md-streaming > :is(p, blockquote):last-child::after,
+.md-streaming > :is(ul, ol):last-child > li:last-child::after {
+  content: ""; display: inline-block; width: 7px; height: 17px; margin-left: 3px; vertical-align: -2px; background: var(--accent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .md-streaming > :is(p, blockquote):last-child::after,
+  .md-streaming > :is(ul, ol):last-child > li:last-child::after { display: none; }
+}
 .t-quiet-link { font-family: var(--font-serif); font-size: 18px; font-style: italic; color: var(--ink-soft); text-decoration: underline; text-underline-offset: 5px; }
 .t-quiet-link:hover { color: var(--ink); }
 

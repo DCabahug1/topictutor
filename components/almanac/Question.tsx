@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useRef, type KeyboardEvent } from "react";
+import { plainText } from "@/lib/almanac/rules";
 import { AnswerOption, type AnswerResult } from "./AnswerOption";
 import { cx } from "./cx";
+import { Markdown } from "./Markdown";
 
 /** An option index, or "unsure" for the Not sure option in tests. */
 export type Answer = number | "unsure";
@@ -129,7 +131,7 @@ export function Question({
     <div className={className}>
       <div
         role="radiogroup"
-        aria-label={label}
+        aria-label={plainText(label)}
         onKeyDown={onKeyDown}
         className={cx("flex flex-col gap-[10px]", columns === 2 && "md:grid md:grid-cols-2")}
       >
@@ -156,7 +158,7 @@ export function Question({
           <strong className={cx("font-semibold", isCorrect ? "text-(--correct)" : "text-(--incorrect)")}>
             {isCorrect ? "Right." : "Not quite."}
           </strong>{" "}
-          <span className="text-(--ink-soft)">{explanation}</span>
+          <span className="text-(--ink-soft)">{explanation && <Markdown mode="inline">{explanation}</Markdown>}</span>
         </p>
       )}
     </div>

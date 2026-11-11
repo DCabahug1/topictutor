@@ -5,6 +5,7 @@ import { Button } from "@/components/almanac/Button";
 import { SessionPage } from "@/components/almanac/Page";
 import { Question } from "@/components/almanac/Question";
 import { StepMeter } from "@/components/almanac/StepMeter";
+import { Markdown } from "@/components/almanac/Markdown";
 import { almanac, type Answer, type Mastery } from "@/lib/almanac";
 
 type MasteryTakingProps = {
@@ -119,7 +120,7 @@ export function MasteryTaking({ mastery, focusHeading = false, onUpdate }: Maste
           Question {index + 1} of {questions.length} · from lesson {question.lessonNumber ?? index + 1}
         </p>
         <h1 ref={heading} tabIndex={-1} className="after-eyebrow m-0 text-[24px] font-medium leading-[1.25] [overflow-wrap:anywhere] md:text-[32px]">
-          {question.prompt}
+          <Markdown mode="inline">{question.prompt}</Markdown>
         </h1>
         <Question
           key={index}

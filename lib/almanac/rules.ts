@@ -3,6 +3,43 @@
 import type { Answer, ChoiceQuestion, SeriesStatus, StreakDay } from "./types";
 
 export const LESSONS_PER_SERIES = 5;
+
+/**
+ * Lesson text is markdown in sections. Sections are separated by a line holding
+ * only `---`, since a section can have blank lines of its own (a list, a table).
+ */
+export const SECTION_BREAK = "\n\n---\n\n";
+
+const BREAK_LINE = /^[ \t]*-{3,}[ \t]*$/m;
+
+/**
+ * Splits lesson text into its sections. While it is still being written, a
+ * half-typed break at the very end is held back so it never shows as text.
+ * Finished text with no breaks at all (older lessons, or a writer that forgot)
+ * falls back to splitting on blank lines.
+ */
+export function splitSections(text: string, { streaming = false }: { streaming?: boolean } = {}): string[] {
+  let body = text.replace(/\r\n/g, "\n");
+  if (streaming) body = body.replace(/\n[ \t]*-{1,3}[ \t]*$/, "");
+  const parts = BREAK_LINE.test(body) || streaming ? body.split(new RegExp(BREAK_LINE.source, "gm")) : body.split(/\n\s*\n/);
+  return parts.map((part) => part.trim()).filter(Boolean);
+}
+
+/** Markdown with its marks taken out, for screen-reader announcements and plain previews. */
+export function plainText(markdown: string): string {
+  return markdown
+    .replace(/```[\s\S]*?```/g, (block) => block.replace(/```\w*/g, ""))
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/^[ \t]*(#{1,6}|>|[-*+]|\d+[.)])[ \t]+/gm, "")
+    .replace(/^[ \t]*\|?[ \t]*:?-{3,}:?[ \t]*(\|[ \t]*:?-{3,}:?[ \t]*)*\|?[ \t]*$/gm, "")
+    .replace(/\|/g, " ")
+    .replace(/(\*\*|__|~~|\*|_|`)/g, "")
+    .replace(/^[ \t]*-{3,}[ \t]*$/gm, "")
+    .replace(/[ \t]+/g, " ")
+    .replace(/\n{2,}/g, "\n")
+    .trim();
+}
 export const MASTERY_PASS = 4;
 
 /** Local calendar date as YYYY-MM-DD. Streaks follow the learner's own timezone. */

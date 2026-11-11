@@ -9,7 +9,7 @@ type LessonRowProps = {
   number?: number;
   /** Replaces the number, for example "◇" on the Mastery Check row. */
   marker?: ReactNode;
-  title: string;
+  title: ReactNode;
   /** Kept for callers; lists no longer show descriptions. */
   description?: string;
   /** Why this lesson is in the learner's series. Shown only on the next lesson. */
@@ -19,7 +19,7 @@ type LessonRowProps = {
   /** done: the check is answered, right or wrong. upNext: the lesson the main action opens. */
   status: LessonRowStatus;
   /** An italic line shown whatever the status, for rows like the Mastery Check. */
-  sub?: string;
+  sub?: ReactNode;
   /** Replaces the status glyph and word, for example "5 questions · pass with 4". */
   tag?: ReactNode;
   /** Muted title and tag, for a row that is closed for now. */

@@ -7,6 +7,7 @@ import { Notice } from "@/components/almanac/Notice";
 import { SessionPage } from "@/components/almanac/Page";
 import { Question } from "@/components/almanac/Question";
 import { StepMeter } from "@/components/almanac/StepMeter";
+import { Markdown } from "@/components/almanac/Markdown";
 import { almanac, useAlmanac, type Answer } from "@/lib/almanac";
 import { InlineAlert, LoadingLines, QUESTION_HEADING } from "./parts";
 
@@ -239,7 +240,7 @@ export function PlacementTest() {
           {question.level ? ` · ${question.level}` : ""}
         </p>
         <h1 ref={heading} tabIndex={-1} className="after-eyebrow m-0 text-[24px] font-medium leading-[1.25] [overflow-wrap:anywhere] md:text-[32px]">
-          {question.prompt}
+          <Markdown mode="inline">{question.prompt}</Markdown>
         </h1>
         <Question
           key={index}

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/almanac/Button";
 import { LeadBlock } from "@/components/almanac/LeadBlock";
 import { LessonRow } from "@/components/almanac/LessonRow";
+import { Markdown } from "@/components/almanac/Markdown";
 import { Notice } from "@/components/almanac/Notice";
 import { PaperPage } from "@/components/almanac/Page";
 import { ScoreNumeral } from "@/components/almanac/ScoreNumeral";
@@ -205,9 +206,9 @@ export function PlacementResults() {
               <LessonRow
                 key={i}
                 number={i + 1}
-                title={question.prompt}
+                title={<Markdown mode="inline">{question.prompt}</Markdown>}
                 status="notStarted"
-                sub={`${said}Answer: ${question.options[question.correctIndex]}.`}
+                sub={<Markdown mode="inline">{`${said}Answer: ${question.options[question.correctIndex]}.`}</Markdown>}
                 tag={TAG[verdict]}
               />
             );

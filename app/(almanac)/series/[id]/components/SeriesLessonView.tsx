@@ -8,7 +8,7 @@ import { LessonBody } from "@/components/almanac/LessonBody";
 import { Notice } from "@/components/almanac/Notice";
 import { SessionPage } from "@/components/almanac/Page";
 import { Question } from "@/components/almanac/Question";
-import { LESSONS_PER_SERIES, almanac, useAlmanac, useTextStream } from "@/lib/almanac";
+import { LESSONS_PER_SERIES, almanac, splitSections, useAlmanac, useTextStream } from "@/lib/almanac";
 import { lessonList, shortTitle } from "./copy";
 import { SeriesLoading, SeriesProblem } from "./SeriesStates";
 
@@ -51,7 +51,7 @@ function SeriesLesson({ id, number }: { id: string; number: number }) {
   if (error) return <SeriesProblem notFound={error.kind === "notFound"} what="lesson" onRetry={reload} />;
   if (!lesson) return <SeriesLoading label="Loading the lesson" />;
 
-  const paragraphs = lesson.paragraphs ?? (text ? text.split("\n\n") : []);
+  const paragraphs = lesson.paragraphs ?? (text ? splitSections(text, { streaming: true }) : []);
   const writing = needsWriting && writeStatus !== "done" && writeStatus !== "failed";
   const writeFailed = needsWriting && writeStatus === "failed";
   const last = number === LESSONS_PER_SERIES;

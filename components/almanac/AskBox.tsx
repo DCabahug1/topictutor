@@ -2,8 +2,10 @@
 
 import { useId, useState, type FormEvent } from "react";
 import type { TutorChunk } from "@/lib/almanac/types";
+import { plainText } from "@/lib/almanac/rules";
 import { useTextStream } from "@/lib/almanac/use-stream";
 import { Caret } from "./Button";
+import { Markdown } from "./Markdown";
 
 type AskBoxProps = {
   /** Changing lesson clears the conversation. */
@@ -90,10 +92,13 @@ function AskBoxForLesson({ onAsk, onExplainDifferently, hint, className }: AskBo
             </div>
           ) : (
             <>
-              <p aria-busy={answering} className="m-0 mt-[10px] text-[18px] leading-[1.6] md:text-[19px]">
-                {text}
-                {answering && <Caret inText className="h-4" />}
-              </p>
+              <div aria-busy={answering} className="mt-[10px] text-[18px] leading-[1.6] md:text-[19px]">
+                {text ? (
+                  <Markdown streaming={answering}>{text}</Markdown>
+                ) : (
+                  answering && <Caret inText className="h-4" />
+                )}
+              </div>
               {status === "done" && source !== null && (
                 <p className="m-0 mt-[14px] font-mono text-[12px] uppercase tracking-[0.08em] text-(--accent)">
                   ↳ From paragraph {source}
@@ -101,7 +106,7 @@ function AskBoxForLesson({ onAsk, onExplainDifferently, hint, className }: AskBo
               )}
               {/* Announced once when the answer is complete, never word by word. */}
               <p role="status" className="sr-only">
-                {status === "done" ? `Answer ready. ${text}` : ""}
+                {status === "done" ? `Answer ready. ${plainText(text)}` : ""}
               </p>
             </>
           )}

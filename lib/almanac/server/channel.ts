@@ -1,4 +1,5 @@
 import "server-only";
+import { splitSections } from "../rules";
 
 /**
  * A queue between a writer running in the background and the response that
@@ -50,10 +51,7 @@ export class Channel<T> {
   }
 }
 
-/** Splits written prose into paragraphs on blank lines. */
+/** Splits a finished lesson into its markdown sections, keeping each section's own line breaks. */
 export function paragraphsOf(text: string): string[] {
-  return text
-    .split(/\n\s*\n/)
-    .map((p) => p.replace(/\s+/g, " ").trim())
-    .filter(Boolean);
+  return splitSections(text);
 }

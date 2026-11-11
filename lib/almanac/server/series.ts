@@ -1,7 +1,7 @@
 import "server-only";
 import { GenerationError, streamText } from "@/lib/claude";
 import { SAMPLE_LESSONS, SAMPLE_SERIES } from "../fixtures/sample-series";
-import { LESSONS_PER_SERIES, percentComplete, seriesStatus } from "../rules";
+import { LESSONS_PER_SERIES, SECTION_BREAK, percentComplete, seriesStatus } from "../rules";
 import {
   AlmanacError,
   type ChoiceQuestion,
@@ -283,7 +283,7 @@ export async function* streamSeriesLesson(learner: Learner, id: string, number: 
   const lesson = lessons.find((l) => l.number === number);
   if (!lesson) throw new AlmanacError("notFound");
   if (lesson.paragraphs) {
-    yield lesson.paragraphs.join("\n\n");
+    yield lesson.paragraphs.join(SECTION_BREAK);
     return;
   }
   if (!stored) throw new AlmanacError("notFound");
@@ -292,7 +292,7 @@ export async function* streamSeriesLesson(learner: Learner, id: string, number: 
   const held = await claim(key);
   if (!held) {
     const paragraphs = await waitFor(async () => (await lessonsOf(row.id)).find((l) => l.number === number)?.paragraphs ?? null);
-    yield paragraphs.join("\n\n");
+    yield paragraphs.join(SECTION_BREAK);
     return;
   }
 

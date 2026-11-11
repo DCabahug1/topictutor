@@ -1,5 +1,5 @@
-import { Caret } from "./Button";
 import { cx } from "./cx";
+import { Markdown } from "./Markdown";
 
 type LessonBodyProps = {
   /** The text written so far, one entry per paragraph. Missing entries show as reserved lines. */
@@ -14,8 +14,8 @@ type LessonBodyProps = {
 };
 
 /**
- * Lesson text. While writing, unwritten paragraphs are held as sunk lines so the
- * page does not jump, and a caret follows the last word.
+ * Lesson text, one markdown section per entry. While writing, unwritten sections
+ * are held as sunk lines so the page does not jump, and a caret follows the last word.
  */
 export function LessonBody({ paragraphs, streaming = false, dropCap = false, slots = 3, className }: LessonBodyProps) {
   const count = Math.max(slots, paragraphs.length);
@@ -41,23 +41,10 @@ export function LessonBody({ paragraphs, streaming = false, dropCap = false, slo
             </div>
           );
         }
-        const withCap = dropCap && i === 0;
         return (
-          <p key={i} className="m-0">
-            {withCap && (
-              <>
-                <span
-                  aria-hidden="true"
-                  className="float-left pr-[10px] pt-[6px] text-[60px] font-medium leading-[0.82] text-(--ink) md:text-[76px]"
-                >
-                  {text[0]}
-                </span>
-                <span className="sr-only">{text[0]}</span>
-              </>
-            )}
-            {withCap ? text.slice(1) : text}
-            {streaming && i === lastStarted && <Caret inText />}
-          </p>
+          <Markdown key={i} dropCap={dropCap && i === 0} streaming={streaming && i === lastStarted}>
+            {text}
+          </Markdown>
         );
       })}
     </div>

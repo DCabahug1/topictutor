@@ -30,6 +30,7 @@ import {
   masteryPassed,
   parseLocalDate,
   percentComplete,
+  SECTION_BREAK,
   scoreAnswers,
   seriesStatus,
   shiftDate,
@@ -334,11 +335,11 @@ function forced(flag: ForceFlag) {
 
 const wait = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
-/** Yields text a word at a time. A blank line separates paragraphs. */
+/** Yields text a word at a time, with the same section breaks the real writer uses. */
 async function* writeOut(paragraphs: string[], failAfterWords: number | null, ms = 36): AsyncGenerator<string> {
   let count = 0;
   for (let p = 0; p < paragraphs.length; p += 1) {
-    if (p > 0) yield "\n\n";
+    if (p > 0) yield SECTION_BREAK;
     const words = paragraphs[p].split(" ");
     for (let w = 0; w < words.length; w += 1) {
       await wait(ms);

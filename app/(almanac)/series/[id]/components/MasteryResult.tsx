@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { flushSync } from "react-dom";
 import { Button } from "@/components/almanac/Button";
 import { LeadBlock } from "@/components/almanac/LeadBlock";
 import { LessonRow } from "@/components/almanac/LessonRow";
+import { Markdown } from "@/components/almanac/Markdown";
 import { PaperPage } from "@/components/almanac/Page";
 import { ScoreNumeral } from "@/components/almanac/ScoreNumeral";
 import { Section } from "@/components/almanac/Section";
@@ -63,13 +64,13 @@ export function MasteryResult({ mastery, focusHeading = false, onRetake, retakin
   );
 
   /** The italic line under a lesson in the review: what was picked, and what to look at. */
-  const reviewLine = (lessonNumber: number): string | undefined => {
+  const reviewLine = (lessonNumber: number): ReactNode => {
     const i = questions.findIndex((q, at) => (q.lessonNumber ?? at + 1) === lessonNumber && mastery.answers[at] !== q.correctIndex);
     if (i < 0) return undefined;
     const given = mastery.answers[i];
     const said =
       given === "unsure" ? "You weren’t sure." : given === null ? "No answer." : `You picked “${questions[i].options[given]}”.`;
-    return `${said} ${questions[i].explanation}`;
+    return <Markdown mode="inline">{`${said} ${questions[i].explanation}`}</Markdown>;
   };
 
   const eyebrow = pass ? (
@@ -89,9 +90,9 @@ export function MasteryResult({ mastery, focusHeading = false, onRetake, retakin
             <LessonRow
               key={question.prompt}
               number={i + 1}
-              title={question.prompt}
+              title={<Markdown mode="inline">{question.prompt}</Markdown>}
               status="notStarted"
-              sub={`${correct ? "" : `You said: ${chosen}. `}Answer: ${question.options[question.correctIndex]}.`}
+              sub={<Markdown mode="inline">{`${correct ? "" : `You said: ${chosen}. `}Answer: ${question.options[question.correctIndex]}.`}</Markdown>}
               tag={
                 correct ? (
                   <span className="text-(--correct)">✓ Right</span>

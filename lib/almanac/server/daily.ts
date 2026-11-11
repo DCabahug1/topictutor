@@ -1,6 +1,6 @@
 import "server-only";
 import { GenerationError, generateStructured, streamText } from "@/lib/claude";
-import { lastSevenDays, longestStreak, parseLocalDate, shiftDate, streakCount } from "../rules";
+import { SECTION_BREAK, lastSevenDays, longestStreak, parseLocalDate, shiftDate, streakCount } from "../rules";
 import {
   AlmanacError,
   SUBJECTS,
@@ -365,7 +365,7 @@ export async function* streamDailyLesson(learner: Learner): AsyncGenerator<strin
   ]);
   const lesson = await lessonForToday(learner, subjects, progress);
   if (lesson.paragraphs) {
-    yield lesson.paragraphs.join("\n\n");
+    yield lesson.paragraphs.join(SECTION_BREAK);
     return;
   }
 
@@ -373,7 +373,7 @@ export async function* streamDailyLesson(learner: Learner): AsyncGenerator<strin
   const held = await claim(key);
   if (!held) {
     const paragraphs = await waitFor(async () => (await lessonById(lesson.id))?.paragraphs ?? null);
-    yield paragraphs.join("\n\n");
+    yield paragraphs.join(SECTION_BREAK);
     return;
   }
 
