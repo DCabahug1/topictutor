@@ -13,7 +13,7 @@ import {
 import { claim, once, release } from "./claims";
 import { check, db, requireUser, type Learner } from "./context";
 import { ArrayScanner } from "./json-scan";
-import { finishChoice, outlinePrompt, outlineSchema, placementPrompt, placementSchema, type OutlineLesson } from "./prompts";
+import { finishChoice, keepKeyPoints, outlinePrompt, outlineSchema, placementPrompt, placementSchema, type OutlineLesson } from "./prompts";
 import { writeAhead, type SeriesRow } from "./series";
 import { CAPS, LIMITS, countUse, used } from "./usage";
 
@@ -204,7 +204,7 @@ async function createSeries(row: PlacementRow, outline: { title: string; categor
           description: lesson.description,
           why: whyLine(questions, row.answers, i),
           focus: row.answers[i] !== questions[i]?.correctIndex,
-          key_points: lesson.keyPoints,
+          key_points: keepKeyPoints(lesson.keyPoints),
           check_question: finishChoice(lesson.check),
           ask_hint: lesson.askHint,
         }))
