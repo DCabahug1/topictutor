@@ -17,6 +17,10 @@
   --correct-wash: #E3EAF4;
   --incorrect: #8F3F00;
   --incorrect-wash: #F6E7D8;
+  /* Destructive actions only (delete). A cooler, deeper red than the accent. */
+  --danger: #B0201C;
+  --danger-hover: #8E1714;
+  --on-danger: #FFFFFF;
   --focus: var(--accent);
 }
 
@@ -36,6 +40,9 @@
   --correct-wash: #24324A;
   --incorrect: #F0A35E;
   --incorrect-wash: #3A2C1E;
+  --danger: #FF8A80;
+  --danger-hover: #FFA9A1;
+  --on-danger: #1E2124;
   --focus: var(--accent);
 }
 

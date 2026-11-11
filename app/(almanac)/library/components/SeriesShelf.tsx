@@ -156,7 +156,7 @@ export function SeriesShelf({ series, onDeleted }: SeriesShelfProps) {
                       type="button"
                       aria-label={`Delete series: ${s.title}`}
                       onClick={() => setConfirm({ item: s, open: true })}
-                      className="flex h-11 w-11 cursor-pointer items-center justify-center border-0 bg-transparent text-(--ink-muted) hover:text-(--incorrect)"
+                      className="flex h-11 w-11 cursor-pointer items-center justify-center border-0 bg-transparent text-(--ink-muted) hover:text-(--danger) focus-visible:text-(--danger)"
                     >
                       <TrashIcon size={17} />
                     </button>

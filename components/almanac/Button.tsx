@@ -24,9 +24,10 @@ type ButtonProps = {
    * outline: "Continue with Google", inside dialogs, and a section's own action
    *   when the screen's primary is something else (Today's "Start a series").
    * quiet: the italic "or …" link for every other action.
+   * danger: red, for the one action that deletes something. Only in a confirm step.
    * secondary is the old name for outline.
    */
-  variant?: "primary" | "outline" | "quiet" | "secondary";
+  variant?: "primary" | "outline" | "quiet" | "secondary" | "danger";
   /** default is 58px tall. compact is 44px, for dialogs and tools. large is the old name for default. */
   size?: "default" | "compact" | "large";
   /** Shows the writing caret and blocks clicks. The label should say what is happening. */
@@ -54,6 +55,8 @@ const sizes = {
 const variants = {
   primary: "border-[1.5px] border-(--ink) bg-(--ink) text-(--on-ink) hover:border-(--accent) hover:bg-(--accent)",
   outline: "border-[1.5px] border-(--ink) bg-transparent text-(--ink) hover:bg-(--paper-sunk)",
+  danger:
+    "border-[1.5px] border-(--danger) bg-(--danger) text-(--on-danger) hover:border-(--danger-hover) hover:bg-(--danger-hover)",
 };
 
 const quietLook =

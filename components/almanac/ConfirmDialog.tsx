@@ -71,10 +71,11 @@ export function ConfirmDialog({
           </p>
         )}
         <div className="mt-6 flex flex-wrap gap-2">
-          <Button ref={keep} onClick={onCancel}>
+          {/* Focus starts on the safe choice; the red one is what deletes. */}
+          <Button ref={keep} variant="outline" onClick={onCancel}>
             {cancelLabel}
           </Button>
-          <Button variant="secondary" onClick={onConfirm} busy={busy}>
+          <Button variant="danger" onClick={onConfirm} busy={busy}>
             {confirmLabel}
           </Button>
         </div>
