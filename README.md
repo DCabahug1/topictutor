@@ -18,7 +18,7 @@ An AI-powered personalized learning platform that creates custom courses based o
 - **Styling**: Tailwind CSS, Radix UI components
 - **Authentication**: Supabase Auth (Email/Password + Google OAuth)
 - **Database**: Supabase (PostgreSQL)
-- **AI Integration**: Claude Opus 5.5 (Anthropic API)
+- **AI Integration**: Claude Sonnet 5.5 (Anthropic API)
 - **File Storage**: Supabase Storage
 - **Animations**: Motion (Framer Motion)
 - **Icons**: Lucide React
@@ -141,7 +141,7 @@ topictutor/
 ## API Integration
 
 ### Claude Integration
-The app uses Anthropic's Claude Opus 5.5 model for:
+The app uses Anthropic's Claude Sonnet 5.5 model for:
 - Generating placement test questions
 - Creating personalized course content
 - Generating final assessments
