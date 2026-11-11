@@ -2,6 +2,7 @@
 // to /api/almanac, which reads and writes the database on the server.
 // Browser only, like the sample source.
 
+import { withNext } from "@/lib/next-path";
 import { createClient } from "@/utils/supabase/client";
 import { DATE_HEADER, type ErrorKind, type Frame, type RpcMethod, type RpcReply, type StreamMethod } from "./protocol";
 import { localDate } from "./rules";
@@ -16,20 +17,36 @@ function toError(kind: unknown): AlmanacError {
 
 let signingIn: Promise<void> | null = null;
 
+// The account the page was rendered for, set by SessionProvider. Null for a guest.
+let expectedAccount: string | null = null;
+
+export function setExpectedAccount(userId: string | null) {
+  expectedAccount = userId;
+}
+
 /**
  * A visitor gets an anonymous session the first time they do something that
  * is saved. Reading never creates one, so crawlers never become users.
+ *
+ * The session is looked up on every call, since it can end while the page is
+ * open. A page drawn for an account never starts a guest: when that account's
+ * session is gone, the learner is sent to log in and come back here, rather
+ * than having their answers land on a throwaway guest.
  */
-function ensureSession(): Promise<void> {
+async function ensureSession(): Promise<void> {
+  const supabase = createClient();
+  const { data } = await supabase.auth.getSession();
+  if (data.session) return;
+  if (expectedAccount) {
+    const here = `${window.location.pathname}${window.location.search}`;
+    window.location.assign(withNext("/login", here));
+    throw new AlmanacError("accountRequired", "The account’s session ended");
+  }
   signingIn ??= (async () => {
-    const supabase = createClient();
-    const { data } = await supabase.auth.getSession();
-    if (data.session) return;
     const { error } = await supabase.auth.signInAnonymously();
     if (error) throw new AlmanacError("loadFailed", "Couldn’t start a guest session");
-  })().catch((cause) => {
+  })().finally(() => {
     signingIn = null;
-    throw cause;
   });
   return signingIn;
 }
