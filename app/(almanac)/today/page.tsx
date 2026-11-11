@@ -10,8 +10,8 @@ import { SeriesRow } from "@/components/almanac/SeriesRow";
 import { useSession } from "@/components/almanac/SessionProvider";
 import { StreakMark } from "@/components/almanac/StreakMark";
 import { almanac, useAlmanac, type DailySession, type SeriesSummary } from "@/lib/almanac";
-import { DEEPER_ACTION, OWN_TOPIC_ACTION, OWN_TOPIC_HREF, deeperHref } from "./lesson/components/copy";
-import { DeeperSuggestion } from "./lesson/components/DeeperSuggestion";
+import { MoreTopics } from "./lesson/components/MoreTopics";
+import { OwnTopicStart } from "./lesson/components/OwnTopicStart";
 
 function timeOfDay(hour: number): string {
   if (hour >= 5 && hour < 12) return "Good morning";
@@ -102,13 +102,14 @@ export default function TodayPage() {
     <Button icon href={`/series/${continueTo.id}/${continueTo.nextLesson.number}`}>
       Continue your series
     </Button>
-  ) : (
-    <Button icon href={deeperHref(lesson.deeperTopic)}>
-      {DEEPER_ACTION}
+  ) : undefined;
+  // Done with no series to continue: the next step is a series on a topic of the learner's own.
+  const ownTopic = done && !continueTo?.nextLesson;
+  const readAgain = done ? (
+    <Button variant="quiet" href="/today/lesson?read=1">
+      or read today’s lesson again
     </Button>
-  );
-  // Done with no series to continue: the related topic is named above its button.
-  const suggestDeeper = done && !continueTo?.nextLesson;
+  ) : undefined;
 
   return (
     <PaperPage current="today">
@@ -123,22 +124,16 @@ export default function TodayPage() {
           line={leadLine(session, isNew, started)}
           className="max-w-[780px] flex-[1_1_620px]"
           primary={primary}
-          secondary={
-            suggestDeeper ? (
-              <Button variant="outline" href={OWN_TOPIC_HREF}>
-                {OWN_TOPIC_ACTION}
-              </Button>
-            ) : undefined
-          }
-          quiet={
-            done ? (
-              <Button variant="quiet" href="/today/lesson?read=1">
-                or read today’s lesson again
-              </Button>
-            ) : undefined
-          }
+          // With the own-topic field below, "read again" sits beside its button instead.
+          quiet={ownTopic ? undefined : readAgain}
         >
-          {suggestDeeper ? <DeeperSuggestion topic={lesson.deeperTopic} /> : undefined}
+          {done ? (
+            <>
+              {/* Today's lesson points to two series: its related topic, and its own title. */}
+              <MoreTopics topics={[lesson.deeperTopic, lesson.title]} />
+              {ownTopic && <OwnTopicStart quiet={readAgain} className="mt-9" />}
+            </>
+          ) : undefined}
         </LeadBlock>
         {!isNew && (
           <StreakMark
@@ -154,7 +149,7 @@ export default function TodayPage() {
         )}
       </section>
 
-      {/* Only once there is a series. Starting one is offered by the lesson's own buttons above. */}
+      {/* Only once there is a series. Starting one is offered by the own-topic field above. */}
       {series.length > 0 && (
         <Section
           id="series"

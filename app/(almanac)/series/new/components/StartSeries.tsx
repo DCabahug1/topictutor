@@ -6,10 +6,11 @@ import { Button } from "@/components/almanac/Button";
 import { LeadActions, LeadBlock } from "@/components/almanac/LeadBlock";
 import { PaperPage } from "@/components/almanac/Page";
 import { useSession } from "@/components/almanac/SessionProvider";
-import { almanac, useAlmanac, type TopicCheck } from "@/lib/almanac";
+import { almanac, useAlmanac } from "@/lib/almanac";
 import { BackLink } from "../../[id]/components/SeriesStates";
 import { InlineAlert, LoadingLines } from "./parts";
 import { TopicReview } from "@/components/almanac/TopicReview";
+import { useSeriesStart } from "./useSeriesStart";
 
 const HOW_IT_WORKS = [
   { title: "Placement test", text: "Five questions, easy to hard." },
@@ -53,12 +54,10 @@ function StartSeriesInner() {
   const [typedTopic, setTypedTopic] = useState<string | null>(null);
   const [typedFocus, setTypedFocus] = useState<string | null>(null);
   const [focusOpen, setFocusOpen] = useState(false);
-  const [checking, setChecking] = useState(false);
-  // The topic whose test is being started, or null.
-  const [starting, setStarting] = useState<string | null>(null);
-  const [failed, setFailed] = useState(false);
-  // A topic that needs a second look, and what was typed when it was checked.
-  const [review, setReview] = useState<{ check: TopicCheck; typed: string } | null>(null);
+  // The field shows the topic being started.
+  const { checking, starting, failed, review, begin, submit, clearReview, setStarting } = useSeriesStart({
+    onBegin: setTypedTopic,
+  });
 
   const pending = context?.pending ?? null;
   const topic = typedTopic ?? (fromUrl || pending?.topic || "");
@@ -69,25 +68,10 @@ function StartSeriesInner() {
   const fromToday = Boolean(todaysLesson && fromUrl && todaysLesson.deeperTopic.toLowerCase() === fromUrl.toLowerCase());
   const prefilled = Boolean(fromUrl) && typedTopic === null;
 
-  /** Starts the test on `chosen`. Only this counts toward the daily series limit. */
-  const begin = async (chosen: string) => {
-    setStarting(chosen);
-    setFailed(false);
-    setTypedTopic(chosen);
-    try {
-      await almanac.startPlacement({ topic: chosen, focus: focus.trim() || undefined });
-      router.push("/series/new/placement");
-    } catch {
-      setStarting(null);
-      setFailed(true);
-    }
-  };
-
   const start = async (event: FormEvent) => {
     event.preventDefault();
     const wanted = topic.trim();
     if (!wanted || starting !== null || checking) return;
-    setFailed(false);
 
     // The same request as the unfinished test picks that test up, answers included.
     if (pending !== null && pending.topic === wanted && pending.focus === focus.trim()) {
@@ -95,20 +79,11 @@ function StartSeriesInner() {
       router.push("/series/new/placement");
       return;
     }
-
-    setChecking(true);
-    // If the check itself fails, the topic goes through as typed.
-    const check = await almanac.checkTopic({ topic: wanted, focus: focus.trim() || undefined }).catch(() => null);
-    setChecking(false);
-    if (check && check.verdict !== "clear") {
-      setReview({ check, typed: wanted });
-      return;
-    }
-    await begin(check?.topic || wanted);
+    await submit(wanted, focus);
   };
 
   const editTopic = () => {
-    setReview(null);
+    clearReview();
     const field = document.getElementById("series-topic") as HTMLInputElement | null;
     field?.focus();
     field?.select();
@@ -145,7 +120,7 @@ function StartSeriesInner() {
             value={topic}
             onChange={(event) => {
               setTypedTopic(event.target.value);
-              setReview(null);
+              clearReview();
             }}
             placeholder="Basics of web development"
             autoComplete="off"
@@ -186,7 +161,7 @@ function StartSeriesInner() {
           {failed && <InlineAlert className="mt-4">The test didn’t start. Check your connection and try again.</InlineAlert>}
 
           {review ? (
-            <TopicReview check={review.check} typed={review.typed} starting={starting} onUse={begin} onEdit={editTopic} />
+            <TopicReview check={review.check} typed={review.typed} starting={starting} onUse={(t) => begin(t, focus)} onEdit={editTopic} />
           ) : (
             <LeadActions
               primary={
