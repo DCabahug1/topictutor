@@ -15,7 +15,7 @@ import { LessonTeaser } from "./components/LessonTeaser";
 import { SessionPlayer } from "./components/SessionPlayer";
 import { TutorBand } from "./components/TutorBand";
 
-const HEADLINE = [{ text: "Learn one thing " }, { text: "well", em: true }, { text: ", every day." }];
+const HEADLINE = [{ text: "Learn a new " }, { text: "topic", em: true }, { text: ", every day." }];
 
 // The front page. A guest starts today's lesson from here; a signed-in learner goes to it too.
 export default function LandingPage() {
