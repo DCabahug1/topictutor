@@ -54,7 +54,7 @@ export function PastDailyList({ lessons, today }: PastDailyListProps) {
         </p>
       ) : (
         <>
-          <ul className="m-0 grid list-none grid-cols-1 gap-x-10 p-0 md:grid-cols-2">
+          <ul className="almanac-stagger [--stagger-base:120ms] [--stagger-step:50ms] m-0 grid list-none grid-cols-1 gap-x-10 p-0 md:grid-cols-2">
             {shown.map((lesson, i) => {
               const href =
                 lesson.date === today

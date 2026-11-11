@@ -85,11 +85,11 @@ export function SessionPage({
       <SessionBar leaveHref={leaveHref} onLeave={onLeave} leaveLabel={leaveLabel} leaveIcon={leaveIcon} />
       {rail && <div className="mx-auto mt-2 w-full max-w-(--reading-col)">{rail}</div>}
       <div className={column}>
-        <main key={stepKey} className="almanac-rise mt-12 md:mt-[88px]">
+        <main key={stepKey} className="session-step almanac-rise mt-12 md:mt-[88px]">
           {children}
         </main>
         {(footer || footerNote) && (
-          <div className="mt-14 border-0 border-t border-solid border-(--ink) pt-5 md:mt-16 md:pt-7">
+          <div className="session-foot mt-14 border-0 border-t border-solid border-(--ink) pt-5 md:mt-16 md:pt-7">
             {footerNote && <div className="m-0 text-[17px] italic text-(--ink-muted) md:text-[18px]">{footerNote}</div>}
             {footer && <LeadActions primary={footer} quiet={footerQuiet} className={footerNote ? undefined : "mt-0!"} />}
           </div>

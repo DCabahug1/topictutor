@@ -146,7 +146,7 @@ export function SeriesShelf({ series, onDeleted }: SeriesShelfProps) {
             </div>
           </div>
         ) : (
-          <ul className="m-0 list-none p-0">
+          <ul className="almanac-stagger m-0 list-none p-0 [--stagger-base:120ms] [--stagger-step:50ms]">
             {shown.map((s) => (
               <li key={s.id} className="border-0 border-b border-solid border-(--rule)">
                 <SeriesRow

@@ -198,7 +198,7 @@ export function PlacementResults() {
       </section>
 
       <Section id="answers" title={anyMissed ? "What you missed" : "Your answers"}>
-        <ol className="m-0 list-none p-0">
+        <ol className="almanac-stagger m-0 list-none p-0 [--stagger-base:160ms] [--stagger-step:60ms]">
           {rows.map(({ question, i, verdict }) => {
             const answer = placement.answers[i];
             const said = verdict === "missed" && typeof answer === "number" ? `You said: ${question.options[answer]}. ` : "";

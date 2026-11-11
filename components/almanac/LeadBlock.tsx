@@ -48,7 +48,7 @@ export function LeadBlock({
   className,
 }: LeadBlockProps) {
   return (
-    <div className={cx("min-w-0", className)}>
+    <div className={cx("lead-rise min-w-0", className)}>
       {eyebrow && <p className="t-eyebrow m-0">{eyebrow}</p>}
       {numeral && <div className={eyebrow ? "after-eyebrow" : undefined}>{numeral}</div>}
       <h1

@@ -95,7 +95,7 @@ export function Button({
 
   const content = (
     <>
-      {busy && <Caret className="h-4" />}
+      {busy && <Caret className="almanac-pulse h-4" />}
       {children}
       {icon && !busy && !disabled && <ArrowIcon />}
     </>

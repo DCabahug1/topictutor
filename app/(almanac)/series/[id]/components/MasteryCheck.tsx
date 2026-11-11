@@ -6,6 +6,7 @@ import { Button, Caret } from "@/components/almanac/Button";
 import { Notice } from "@/components/almanac/Notice";
 import { SessionPage } from "@/components/almanac/Page";
 import { StepMeter } from "@/components/almanac/StepMeter";
+import { changeStep } from "@/components/almanac/stepTransition";
 import { almanac, useAlmanac, type Mastery } from "@/lib/almanac";
 import { QUESTION_HEADING } from "../../new/components/parts";
 import { MasteryLocked } from "./MasteryLocked";
@@ -38,8 +39,10 @@ function MasteryForSeries({ id }: { id: string }) {
       .writeMastery(id)
       .then((written) => {
         if (!current) return;
-        setMoved(true);
-        setData(written);
+        changeStep(() => {
+          setMoved(true);
+          setData(written);
+        });
       })
       .catch(() => {
         if (current) setWriteFailed(true);
@@ -72,10 +75,12 @@ function MasteryForSeries({ id }: { id: string }) {
     setRetakeFailed(false);
     try {
       const fresh = await almanac.retakeMastery(id);
-      setWriteFailed(false);
-      window.scrollTo({ top: 0 });
-      setMoved(true);
-      setData(fresh);
+      changeStep(() => {
+        setWriteFailed(false);
+        window.scrollTo({ top: 0 });
+        setMoved(true);
+        setData(fresh);
+      });
     } catch {
       setRetakeFailed(true);
     } finally {

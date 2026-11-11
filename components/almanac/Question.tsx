@@ -133,7 +133,7 @@ export function Question({
         role="radiogroup"
         aria-label={plainText(label)}
         onKeyDown={onKeyDown}
-        className={cx("flex flex-col gap-[10px]", columns === 2 && "md:grid md:grid-cols-2")}
+        className={cx("almanac-stagger flex flex-col gap-[10px]", columns === 2 && "md:grid md:grid-cols-2")}
       >
         {answers.map((answer, i) => (
           <AnswerOption

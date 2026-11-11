@@ -7,6 +7,7 @@ import { Notice } from "@/components/almanac/Notice";
 import { SessionPage } from "@/components/almanac/Page";
 import { Question } from "@/components/almanac/Question";
 import { StepMeter } from "@/components/almanac/StepMeter";
+import { changeStep } from "@/components/almanac/stepTransition";
 import { Markdown } from "@/components/almanac/Markdown";
 import { almanac, useAlmanac, type Answer } from "@/lib/almanac";
 import { InlineAlert, LoadingLines, QUESTION_HEADING } from "./parts";
@@ -56,7 +57,7 @@ export function PlacementTest() {
       (written) => {
         if (!current) return;
         focusHeading.current = true;
-        setData(written);
+        changeStep(() => setData(written));
       },
       () => {
         if (current) setWriteFailed(true);
@@ -168,8 +169,13 @@ export function PlacementTest() {
   const go = (next: number) => {
     if (next === index) return;
     focusHeading.current = true;
-    setIndex(next);
-    window.scrollTo({ top: 0 });
+    changeStep(
+      () => {
+        setIndex(next);
+        window.scrollTo({ top: 0 });
+      },
+      next < index ? "back" : "forward"
+    );
   };
 
   const choose = (answer: Answer) => {

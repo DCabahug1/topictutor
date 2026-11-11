@@ -10,6 +10,7 @@ import { SessionPage } from "@/components/almanac/Page";
 import { Question } from "@/components/almanac/Question";
 import { useSession } from "@/components/almanac/SessionProvider";
 import { StepMeter } from "@/components/almanac/StepMeter";
+import { changeStep } from "@/components/almanac/stepTransition";
 import { Markdown } from "@/components/almanac/Markdown";
 import { almanac, splitSections, useAlmanac, useTextStream, type DailySession as Session } from "@/lib/almanac";
 import { DoneForToday } from "./DoneForToday";
@@ -63,9 +64,11 @@ function DailySessionInner() {
 
   const go = useCallback((next: Step) => {
     moved.current = true;
-    setSaveFailed(false);
-    setStep(next);
-    window.scrollTo({ top: 0 });
+    changeStep(() => {
+      setSaveFailed(false);
+      setStep(next);
+      window.scrollTo({ top: 0 });
+    });
   }, []);
 
   // After a step change, start reading from the new step's heading.
@@ -99,9 +102,11 @@ function DailySessionInner() {
   const continueFromCheck = () => {
     if (!lastCheck) {
       moved.current = true;
-      setSaveFailed(false);
-      setCheckIndex((i) => i + 1);
-      window.scrollTo({ top: 0 });
+      changeStep(() => {
+        setSaveFailed(false);
+        setCheckIndex((i) => i + 1);
+        window.scrollTo({ top: 0 });
+      });
     } else {
       go("finish");
     }

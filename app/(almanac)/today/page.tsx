@@ -151,7 +151,7 @@ export default function TodayPage() {
         }
       >
         {open.length > 0 ? (
-          <ul className="m-0 list-none p-0">
+          <ul className="almanac-stagger m-0 list-none p-0 [--stagger-base:120ms] [--stagger-step:50ms]">
             {open.map((s) => (
               <li key={s.id} className="border-0 border-b border-solid border-(--rule)">
                 <SeriesRow series={s} lead="nextLesson" />

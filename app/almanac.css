@@ -190,10 +190,116 @@ body { margin: 0; font-family: var(--font-serif); background: var(--paper); colo
 /* The double rule drawing across, left to right, on the finish and a Mastery Check pass. */
 .almanac-draw { transform-origin: left; animation: almanac-draw var(--duration-moment) var(--ease-enter) both; }
 
+/*
+ * Rows and options arriving one after another. Each child waits its place in
+ * line times --stagger-step, after --stagger-base. Past the eighth they all wait the same.
+ */
+.almanac-stagger > * { --n: 8; animation: almanac-rise var(--duration-step) var(--ease-enter) both; animation-delay: calc(var(--stagger-base, 0ms) + var(--n) * var(--stagger-step, 40ms)); }
+.almanac-stagger > :nth-child(1) { --n: 0; }
+.almanac-stagger > :nth-child(2) { --n: 1; }
+.almanac-stagger > :nth-child(3) { --n: 2; }
+.almanac-stagger > :nth-child(4) { --n: 3; }
+.almanac-stagger > :nth-child(5) { --n: 4; }
+.almanac-stagger > :nth-child(6) { --n: 5; }
+.almanac-stagger > :nth-child(7) { --n: 6; }
+.almanac-stagger > :nth-child(8) { --n: 7; }
+/* The opening block of a page rising in on load. Not during a step slide, which already moves it. */
+.lead-rise { animation: almanac-rise var(--duration-moment) var(--ease-enter) both; }
+:root[data-step] .lead-rise { animation: none; }
+
+/* The right-or-wrong tag on an answer sliding in beside it. */
+@keyframes almanac-tag-in {
+  from { opacity: 0; transform: translateX(-6px); }
+  to { opacity: 1; transform: none; }
+}
+.almanac-tag-in { display: inline-block; animation: almanac-tag-in var(--duration-step) var(--ease-enter) both; }
+
+/* Stats bars growing from the baseline or from the left. */
+@keyframes almanac-grow-y { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes almanac-grow-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.almanac-grow-y { transform-origin: bottom; animation: almanac-grow-y var(--duration-moment) var(--ease-enter) both; }
+.almanac-grow-x { transform-origin: left; animation: almanac-grow-x var(--duration-moment) var(--ease-enter) both; }
+
+/* The caret in a busy button breathes while it waits. */
+@keyframes almanac-pulse {
+  0%, 100% { opacity: 1; transform: scaleY(1); }
+  50% { opacity: 0.3; transform: scaleY(0.82); }
+}
+.almanac-pulse { animation: almanac-pulse 1.1s ease-in-out infinite; }
+
+/*
+ * Session steps (stepTransition.ts). The old step drifts out one way while the
+ * next comes in from the other. Only the step and its footer are captured: the
+ * session bar and step meter stay live and animate by themselves.
+ */
+.session-step { view-transition-name: session-step; }
+.session-foot { view-transition-name: session-foot; }
+:root[data-step] { view-transition-name: none; }
+:root[data-step] .session-step { animation: none; }
+::view-transition-group(session-step),
+::view-transition-group(session-foot) { animation: none; }
+@keyframes step-out-forward { to { opacity: 0; transform: translateX(-24px); } }
+@keyframes step-in-forward { from { opacity: 0; transform: translateX(24px); } }
+@keyframes step-out-back { to { opacity: 0; transform: translateX(24px); } }
+@keyframes step-in-back { from { opacity: 0; transform: translateX(-24px); } }
+@keyframes step-fade-out { to { opacity: 0; } }
+@keyframes step-fade-in { from { opacity: 0; } }
+::view-transition-old(session-step) { animation: step-out-forward 160ms var(--ease-exit) both; }
+::view-transition-new(session-step) { animation: step-in-forward 320ms var(--ease-enter) 60ms both; }
+:root[data-step="back"]::view-transition-old(session-step) { animation-name: step-out-back; }
+:root[data-step="back"]::view-transition-new(session-step) { animation-name: step-in-back; }
+::view-transition-old(session-foot) { animation: step-fade-out 160ms var(--ease-exit) both; }
+::view-transition-new(session-foot) { animation: step-fade-in 240ms var(--ease-enter) 60ms both; }
+
+/* The step meter: the current bar fills left to right, done bars turn ink. */
+.step-fill { transform-origin: left; transition: scale var(--duration-step) var(--ease-enter), background-color var(--duration-step) var(--ease-enter); }
+
+/* Typed text (TypedText.tsx): the caret rides on an empty inline after the last typed letter. */
+.typed-caret-anchor { position: relative; }
+.typed-caret {
+  position: absolute; left: 0.03em; top: 0.16em; width: 0.07em; height: 0.72em; background: var(--accent);
+  transition: opacity 400ms var(--ease-exit) 500ms;
+}
+[data-typed="done"] .typed-caret { opacity: 0; }
+
+/*
+ * On-view and after-typing motion. The hidden "before" states exist only when
+ * motion is allowed, so with reduced motion everything is simply there.
+ */
+@keyframes stair-rise { from { transform: translateY(calc(100% + 4px)); } to { transform: none; } }
+@keyframes stair-rise-row { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: no-preference) {
+  .typed-rest { visibility: hidden; }
+
+  .almanac-reveal {
+    opacity: 0; transform: translateY(16px);
+    transition: opacity var(--duration-moment) var(--ease-enter), transform var(--duration-moment) var(--ease-enter);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .almanac-reveal.is-in { opacity: 1; transform: none; }
+
+  .almanac-rule-draw { transform: scaleX(0); transform-origin: left; transition: transform var(--duration-moment) var(--ease-enter) var(--reveal-delay, 0ms); }
+  .almanac-rule-draw.is-in { transform: scaleX(1); }
+
+  .typed-after {
+    transition: opacity var(--duration-moment) var(--ease-enter), transform var(--duration-moment) var(--ease-enter);
+    transition-delay: calc(var(--i, 0) * 120ms + 60ms);
+  }
+  .typed-group:has([data-typed="typing"]) .typed-after { opacity: 0; transform: translateY(12px); visibility: hidden; transition: none; }
+
+  .stair { transform: translateY(calc(100% + 4px)); }
+  .stair.is-in { animation: stair-rise var(--duration-moment) var(--ease-enter) both; animation-delay: calc(var(--i, 0) * 110ms); }
+  @media (max-width: 767px) {
+    .stair { transform: none; opacity: 0; }
+    .stair.is-in { animation-name: stair-rise-row; }
+  }
+}
+
 input::placeholder, textarea::placeholder { color: inherit; opacity: 0.62; }
 
 @media (prefers-reduced-motion: reduce) {
-  .almanac-text-caret { display: none; }
+  .almanac-text-caret, .typed-caret { display: none; }
+  .almanac-pulse { animation: none; }
   *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; scroll-behavior: auto !important; }
 }
 

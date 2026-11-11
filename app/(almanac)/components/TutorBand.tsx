@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { cx } from "@/components/almanac/cx";
+import { Reveal } from "@/components/almanac/Reveal";
+import { useInView } from "@/components/almanac/useInView";
 import { useReducedMotion } from "./useReducedMotion";
 
 const ASK = [
@@ -25,23 +27,25 @@ const ASK = [
 /** The tutor, full bleed on sunk paper: tap a question and the answer types out with its source. */
 export function TutorBand() {
   const reduced = useReducedMotion();
-  // The first answer starts written; a tapped question types out.
-  const [{ index, shown }, setAsk] = useState({ index: 0, shown: Infinity });
+  // The first answer types out once the card is in view; a tapped question types out too.
+  const [{ index, shown: typed }, setAsk] = useState({ index: 0, shown: 0 });
+  const [cardRef, inView] = useInView<HTMLDivElement>({ threshold: 0.45 });
   const current = ASK[index];
+  const shown = reduced ? Infinity : typed;
   const typing = shown < current.a.length;
 
   useEffect(() => {
-    if (!typing) return;
+    if (!typing || !inView) return;
     const timer = window.setInterval(() => {
       setAsk((s) => ({ index: s.index, shown: Math.min(ASK[s.index].a.length, s.shown + 2) }));
     }, 22);
     return () => window.clearInterval(timer);
-  }, [typing, index]);
+  }, [typing, inView, index]);
 
   return (
     <section aria-labelledby="tutor-heading" className="bg-(--paper-sunk) px-(--gutter) py-[72px] md:py-32">
       <div className="mx-auto flex max-w-(--content-max) flex-wrap items-center gap-x-20 gap-y-10">
-        <div className="min-w-0 flex-[1_1_320px]">
+        <Reveal className="min-w-0 flex-[1_1_320px]">
           <p className="t-eyebrow m-0">The tutor</p>
           <h2 id="tutor-heading" className="after-eyebrow m-0 text-[44px] font-medium leading-[0.98] tracking-[-0.03em] md:text-[76px]">
             Stuck on a line? <em className="font-normal">Ask.</em>
@@ -49,9 +53,9 @@ export function TutorBand() {
           <p className="m-0 mt-5 max-w-[380px] text-[19px] leading-normal text-(--ink-soft)">
             Every lesson has a tutor that answers from the lesson itself, and shows you where.
           </p>
-        </div>
+        </Reveal>
 
-        <div className="min-w-0 flex-[1.5_1_440px] border border-solid border-(--ink) bg-(--paper-raised)">
+        <div ref={cardRef} className="min-w-0 flex-[1.5_1_440px] border border-solid border-(--ink) bg-(--paper-raised)">
           <div className="flex flex-wrap justify-between gap-x-3 gap-y-1 border-0 border-b border-solid border-(--rule) px-[18px] py-4 font-label text-[12px] uppercase tracking-[0.08em] md:px-7">
             <span className="text-(--ink-muted)">Asking about</span>
             <span>Why leap years exist</span>

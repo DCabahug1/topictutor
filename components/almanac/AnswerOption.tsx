@@ -47,7 +47,9 @@ export const AnswerOption = forwardRef<HTMLButtonElement, AnswerOptionProps>(fun
       tabIndex={tabIndex}
       onClick={locked ? undefined : onSelect}
       className={cx(
-        "grid w-full grid-cols-[28px_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 text-left font-serif leading-[1.3] md:grid-cols-[48px_minmax(0,1fr)_auto] md:px-5 transition-colors duration-(--duration-instant) ease-out",
+        "grid w-full grid-cols-[28px_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 text-left font-serif leading-[1.3] md:grid-cols-[48px_minmax(0,1fr)_auto] md:px-5 transition-colors ease-out",
+        // Right and wrong ease in; hover and selection stay quick.
+        locked ? "duration-(--duration-step)" : "duration-(--duration-instant)",
         size === "lg" ? "min-h-16 text-[18px] font-medium md:text-[22px]" : "min-h-[58px] text-[17px] md:text-[19px]",
         "border-solid",
         selected && plain && !dimmed ? "border-2" : "border-[1.5px]",
@@ -77,7 +79,11 @@ export const AnswerOption = forwardRef<HTMLButtonElement, AnswerOptionProps>(fun
           correct ? "text-(--correct)" : "text-(--incorrect)"
         )}
       >
-        {tag}
+        {tag && (
+          <span key={tag} className="almanac-tag-in">
+            {tag}
+          </span>
+        )}
       </span>
     </button>
   );

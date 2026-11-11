@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { cx } from "@/components/almanac/cx";
+import { Reveal } from "@/components/almanac/Reveal";
+import { useInView } from "@/components/almanac/useInView";
 import { useReducedMotion } from "./useReducedMotion";
 
 /** How long each step plays, in milliseconds. */
@@ -19,14 +21,16 @@ const KICKER = "m-0 font-label text-[12px] uppercase tracking-[0.08em]";
 
 /**
  * "Watch a whole session": the four steps play on their own, with a pause
- * button. With reduced motion it waits for a click and nothing slides.
+ * button, once it is in view. With reduced motion it waits for a click and nothing slides.
  */
 export function SessionPlayer() {
   const reduced = useReducedMotion();
   const [{ step, elapsed }, setClock] = useState({ step: 0, elapsed: 0 });
   // Null until the learner presses play or pause: then it follows reduced motion.
   const [chosen, setChosen] = useState<boolean | null>(null);
-  const playing = chosen ?? !reduced;
+  // It starts from the first step once it scrolls into view, not on page load.
+  const [frameRef, inView] = useInView<HTMLDivElement>({ threshold: 0.4 });
+  const playing = chosen ?? (!reduced && inView);
 
   useEffect(() => {
     if (!playing) return;
@@ -46,6 +50,7 @@ export function SessionPlayer() {
 
   return (
     <section aria-labelledby="player-heading" className="mt-[112px] md:mt-[200px]">
+      <Reveal>
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-3">
         <h2 id="player-heading" className="m-0 text-[34px] font-medium leading-[1.05] tracking-[-0.02em] md:text-[48px]">
           Watch a whole session.
@@ -53,7 +58,7 @@ export function SessionPlayer() {
         <p className={cx(KICKER, "text-(--ink-muted)")}>Step {step + 1} of 4 · about three minutes for real</p>
       </div>
 
-      <div className="mt-6 flex flex-wrap border border-solid border-(--ink) bg-(--paper-raised)">
+      <div ref={frameRef} className="mt-6 flex flex-wrap border border-solid border-(--ink) bg-(--paper-raised)">
         <div
           role="group"
           aria-label="Session steps"
@@ -184,6 +189,7 @@ export function SessionPlayer() {
           ))}
         </div>
       </div>
+      </Reveal>
     </section>
   );
 }

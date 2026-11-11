@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { cx } from "@/components/almanac/cx";
+import { RevealRule } from "@/components/almanac/Reveal";
+import { useInView } from "@/components/almanac/useInView";
 
 const TOPICS = [
   { name: "Bridges", start: 1, lessons: ["What holds a bridge up", "Beams and arches", "Why suspension works", "Wind and resonance", "Reading a real bridge"] },
@@ -13,6 +15,8 @@ const TOPICS = [
 export function DeeperStaircase() {
   const [topic, setTopic] = useState(0);
   const current = TOPICS[topic];
+  // The steps rise one after another, like a drawer opening upward, once the staircase is in view.
+  const [stairsRef, inView] = useInView<HTMLOListElement>({ threshold: 0.35 });
 
   return (
     <section aria-labelledby="deeper-heading" className="mt-[112px] md:mt-[200px]">
@@ -46,17 +50,21 @@ export function DeeperStaircase() {
         </div>
       </div>
 
-      <ol aria-label={`${current.name}: five lessons`} className="m-0 mt-10 flex list-none flex-col gap-[6px] p-0 md:mt-14 md:flex-row md:items-end md:gap-2">
+      <ol
+        ref={stairsRef}
+        aria-label={`${current.name}: five lessons`}
+        className="m-0 mt-10 flex list-none flex-col gap-[6px] p-0 md:mt-14 md:flex-row md:items-end md:gap-2 md:overflow-hidden"
+      >
         {current.lessons.map((title, i) => {
           const skip = i < current.start;
           const here = i === current.start;
           return (
             <li
               key={`${current.name}-${i}`}
-              style={{ ["--stair-h" as string]: `${210 + i * 56}px`, ["--stair-ml" as string]: `${i * 14}px` }}
+              style={{ ["--stair-h" as string]: `${210 + i * 56}px`, ["--stair-ml" as string]: `${i * 14}px`, ["--i" as string]: i }}
               className={cx(
-                "box-border flex min-w-0 items-end justify-between gap-3 border-0 border-t-[3px] border-solid px-4 py-[14px] ml-(--stair-ml) md:ml-0 md:h-(--stair-h) md:flex-[1_1_0] md:flex-col md:items-stretch md:px-5 md:pb-[18px] md:pt-5",
-                "transition-[height,background-color,color] duration-[420ms] ease-(--ease-enter)",
+                "stair box-border flex min-w-0 items-end justify-between gap-3 border-0 border-t-[3px] border-solid px-4 py-[14px] ml-(--stair-ml) md:ml-0 md:h-(--stair-h) md:flex-[1_1_0] md:flex-col md:items-stretch md:px-5 md:pb-[18px] md:pt-5",
+                inView && "is-in",
                 here && "border-(--accent) bg-(--ink) text-(--on-ink)",
                 skip && "border-(--rule) bg-transparent text-(--ink-muted)",
                 !here && !skip && "border-(--ink) bg-(--paper-sunk) text-(--ink)"
@@ -86,7 +94,11 @@ export function DeeperStaircase() {
           );
         })}
       </ol>
-      <div className="mt-4 flex flex-wrap justify-between gap-x-4 gap-y-2 border-0 border-t border-solid border-(--ink) pt-[14px] font-label text-[13px] uppercase tracking-[0.06em]">
+      <RevealRule show={inView} delay={5 * 110 + 200} className="mt-4 h-px bg-(--ink)" />
+      <div
+        className={cx("almanac-reveal flex flex-wrap justify-between gap-x-4 gap-y-2 pt-[14px] font-label text-[13px] uppercase tracking-[0.06em]", inView && "is-in")}
+        style={{ ["--reveal-delay" as string]: `${5 * 110 + 360}ms` }}
+      >
         <span className="text-(--accent)">↑ Placement starts you at lesson {current.start + 1}</span>
         <span className="text-(--ink-muted)">Then a Mastery Check</span>
       </div>

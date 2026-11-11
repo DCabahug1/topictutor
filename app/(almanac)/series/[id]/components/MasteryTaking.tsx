@@ -5,6 +5,7 @@ import { Button } from "@/components/almanac/Button";
 import { SessionPage } from "@/components/almanac/Page";
 import { Question } from "@/components/almanac/Question";
 import { StepMeter } from "@/components/almanac/StepMeter";
+import { changeStep } from "@/components/almanac/stepTransition";
 import { Markdown } from "@/components/almanac/Markdown";
 import { almanac, type Answer, type Mastery } from "@/lib/almanac";
 
@@ -45,8 +46,13 @@ export function MasteryTaking({ mastery, focusHeading = false, onUpdate }: Maste
 
   const jump = (next: number) => {
     moved.current = true;
-    setIndex(next);
-    window.scrollTo({ top: 0 });
+    changeStep(
+      () => {
+        setIndex(next);
+        window.scrollTo({ top: 0 });
+      },
+      next < index ? "back" : "forward"
+    );
   };
 
   // Shown at once and saved on every change, so a refresh restores the check.
@@ -73,8 +79,10 @@ export function MasteryTaking({ mastery, focusHeading = false, onUpdate }: Maste
         setSaveFailed(false);
       }
       const result = await almanac.submitMastery(id);
-      window.scrollTo({ top: 0 });
-      onUpdate(result);
+      changeStep(() => {
+        window.scrollTo({ top: 0 });
+        onUpdate(result);
+      });
     } catch {
       setSubmitFailed(true);
       setSubmitting(false);

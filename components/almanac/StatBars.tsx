@@ -21,6 +21,9 @@ type StatBarsProps = {
   className?: string;
 };
 
+/** Bars grow one after another, 40ms apart. */
+const grow = (i: number) => ({ animationDelay: `${Math.min(i, 12) * 40}ms` });
+
 // The tallest column, in a 180px chart that leaves room for the number above it.
 const COLUMN_HEIGHT = 140;
 
@@ -36,14 +39,17 @@ export function StatBars({ title, bars, layout, max, className }: StatBarsProps)
   if (layout === "rows") {
     return (
       <div role="img" aria-label={label} className={className}>
-        {bars.map((bar) => (
+        {bars.map((bar, i) => (
           <div
             key={bar.label}
             className="grid grid-cols-[120px_minmax(0,1fr)_32px] items-center gap-3 py-2 md:grid-cols-[180px_minmax(0,1fr)_40px]"
           >
             <span className="text-[17px] leading-[1.2]">{bar.label}</span>
             <span className="h-3 bg-(--paper-sunk)">
-              <span className="block h-full bg-(--ink-muted)" style={{ width: `${Math.round((bar.value / full) * 100)}%` }} />
+              <span
+                className="almanac-grow-x block h-full bg-(--ink-muted)"
+                style={{ width: `${Math.round((bar.value / full) * 100)}%`, ...grow(i) }}
+              />
             </span>
             <span className="text-right font-label text-[13px]">{bar.value}</span>
           </div>
@@ -56,16 +62,16 @@ export function StatBars({ title, bars, layout, max, className }: StatBarsProps)
   return (
     <div role="img" aria-label={label} className={className}>
       <div className="grid h-[180px] items-end gap-2 border-0 border-b border-solid border-(--ink) md:gap-4" style={columns}>
-        {bars.map((bar) => (
+        {bars.map((bar, i) => (
           <div key={bar.label} className="flex h-full flex-col items-center justify-end gap-[6px]">
             <span className="font-label text-[12px] text-(--ink-muted)">{bar.value || (bar.current ? "·" : "0")}</span>
             <span
               className={cx(
-                "box-border w-full",
+                "almanac-grow-y box-border w-full",
                 bar.value ? "bg-(--ink-muted)" : "h-[2px]",
                 !bar.value && (bar.current ? "border border-dashed border-(--ink)" : "bg-(--ink-muted)")
               )}
-              style={bar.value ? { height: Math.max(2, Math.round((bar.value / full) * COLUMN_HEIGHT)) } : undefined}
+              style={{ ...(bar.value ? { height: Math.max(2, Math.round((bar.value / full) * COLUMN_HEIGHT)) } : {}), ...grow(i) }}
             />
           </div>
         ))}

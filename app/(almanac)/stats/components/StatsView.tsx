@@ -175,7 +175,7 @@ export function StatsView() {
             )}
           </p>
           {stats.masteryScores.length > 0 ? (
-            <ul className="m-0 mt-7 list-none border-0 border-t border-solid border-(--ink) p-0">
+            <ul className="almanac-stagger [--stagger-base:120ms] [--stagger-step:50ms] m-0 mt-7 list-none border-0 border-t border-solid border-(--ink) p-0">
               {stats.masteryScores.map((score) => {
                 const passed = masteryPassed(score.best);
                 return (

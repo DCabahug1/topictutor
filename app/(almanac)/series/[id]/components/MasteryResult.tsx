@@ -81,7 +81,7 @@ export function MasteryResult({ mastery, focusHeading = false, onRetake, retakin
 
   const answersSection = showAnswers && (
     <Section id="answers" title="Your answers">
-      <ol className="m-0 list-none p-0">
+      <ol className="almanac-stagger m-0 list-none p-0 [--stagger-base:160ms] [--stagger-step:60ms]">
         {questions.map((question, i) => {
           const given = mastery.answers[i];
           const correct = given === question.correctIndex;
@@ -156,7 +156,7 @@ export function MasteryResult({ mastery, focusHeading = false, onRetake, retakin
 
         {others.length > 0 && (
           <Section title="Or try one of these" className="mt-[72px]! md:mt-[120px]!">
-            <ol className="m-0 list-none p-0">
+            <ol className="almanac-stagger m-0 list-none p-0 [--stagger-base:160ms] [--stagger-step:60ms]">
               {others.map((suggestion) => (
                 <LessonRow
                   key={suggestion.title}
@@ -217,7 +217,7 @@ export function MasteryResult({ mastery, focusHeading = false, onRetake, retakin
 
       {mastery.review.length > 0 && (
         <Section title="Review these first" className="mt-[72px]! md:mt-[120px]!">
-          <ol className="m-0 list-none p-0">
+          <ol className="almanac-stagger m-0 list-none p-0 [--stagger-base:160ms] [--stagger-step:60ms]">
             {mastery.review.map((lesson) => (
               <LessonRow
                 key={lesson.number}
