@@ -161,11 +161,17 @@ export type SeriesLesson = {
   /** Null until written. Stream it with streamSeriesLesson. */
   paragraphs: string[] | null;
   check: ChoiceQuestion;
+  /** The pick on the current question, right or wrong. Null until one is made. */
   checkAnswer: number | null;
+  /**
+   * The check was answered right, so the lesson is finished. A wrong pick
+   * leaves this false until retrySeriesCheck asks again and the next pick is right.
+   */
+  checkPassed: boolean;
   askHint: string;
   /** The next lesson is already written, so "Next" opens instantly. */
   nextReady: boolean;
-  /** Lesson numbers whose checks are still unanswered. */
+  /** Lesson numbers whose checks haven't been answered right yet. */
   unfinished: number[];
 };
 

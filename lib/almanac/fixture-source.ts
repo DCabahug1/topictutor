@@ -79,7 +79,12 @@ type StoredSeries = {
   whys: string[];
   focus: boolean[];
   written: boolean[];
+  /** Right answers only: a lesson is done when its entry isn't null. */
   checkAnswers: Array<number | null>;
+  /** A wrong pick waiting for a retry. Missing in stores saved before retries. */
+  checkMissed?: Array<number | null>;
+  /** A check asked again replaces the lesson's own. */
+  retryChecks?: Array<ChoiceQuestion | null>;
   mastery: {
     written: boolean;
     answers: Array<Answer | null>;
@@ -399,6 +404,15 @@ function summarize(series: StoredSeries): SeriesSummary {
   };
 }
 
+function shuffled(question: ChoiceQuestion): ChoiceQuestion {
+  const order = question.options.map((_, i) => i);
+  for (let i = order.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return { ...question, options: order.map((i) => question.options[i]), correctIndex: order.indexOf(question.correctIndex) };
+}
+
 function unfinishedOf(series: StoredSeries): number[] {
   return series.checkAnswers.map((a, i) => (a === null ? i + 1 : 0)).filter((n) => n > 0);
 }
@@ -503,8 +517,9 @@ function toSeriesLesson(series: StoredSeries, number: number): SeriesLesson {
     description: lesson.description,
     why: series.whys[number - 1] ?? "",
     paragraphs: series.written[number - 1] ? lesson.paragraphs : null,
-    check: lesson.check,
-    checkAnswer: series.checkAnswers[number - 1],
+    check: series.retryChecks?.[number - 1] ?? lesson.check,
+    checkAnswer: series.checkAnswers[number - 1] ?? series.checkMissed?.[number - 1] ?? null,
+    checkPassed: series.checkAnswers[number - 1] !== null,
     askHint: lesson.askHint,
     nextReady: number < LESSONS_PER_SERIES && series.written[number],
     unfinished: unfinishedOf(series),
@@ -752,10 +767,32 @@ export const fixtureSource: AlmanacSource = {
   async answerSeriesCheck(id, number, answer) {
     const store = load();
     const series = findSeries(store, id);
-    if (series.checkAnswers[number - 1] === null) {
-      series.checkAnswers[number - 1] = answer;
-      series.updatedAt = new Date().toISOString();
-      store.finished.push({ date: localDate(), subject: series.category, kind: "series" });
+    const i = number - 1;
+    const missed = (series.checkMissed ??= Array(LESSONS_PER_SERIES).fill(null));
+    if (series.checkAnswers[i] === null && missed[i] === null) {
+      const question = series.retryChecks?.[i] ?? lessonsOf(series)[i].check;
+      if (answer === question.correctIndex) {
+        series.checkAnswers[i] = answer;
+        series.updatedAt = new Date().toISOString();
+        store.finished.push({ date: localDate(), subject: series.category, kind: "series" });
+      } else {
+        missed[i] = answer;
+      }
+      save(store);
+    }
+    return toSeriesLesson(series, number);
+  },
+
+  async retrySeriesCheck(id, number) {
+    await wait(700);
+    const store = load();
+    const series = findSeries(store, id);
+    const i = number - 1;
+    if (series.checkAnswers[i] === null && series.checkMissed?.[i] != null) {
+      // The sample data can't be reworded, so the fixture only reshuffles.
+      const question = series.retryChecks?.[i] ?? lessonsOf(series)[i].check;
+      (series.retryChecks ??= Array(LESSONS_PER_SERIES).fill(null))[i] = shuffled(question);
+      series.checkMissed[i] = null;
       save(store);
     }
     return toSeriesLesson(series, number);

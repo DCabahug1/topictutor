@@ -59,7 +59,10 @@ export interface AlmanacSource {
   getSeriesLesson(id: string, number: number): Promise<SeriesLesson>;
   /** Writes a series lesson. Only needed while `paragraphs` is null. */
   streamSeriesLesson(id: string, number: number): AsyncIterable<string>;
+  /** Only a right answer finishes the lesson. A wrong one is shown, then waits for retrySeriesCheck. */
   answerSeriesCheck(id: string, number: number, answer: number): Promise<SeriesLesson>;
+  /** After a wrong answer: the check again, rephrased with its options reshuffled. */
+  retrySeriesCheck(id: string, number: number): Promise<SeriesLesson>;
 
   // Placement test (one in progress at a time)
   /**

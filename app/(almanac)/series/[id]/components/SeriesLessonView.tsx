@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AskBox } from "@/components/almanac/AskBox";
 import { Button } from "@/components/almanac/Button";
 import { LessonBody } from "@/components/almanac/LessonBody";
@@ -27,6 +27,9 @@ function SeriesLesson({ id, number }: { id: string; number: number }) {
   const { data: series } = useAlmanac(() => almanac.getSeries(id), [id]);
   const { text, status: writeStatus, start: startWriting } = useTextStream();
   const [saveFailed, setSaveFailed] = useState(false);
+  const [retrying, setRetrying] = useState(false);
+  const [retryFailed, setRetryFailed] = useState(false);
+  const checkHeading = useRef<HTMLHeadingElement>(null);
 
   // A lesson opened for the first time is written while the learner watches.
   const needsWriting = Boolean(lesson && !lesson.paragraphs);
@@ -69,9 +72,31 @@ function SeriesLesson({ id, number }: { id: string; number: number }) {
       .catch(() => setSaveFailed(true));
   };
 
+  // A wrong answer is shown with the right one, then the check comes back in new words.
+  const passed = lesson.checkPassed;
+  const missed = lesson.checkAnswer !== null && !passed;
+  const retry = () => {
+    setRetrying(true);
+    setRetryFailed(false);
+    almanac
+      .retrySeriesCheck(id, number)
+      .then((fresh) => {
+        setData(fresh);
+        checkHeading.current?.focus();
+      })
+      .catch(() => setRetryFailed(true))
+      .finally(() => setRetrying(false));
+  };
+
   // The next step: the next lesson, the Mastery Check, or the lessons still unfinished.
   const firstUnfinished = lesson.unfinished[0];
-  const footer = !last ? (
+  const footer = missed ? (
+    <Button icon busy={retrying} onClick={retry}>
+      {retrying ? "Writing a new question" : "Try the question again"}
+    </Button>
+  ) : !passed ? (
+    <Button disabled>Answer the check to continue</Button>
+  ) : !last ? (
     <Button icon href={`${seriesHref}/${nextNumber}`}>
       Continue to lesson {nextNumber}
     </Button>
@@ -88,7 +113,9 @@ function SeriesLesson({ id, number }: { id: string; number: number }) {
       Take the Mastery Check
     </Button>
   );
-  const footerNote = !last
+  const footerNote = missed
+    ? "Get the check right to move on. It comes back in new words."
+    : !last
     ? lesson.nextReady
       ? `Lesson ${nextNumber} is ready.`
       : undefined
@@ -158,10 +185,17 @@ function SeriesLesson({ id, number }: { id: string; number: number }) {
           />
           <section aria-labelledby="lesson-check" className="mt-14 border-0 border-t border-solid border-(--ink) pt-6 md:mt-16 md:pt-8">
             <p className="m-0 font-mono text-[12px] uppercase tracking-[0.1em] text-(--ink-muted)">Check</p>
-            <h2 id="lesson-check" className="after-eyebrow m-0 text-[26px] font-medium leading-[1.15] tracking-[-0.015em] md:text-[36px]">
+            <h2
+              id="lesson-check"
+              ref={checkHeading}
+              tabIndex={-1}
+              className="after-eyebrow m-0 text-[26px] font-medium leading-[1.15] tracking-[-0.015em] md:text-[36px]"
+            >
               <Markdown mode="inline">{lesson.check.prompt}</Markdown>
             </h2>
             <Question
+              // A new question starts clean.
+              key={lesson.check.prompt}
               className="mt-7"
               label={lesson.check.prompt}
               options={lesson.check.options}
@@ -176,6 +210,11 @@ function SeriesLesson({ id, number }: { id: string; number: number }) {
             {saveFailed && (
               <p role="alert" className="m-0 mt-5 text-[17px] text-(--incorrect)">
                 That answer didn’t save. Pick it again.
+              </p>
+            )}
+            {retryFailed && (
+              <p role="alert" className="m-0 mt-5 text-[17px] text-(--incorrect)">
+                The new question didn’t arrive. Try again.
               </p>
             )}
           </section>

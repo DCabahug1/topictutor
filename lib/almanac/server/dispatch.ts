@@ -47,6 +47,7 @@ const RPC: Record<RpcMethod, Entry<Promise<unknown>>> = {
   deleteSeries: def(z.tuple([id]), (l, [s]) => series.deleteSeries(l, s)),
   getSeriesLesson: def(z.tuple([id, lessonNumber]), (l, [s, n]) => series.getSeriesLesson(l, s, n)),
   answerSeriesCheck: def(z.tuple([id, lessonNumber, option]), (l, [s, n, a]) => series.answerSeriesCheck(l, s, n, a)),
+  retrySeriesCheck: def(z.tuple([id, lessonNumber]), (l, [s, n]) => series.retrySeriesCheck(l, s, n)),
   checkTopic: def(z.tuple([seriesRequest]), (l, [r]) => checkTopic(l, r)),
   startPlacement: def(z.tuple([seriesRequest]), (l, [r]) =>
     placement.startPlacement(l, r)

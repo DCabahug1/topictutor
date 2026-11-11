@@ -1,5 +1,5 @@
 import "server-only";
-import { GenerationError, HAIKU, streamText } from "@/lib/claude";
+import { GenerationError, HAIKU, generateStructured, streamText } from "@/lib/claude";
 import { SAMPLE_LESSONS, SAMPLE_SERIES } from "../fixtures/sample-series";
 import { LESSONS_PER_SERIES, SECTION_BREAK, percentComplete, seriesStatus } from "../rules";
 import {
@@ -15,7 +15,7 @@ import { Channel, paragraphsOf } from "./channel";
 import { claim, release, waitFor } from "./claims";
 import { check, db, isUuid, requireUser, type Learner } from "./context";
 import { prepareMastery } from "./mastery";
-import { seriesProsePrompt } from "./prompts";
+import { finishChoice, retryCheckPrompt, retryCheckSchema, seriesProsePrompt, shuffleChoice } from "./prompts";
 
 export type SeriesRow = {
   id: string;
@@ -41,12 +41,15 @@ export type LessonRow = {
   check_question: ChoiceQuestion;
   ask_hint: string;
   paragraphs: string[] | null;
+  /** Set only by a right answer, so a lesson is done when this isn't null. */
   check_answer: number | null;
+  /** A wrong pick on the current question. Cleared when the question is asked again. */
+  check_missed: number | null;
 };
 
 const SERIES_COLUMNS =
   "id, user_id, is_sample, title, category, description, focus_line, placement_score, mastery_passed, mastery_best, updated_at";
-const LESSON_COLUMNS = "number, title, description, why, focus, key_points, check_question, ask_hint, paragraphs, check_answer";
+const LESSON_COLUMNS = "number, title, description, why, focus, key_points, check_question, ask_hint, paragraphs, check_answer, check_missed";
 
 /** The public sample, before a learner has answered anything in it. */
 function sampleSeriesRow(userId: string): SeriesRow {
@@ -77,6 +80,7 @@ function sampleLessonRows(): LessonRow[] {
     ask_hint: lesson.askHint,
     paragraphs: lesson.paragraphs,
     check_answer: null,
+    check_missed: null,
   }));
 }
 
@@ -221,7 +225,8 @@ function toLesson(row: SeriesRow, lessons: LessonRow[], number: number): SeriesL
     why: lesson.why,
     paragraphs: lesson.paragraphs,
     check: lesson.check_question,
-    checkAnswer: lesson.check_answer,
+    checkAnswer: lesson.check_answer ?? lesson.check_missed,
+    checkPassed: lesson.check_answer !== null,
     askHint: lesson.ask_hint,
     nextReady: Boolean(next?.paragraphs),
     unfinished: lessons.filter((l) => l.check_answer === null).map((l) => l.number),
@@ -323,8 +328,21 @@ export async function answerSeriesCheck(learner: Learner, id: string, number: nu
   const lesson = lessons.find((l) => l.number === number);
   if (!lesson) throw new AlmanacError("notFound");
 
-  // The first answer wins. Answering, right or wrong, finishes the lesson.
-  if (lesson.check_answer === null) {
+  // One pick per question. Only a right one finishes the lesson; a wrong one waits for a retry.
+  if (lesson.check_answer !== null || lesson.check_missed !== null) return toLesson(row, lessons, number);
+
+  if (answer !== lesson.check_question.correctIndex) {
+    check(
+      await db()
+        .from("series_lessons")
+        .update({ check_missed: answer })
+        .eq("series_id", row.id)
+        .eq("number", number)
+        .is("check_answer", null)
+        .is("check_missed", null)
+    );
+    lesson.check_missed = answer;
+  } else {
     const now = new Date().toISOString();
     check(
       await db()
@@ -348,6 +366,67 @@ export async function answerSeriesCheck(learner: Learner, id: string, number: nu
     if (!row.is_sample && lessons.every((l) => l.check_answer !== null)) learner.defer(prepareMastery(row.id));
   }
   return toLesson(row, lessons, number);
+}
+
+/** The missed question in new words and new specifics, with its options shuffled. */
+async function rephraseCheck(lesson: LessonRow): Promise<ChoiceQuestion> {
+  const missed = lesson.check_question;
+  try {
+    const { check: written } = await generateStructured({
+      ...retryCheckPrompt(lesson.title, lesson.paragraphs ?? lesson.key_points, missed),
+      schema: retryCheckSchema,
+      route: "series-check-retry",
+      model: HAIKU,
+      effort: "low",
+      maxTokens: 2_000,
+    });
+    return finishChoice(written);
+  } catch (cause) {
+    // Never leave the learner stuck: the same question, reshuffled, still asks them to think again.
+    console.error("[almanac] check retry:", cause);
+    return shuffleChoice(missed);
+  }
+}
+
+/** After a wrong answer: asks the check again, rephrased and reshuffled. */
+export async function retrySeriesCheck(learner: Learner, id: string, number: number): Promise<SeriesLesson> {
+  requireUser(learner);
+  const { row, lessons, stored } = await resolveSeries(learner, id);
+  const lesson = lessons.find((l) => l.number === number);
+  if (!lesson) throw new AlmanacError("notFound");
+  if (!stored || lesson.check_answer !== null || lesson.check_missed === null) return toLesson(row, lessons, number);
+
+  const held = await claim(`series-check:${row.id}:${number}`);
+  if (!held) {
+    // A second tap, or another tab: wait for that rewrite instead of writing another.
+    const fresh = await waitFor(async () => {
+      const current = await lessonsOf(row.id);
+      return current.find((l) => l.number === number)?.check_missed === null ? current : null;
+    });
+    return toLesson(row, fresh, number);
+  }
+  try {
+    // Someone may have asked it again between the first read and the claim.
+    const current = await lessonsOf(row.id);
+    const missed = current.find((l) => l.number === number);
+    if (!missed || missed.check_answer !== null || missed.check_missed === null) return toLesson(row, current, number);
+
+    const question = await rephraseCheck(missed);
+    check(
+      await db()
+        .from("series_lessons")
+        .update({ check_question: question, check_missed: null })
+        .eq("series_id", row.id)
+        .eq("number", number)
+        .is("check_answer", null)
+        .not("check_missed", "is", null)
+    );
+    missed.check_question = question;
+    missed.check_missed = null;
+    return toLesson(row, current, number);
+  } finally {
+    await release(held);
+  }
 }
 
 /** A lesson's text and title, for the tutor. */

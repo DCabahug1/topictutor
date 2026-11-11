@@ -72,12 +72,40 @@ export function finishChoice<T extends WrittenChoice>(question: T): Omit<T, "cod
   );
   if (ordered) return { ...rest, prompt };
 
-  const order = [0, 1, 2, 3];
+  return shuffleChoice({ ...rest, prompt });
+}
+
+/** The same question with its options in a new random order. */
+export function shuffleChoice<T extends { options: string[]; correctIndex: number }>(question: T): T {
+  const order = question.options.map((_, i) => i);
   for (let i = order.length - 1; i > 0; i -= 1) {
     const j = Math.floor(Math.random() * (i + 1));
     [order[i], order[j]] = [order[j], order[i]];
   }
-  return { ...rest, prompt, options: order.map((i) => rest.options[i]), correctIndex: order.indexOf(rest.correctIndex) };
+  return { ...question, options: order.map((i) => question.options[i]), correctIndex: order.indexOf(question.correctIndex) };
+}
+
+// ---- A lesson check, asked again ----
+
+export const retryCheckSchema = z.object({ check: choice });
+
+/** A missed lesson check, asked again in new words so the answer just shown isn't the answer now. */
+export function retryCheckPrompt(lessonTitle: string, paragraphs: string[], missed: { prompt: string; options: string[]; correctIndex: number }) {
+  return {
+    system: `You write the lesson check for a TopicTutor lesson again, after the learner got it wrong.
+Ask about the same idea from the lesson, in new words. Change the specifics (numbers, names, code, the example) so the right answer is not the one they were just shown.
+It must still be answerable from the lesson alone, at the same difficulty.
+${VOICE}`,
+    user: `Lesson: ${lessonTitle}
+
+${paragraphs.join("\n\n")}
+
+The question they missed:
+${missed.prompt}
+${missed.options.map((o, i) => `${i === missed.correctIndex ? "(right) " : ""}${o}`).join("\n")}
+
+Write the new question.`,
+  };
 }
 
 // ---- Daily lesson ----
