@@ -54,7 +54,10 @@ function toMastery(series: SeriesRow, lessons: LessonRow[], m: MasteryRow | null
 
 /** The lessons the learner got wrong along the way, or missed in the last attempt. */
 function weakLessons(lessons: LessonRow[], m: MasteryRow | null): number[] {
-  const wrongChecks = lessons.filter((l) => l.check_answer !== null && l.check_answer !== l.check_question.correctIndex);
+  // check_was_missed covers retries; the second test covers lessons answered wrong before retries existed.
+  const wrongChecks = lessons.filter(
+    (l) => l.check_was_missed || (l.check_answer !== null && l.check_answer !== l.check_question.correctIndex)
+  );
   const missed =
     m?.questions && m.submitted
       ? m.questions.filter((q, i) => m.answers[i] !== q.correctIndex).map((q) => q.lessonNumber ?? 0)

@@ -54,7 +54,7 @@ export function MasteryLocked({ mastery, series }: { mastery: Mastery; series: S
           size="sm"
           eyebrow={<span className="text-(--ink-muted)">Mastery Check · not open yet</span>}
           title={`${TO_GO[todo.length] ?? `${todo.length} lessons`} to go first.`}
-          line="The check opens once every lesson’s check is answered, right or wrong. It draws on all five lessons."
+          line="The check opens once every lesson’s check is answered right. It draws on all five lessons."
           className="max-w-[860px]"
           primary={
             first && (

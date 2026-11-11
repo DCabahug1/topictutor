@@ -23,6 +23,7 @@ import {
 import { SAMPLE_LESSONS, SAMPLE_SERIES } from "./fixtures/sample-series";
 import {
   LESSONS_PER_SERIES,
+  askAgain,
   focusLine,
   lastSevenDays,
   recentDays,
@@ -304,7 +305,7 @@ function markDailyWritten(date: string) {
   if (!dates.includes(date)) writeJson(`${KEY}:shared:dailyWritten`, [...dates, date].slice(-14));
 }
 
-// ---- Dev controls (used by /dev/components) ----
+// ---- Dev controls (used by the local-only /dev pages) ----
 
 export function getForced(): ForceFlag[] {
   const flags = readJson<string[]>(`${KEY}:force`) ?? [];
@@ -402,15 +403,6 @@ function summarize(series: StoredSeries): SeriesSummary {
     isSample: series.content === "sample",
     nextLesson: next === -1 ? null : { number: next + 1, title: lessons[next].title },
   };
-}
-
-function shuffled(question: ChoiceQuestion): ChoiceQuestion {
-  const order = question.options.map((_, i) => i);
-  for (let i = order.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [order[i], order[j]] = [order[j], order[i]];
-  }
-  return { ...question, options: order.map((i) => question.options[i]), correctIndex: order.indexOf(question.correctIndex) };
 }
 
 function unfinishedOf(series: StoredSeries): number[] {
@@ -789,9 +781,9 @@ export const fixtureSource: AlmanacSource = {
     const series = findSeries(store, id);
     const i = number - 1;
     if (series.checkAnswers[i] === null && series.checkMissed?.[i] != null) {
-      // The sample data can't be reworded, so the fixture only reshuffles.
+      // The sample data can't be reworded, so the fixture only moves the right answer.
       const question = series.retryChecks?.[i] ?? lessonsOf(series)[i].check;
-      (series.retryChecks ??= Array(LESSONS_PER_SERIES).fill(null))[i] = shuffled(question);
+      (series.retryChecks ??= Array(LESSONS_PER_SERIES).fill(null))[i] = askAgain(question);
       series.checkMissed[i] = null;
       save(store);
     }

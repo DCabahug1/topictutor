@@ -16,7 +16,7 @@ type LessonRowProps = {
   why?: string;
   /** True when the lesson is here because its placement question was missed. */
   focus?: boolean;
-  /** done: the check is answered, right or wrong. upNext: the lesson the main action opens. */
+  /** done: the check is answered right. upNext: the lesson the main action opens. */
   status: LessonRowStatus;
   /** An italic line shown whatever the status, for rows like the Mastery Check. */
   sub?: ReactNode;

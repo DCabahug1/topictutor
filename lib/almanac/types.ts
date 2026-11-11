@@ -118,7 +118,7 @@ export type SeriesLessonRow = {
   why: string;
   /** True when the lesson is here because its placement question was missed. */
   focus: boolean;
-  /** The check has been answered, right or wrong. */
+  /** The check has been answered right. */
   done: boolean;
   /** The text exists already, so opening is instant. */
   written: boolean;
@@ -289,7 +289,7 @@ export type GuestState = {
   subjectsPrompted: boolean;
 };
 
-/** Sample-layer failures and limits that can be forced from /dev/components. */
+/** Sample-layer failures and limits that can be forced from the local-only /dev pages. */
 export const FORCE_FLAGS = [
   "dailyFail",
   "askFail",

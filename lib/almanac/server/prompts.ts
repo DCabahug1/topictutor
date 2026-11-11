@@ -1,6 +1,7 @@
 import "server-only";
 import { z } from "zod";
-import { SUBJECTS } from "../types";
+import { keepsOrder, shuffleChoice } from "../rules";
+import { SUBJECTS, type ChoiceQuestion } from "../types";
 
 // Prompts and output shapes for everything the Almanac writes. The house voice
 // is the same everywhere, so it lives once, here.
@@ -63,26 +64,8 @@ export function finishChoice<T extends WrittenChoice>(question: T): Omit<T, "cod
   const lang = language.trim().toLowerCase().replace(/[^a-z0-9+#-]/g, "");
   const prompt = body.trim() ? `${rest.prompt.trim()}\n\n${fence}${lang}\n${body}\n${fence}` : rest.prompt;
 
-  // Options that point at each other or at a lettered list only make sense where they were written.
-  const ordered = rest.options.some(
-    (o) =>
-      /^\s*\(?[A-D][.,:)\s]/.test(o) ||
-      /^\s*(version|option|snippet|example|line)\s+\d/i.test(o) ||
-      /\b(all|none|both) of (the )?(above|these)\b/i.test(o)
-  );
-  if (ordered) return { ...rest, prompt };
-
+  if (keepsOrder(rest.options)) return { ...rest, prompt };
   return shuffleChoice({ ...rest, prompt });
-}
-
-/** The same question with its options in a new random order. */
-export function shuffleChoice<T extends { options: string[]; correctIndex: number }>(question: T): T {
-  const order = question.options.map((_, i) => i);
-  for (let i = order.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [order[i], order[j]] = [order[j], order[i]];
-  }
-  return { ...question, options: order.map((i) => question.options[i]), correctIndex: order.indexOf(question.correctIndex) };
 }
 
 // ---- A lesson check, asked again ----
@@ -90,7 +73,7 @@ export function shuffleChoice<T extends { options: string[]; correctIndex: numbe
 export const retryCheckSchema = z.object({ check: choice });
 
 /** A missed lesson check, asked again in new words so the answer just shown isn't the answer now. */
-export function retryCheckPrompt(lessonTitle: string, paragraphs: string[], missed: { prompt: string; options: string[]; correctIndex: number }) {
+export function retryCheckPrompt(lessonTitle: string, paragraphs: string[], missed: ChoiceQuestion) {
   return {
     system: `You write the lesson check for a TopicTutor lesson again, after the learner got it wrong.
 Ask about the same idea from the lesson, in new words. Change the specifics (numbers, names, code, the example) so the right answer is not the one they were just shown.

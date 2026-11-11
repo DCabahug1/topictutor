@@ -34,7 +34,7 @@ export interface AlmanacSource {
   /** Writes today's lesson. Only needed while `lesson.paragraphs` is null. */
   streamDailyLesson(): AsyncIterable<string>;
   answerRecall(answer: number): Promise<DailySession>;
-  /** Answering the last check question finishes the lesson, right or wrong. */
+  /** A right answer finishes the lesson; a wrong one waits for retrySeriesCheck. */
   answerDailyCheck(index: number, answer: number): Promise<DailySession>;
   getPastDailyLessons(): Promise<PastDailyLesson[]>;
   getPastDailyLesson(id: string): Promise<DailyLesson>;

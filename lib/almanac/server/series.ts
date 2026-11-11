@@ -1,7 +1,7 @@
 import "server-only";
 import { GenerationError, HAIKU, generateStructured, streamText } from "@/lib/claude";
 import { SAMPLE_LESSONS, SAMPLE_SERIES } from "../fixtures/sample-series";
-import { LESSONS_PER_SERIES, SECTION_BREAK, percentComplete, seriesStatus } from "../rules";
+import { LESSONS_PER_SERIES, SECTION_BREAK, askAgain, percentComplete, seriesStatus } from "../rules";
 import {
   AlmanacError,
   type ChoiceQuestion,
@@ -15,7 +15,7 @@ import { Channel, paragraphsOf } from "./channel";
 import { claim, release, waitFor } from "./claims";
 import { check, db, isUuid, requireUser, type Learner } from "./context";
 import { prepareMastery } from "./mastery";
-import { finishChoice, retryCheckPrompt, retryCheckSchema, seriesProsePrompt, shuffleChoice } from "./prompts";
+import { finishChoice, retryCheckPrompt, retryCheckSchema, seriesProsePrompt } from "./prompts";
 
 export type SeriesRow = {
   id: string;
@@ -45,11 +45,13 @@ export type LessonRow = {
   check_answer: number | null;
   /** A wrong pick on the current question. Cleared when the question is asked again. */
   check_missed: number | null;
+  /** Set by any wrong pick and never cleared, so the Mastery Check knows the lesson was missed. */
+  check_was_missed: boolean;
 };
 
 const SERIES_COLUMNS =
   "id, user_id, is_sample, title, category, description, focus_line, placement_score, mastery_passed, mastery_best, updated_at";
-const LESSON_COLUMNS = "number, title, description, why, focus, key_points, check_question, ask_hint, paragraphs, check_answer, check_missed";
+const LESSON_COLUMNS = "number, title, description, why, focus, key_points, check_question, ask_hint, paragraphs, check_answer, check_missed, check_was_missed";
 
 /** The public sample, before a learner has answered anything in it. */
 function sampleSeriesRow(userId: string): SeriesRow {
@@ -81,6 +83,7 @@ function sampleLessonRows(): LessonRow[] {
     paragraphs: lesson.paragraphs,
     check_answer: null,
     check_missed: null,
+    check_was_missed: false,
   }));
 }
 
@@ -335,13 +338,14 @@ export async function answerSeriesCheck(learner: Learner, id: string, number: nu
     check(
       await db()
         .from("series_lessons")
-        .update({ check_missed: answer })
+        .update({ check_missed: answer, check_was_missed: true })
         .eq("series_id", row.id)
         .eq("number", number)
         .is("check_answer", null)
         .is("check_missed", null)
     );
     lesson.check_missed = answer;
+    lesson.check_was_missed = true;
   } else {
     const now = new Date().toISOString();
     check(
@@ -382,9 +386,9 @@ async function rephraseCheck(lesson: LessonRow): Promise<ChoiceQuestion> {
     });
     return finishChoice(written);
   } catch (cause) {
-    // Never leave the learner stuck: the same question, reshuffled, still asks them to think again.
+    // Never leave the learner stuck: the same question, with the right answer moved, still asks them to think again.
     console.error("[almanac] check retry:", cause);
-    return shuffleChoice(missed);
+    return askAgain(missed);
   }
 }
 

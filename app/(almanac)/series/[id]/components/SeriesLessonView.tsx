@@ -73,8 +73,11 @@ function SeriesLesson({ id, number }: { id: string; number: number }) {
   };
 
   // A wrong answer is shown with the right one, then the check comes back in new words.
-  const passed = lesson.checkPassed;
-  const missed = lesson.checkAnswer !== null && !passed;
+  const checkState: "unanswered" | "missed" | "passed" = lesson.checkPassed
+    ? "passed"
+    : lesson.checkAnswer !== null
+      ? "missed"
+      : "unanswered";
   const retry = () => {
     setRetrying(true);
     setRetryFailed(false);
@@ -90,13 +93,7 @@ function SeriesLesson({ id, number }: { id: string; number: number }) {
 
   // The next step: the next lesson, the Mastery Check, or the lessons still unfinished.
   const firstUnfinished = lesson.unfinished[0];
-  const footer = missed ? (
-    <Button icon busy={retrying} onClick={retry}>
-      {retrying ? "Writing a new question" : "Try the question again"}
-    </Button>
-  ) : !passed ? (
-    <Button disabled>Answer the check to continue</Button>
-  ) : !last ? (
+  const onward = !last ? (
     <Button icon href={`${seriesHref}/${nextNumber}`}>
       Continue to lesson {nextNumber}
     </Button>
@@ -113,15 +110,24 @@ function SeriesLesson({ id, number }: { id: string; number: number }) {
       Take the Mastery Check
     </Button>
   );
-  const footerNote = missed
-    ? "Get the check right to move on. It comes back in new words."
-    : !last
+  const onwardNote = !last
     ? lesson.nextReady
       ? `Lesson ${nextNumber} is ready.`
       : undefined
     : !allDone
       ? `That was the last lesson. Still unfinished: ${lessonList(lesson.unfinished)}.`
       : "That was the last lesson.";
+
+  const footer = {
+    missed: (
+      <Button icon busy={retrying} onClick={retry}>
+        {retrying ? "Writing a new question" : "Try the question again"}
+      </Button>
+    ),
+    unanswered: <Button disabled>Answer the check to continue</Button>,
+    passed: onward,
+  }[checkState];
+  const footerNote = checkState === "missed" ? "Get the check right to move on. It comes back in new words." : onwardNote;
 
   return (
     <SessionPage

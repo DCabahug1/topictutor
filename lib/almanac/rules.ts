@@ -163,3 +163,39 @@ export function whyLine(questions: ChoiceQuestion[], answers: Array<Answer | nul
     ? `A quick refresher. You got question ${index + 1} right.`
     : `Here because you missed question ${index + 1}, on ${question.topic ?? "this topic"}.`;
 }
+
+/** Options that point at each other or at a lettered list only make sense in the order they were written. */
+export function keepsOrder(options: string[]): boolean {
+  return options.some(
+    (o) =>
+      /^\s*\(?[A-D][.,:)\s]/.test(o) ||
+      /^\s*(version|option|snippet|example|line)\s+\d/i.test(o) ||
+      /\b(all|none|both) of (the )?(above|these)\b/i.test(o)
+  );
+}
+
+/** The same question with its options in a new random order. */
+export function shuffleChoice<T extends { options: string[]; correctIndex: number }>(question: T): T {
+  const order = question.options.map((_, i) => i);
+  for (let i = order.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return { ...question, options: order.map((i) => question.options[i]), correctIndex: order.indexOf(question.correctIndex) };
+}
+
+/**
+ * A missed question asked again in the same words: reshuffled so the right answer
+ * moves off the slot just shown. Options whose order matters stay where they are.
+ */
+export function askAgain<T extends { options: string[]; correctIndex: number }>(question: T): T {
+  const count = question.options.length;
+  if (count < 2 || keepsOrder(question.options)) return question;
+  const next = shuffleChoice(question);
+  if (next.correctIndex !== question.correctIndex) return next;
+  // Swap the right answer with any other slot.
+  const to = (next.correctIndex + 1 + Math.floor(Math.random() * (count - 1))) % count;
+  const options = [...next.options];
+  [options[next.correctIndex], options[to]] = [options[to], options[next.correctIndex]];
+  return { ...next, options, correctIndex: to };
+}
