@@ -19,7 +19,7 @@ export function DeeperStaircase() {
       <div className="flex flex-wrap items-end justify-between gap-x-12 gap-y-7">
         <div className="min-w-0 max-w-[600px] flex-[1_1_420px]">
           <p className="t-eyebrow m-0">Go deeper</p>
-          <h2 id="deeper-heading" className="m-0 mt-[14px] text-[34px] font-medium leading-[1.05] tracking-[-0.02em] md:text-[48px]">
+          <h2 id="deeper-heading" className="after-eyebrow m-0 text-[34px] font-medium leading-[1.05] tracking-[-0.02em] md:text-[48px]">
             Five lessons on anything you name.
           </h2>
           <p className="m-0 mt-4 text-[19px] leading-normal text-(--ink-soft)">

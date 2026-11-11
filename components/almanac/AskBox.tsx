@@ -75,7 +75,7 @@ function AskBoxForLesson({ onAsk, onExplainDifferently, hint, className }: AskBo
 
       {asked && (
         <>
-          <p className="m-0 mt-[14px] text-[17px] italic text-(--ink-muted) md:mt-4 md:text-[19px]">You asked: {asked}</p>
+          <p className="after-eyebrow m-0 text-[17px] italic text-(--ink-muted) md:text-[19px]">You asked: {asked}</p>
           {status === "failed" ? (
             <div role="alert" className="mt-[10px] text-[17px] leading-normal md:text-[19px]">
               <strong className="font-semibold text-(--incorrect)">No answer.</strong>{" "}
@@ -109,7 +109,7 @@ function AskBoxForLesson({ onAsk, onExplainDifferently, hint, className }: AskBo
       )}
 
       {suggestions.length > 0 && (
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className={`${asked ? "mt-4" : "mt-(--eyebrow-gap)"} flex flex-wrap gap-2`}>
           {suggestions.map((question) => (
             <button key={question} type="button" disabled={answering} onClick={() => ask(question)} className={chip}>
               {question}

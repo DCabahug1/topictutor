@@ -118,7 +118,7 @@ export function MasteryTaking({ mastery, focusHeading = false, onUpdate }: Maste
         <p className="t-eyebrow m-0">
           Question {index + 1} of {questions.length} · from lesson {question.lessonNumber ?? index + 1}
         </p>
-        <h1 ref={heading} tabIndex={-1} className="m-0 mt-[18px] text-[24px] font-medium leading-[1.25] [overflow-wrap:anywhere] md:text-[32px]">
+        <h1 ref={heading} tabIndex={-1} className="after-eyebrow m-0 text-[24px] font-medium leading-[1.25] [overflow-wrap:anywhere] md:text-[32px]">
           {question.prompt}
         </h1>
         <Question

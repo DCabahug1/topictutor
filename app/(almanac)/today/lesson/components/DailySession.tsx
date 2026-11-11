@@ -19,7 +19,7 @@ type Step = "recall" | "lesson" | "check" | "finish";
 const STEP_NAMES: Record<Step, string> = { recall: "Recall", lesson: "Lesson", check: "Check", finish: "Finish" };
 
 export const QUESTION_HEADING =
-  "m-0 mt-[18px] text-[30px] font-medium leading-[1.1] tracking-[-0.02em] [overflow-wrap:anywhere] md:text-[48px]";
+  "after-eyebrow m-0 text-[30px] font-medium leading-[1.1] tracking-[-0.02em] [overflow-wrap:anywhere] md:text-[48px]";
 
 /** Where a learner picks the session up: recall first, unless there is none or it is answered. */
 function firstStep(session: Session): Step {
@@ -392,7 +392,7 @@ function LessonHeader({
       <p className="t-eyebrow m-0">
         {daily.subject} · about {daily.minutes} minutes
       </p>
-      <h1 ref={headingRef} tabIndex={-1} className="t-lead-h1-sm m-0 mt-[18px] [overflow-wrap:anywhere]">
+      <h1 ref={headingRef} tabIndex={-1} className="t-lead-h1-sm after-eyebrow m-0 [overflow-wrap:anywhere]">
         {daily.title}
       </h1>
     </header>

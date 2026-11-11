@@ -45,7 +45,7 @@ export function Notice({ tone, kicker, title, body, kept, primary, secondary, he
       </p>
       <Heading
         className={cx(
-          "m-0 mt-[18px] font-medium [overflow-wrap:anywhere]",
+          "after-eyebrow m-0 font-medium [overflow-wrap:anywhere]",
           headingLevel === 1 ? "t-lead-h1-sm" : "text-[28px] leading-[1.1] tracking-[-0.015em] md:text-[36px]"
         )}
       >

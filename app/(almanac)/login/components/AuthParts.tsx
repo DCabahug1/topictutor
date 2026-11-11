@@ -11,7 +11,7 @@ import { authService } from "@/lib/auth";
 
 export const PASSWORD_MIN = 8;
 
-const TITLE = "t-lead-h1-sm m-0 mt-[18px] [overflow-wrap:anywhere]";
+const TITLE = "t-lead-h1-sm after-eyebrow m-0 [overflow-wrap:anywhere]";
 const INLINE_ACTION =
   "inline-flex min-h-11 cursor-pointer items-center border-0 bg-transparent p-0 font-serif text-[17px] italic text-(--ink) underline underline-offset-[5px] hover:text-(--accent)";
 

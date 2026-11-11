@@ -43,7 +43,7 @@ export function TutorBand() {
       <div className="mx-auto flex max-w-(--content-max) flex-wrap items-center gap-x-20 gap-y-10">
         <div className="min-w-0 flex-[1_1_320px]">
           <p className="t-eyebrow m-0">The tutor</p>
-          <h2 id="tutor-heading" className="m-0 mt-[14px] text-[44px] font-medium leading-[0.98] tracking-[-0.03em] md:text-[76px]">
+          <h2 id="tutor-heading" className="after-eyebrow m-0 text-[44px] font-medium leading-[0.98] tracking-[-0.03em] md:text-[76px]">
             Stuck on a line? <em className="font-normal">Ask.</em>
           </h2>
           <p className="m-0 mt-5 max-w-[380px] text-[19px] leading-normal text-(--ink-soft)">

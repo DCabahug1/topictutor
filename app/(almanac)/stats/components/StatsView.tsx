@@ -20,7 +20,7 @@ import { spellOut } from "../../today/lesson/components/copy";
 
 const MASTERY_QUESTIONS = 5;
 const LABEL = "m-0 font-mono text-[12px] uppercase tracking-[0.08em] text-(--ink-muted)";
-const BIG = "m-0 mt-2 font-serif text-[80px] font-medium leading-[0.9] tracking-[-0.04em] md:text-[112px]";
+const BIG = "after-eyebrow big-numeral m-0 font-serif text-[80px] font-medium leading-[0.9] tracking-[-0.04em] md:text-[112px]";
 
 const lessons = (n: number) => `${n} ${n === 1 ? "lesson" : "lessons"}`;
 

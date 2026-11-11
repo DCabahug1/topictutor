@@ -92,7 +92,7 @@ export default function PastDailyLessonPage() {
           <p className="t-eyebrow m-0">
             {lesson.subject} · {lessonDate(lesson.date)}
           </p>
-          <h1 className="t-lead-h1-sm m-0 mt-[18px] [overflow-wrap:anywhere]">{lesson.title}</h1>
+          <h1 className="t-lead-h1-sm after-eyebrow m-0 [overflow-wrap:anywhere]">{lesson.title}</h1>
         </header>
         <LessonBody dropCap paragraphs={lesson.paragraphs ?? []} className="mt-7 md:mt-9" />
       </article>

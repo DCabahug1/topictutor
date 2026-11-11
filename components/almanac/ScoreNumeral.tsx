@@ -5,7 +5,7 @@ export function ScoreNumeral({ score, total, className }: { score: number; total
   return (
     <p
       className={cx(
-        "m-0 font-serif text-[96px] font-medium leading-[0.9] tracking-[-0.05em] md:text-[160px] md:leading-[0.85]",
+        "big-numeral m-0 font-serif text-[96px] font-medium leading-[0.9] tracking-[-0.05em] md:text-[160px] md:leading-[0.85]",
         className
       )}
     >

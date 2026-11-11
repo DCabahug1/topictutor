@@ -68,13 +68,14 @@
   --lead-top: 112px;      /* masthead to the lead block */
   --section-gap: 152px;   /* between the lead block and anything after it */
   --action-gap: 40px;     /* lead sentence to the primary button */
+  --eyebrow-gap: 28px;    /* an eyebrow to the top of the letters under it */
   --button-h: 58px;       /* the one primary button per screen */
   --reading-col: 720px;   /* lessons, checks, tests */
   --content-max: 1200px;
 }
 
 @media (max-width: 767px) {
-  :root { --gutter: 24px; --lead-top: 56px; --section-gap: 88px; --action-gap: 32px; }
+  :root { --gutter: 24px; --lead-top: 56px; --section-gap: 88px; --action-gap: 32px; --eyebrow-gap: 20px; }
 }
 
 /* Text styles */
@@ -97,6 +98,17 @@
 .t-lead { font-family: var(--font-serif); font-size: clamp(19px, 1.6vw, 23px); line-height: 1.45; font-weight: 400; color: var(--ink-soft); }
 .t-section { font-family: var(--font-serif); font-size: clamp(28px, 2.5vw, 36px); line-height: 1.1; font-weight: 500; letter-spacing: -0.015em; }
 .t-eyebrow { font-family: var(--font-mono); font-size: 12px; line-height: 16px; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+/*
+ * Whatever sits under an eyebrow: a heading, a big numeral, a figure. The gap is
+ * measured to the top of the letters, not the line box, so a 160px numeral and a
+ * 24px question sit the same distance below their eyebrow. Browsers without
+ * text-box trimming get a little padding on big numerals instead, whose tight
+ * leading would otherwise push their glyphs up into the eyebrow.
+ */
+.after-eyebrow { margin-top: var(--eyebrow-gap); text-box: trim-start cap alphabetic; }
+@supports not (text-box: trim-start cap alphabetic) {
+  .after-eyebrow .big-numeral, .after-eyebrow.big-numeral { padding-top: 0.12em; }
+}
 .t-quiet-link { font-family: var(--font-serif); font-size: 18px; font-style: italic; color: var(--ink-soft); text-decoration: underline; text-underline-offset: 5px; }
 .t-quiet-link:hover { color: var(--ink); }
 

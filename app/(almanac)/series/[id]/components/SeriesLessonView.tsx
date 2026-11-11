@@ -113,7 +113,7 @@ function SeriesLesson({ id, number }: { id: string; number: number }) {
           <p className="t-eyebrow m-0">
             Lesson {number} of {LESSONS_PER_SERIES} · {shortTitle(lesson.seriesTitle)}
           </p>
-          <h1 className="t-lead-h1-sm m-0 mt-[18px] [overflow-wrap:anywhere]">{lesson.title}</h1>
+          <h1 className="t-lead-h1-sm after-eyebrow m-0 [overflow-wrap:anywhere]">{lesson.title}</h1>
         </header>
 
         {writing && (
@@ -157,7 +157,7 @@ function SeriesLesson({ id, number }: { id: string; number: number }) {
           />
           <section aria-labelledby="lesson-check" className="mt-14 border-0 border-t border-solid border-(--ink) pt-6 md:mt-16 md:pt-8">
             <p className="m-0 font-mono text-[12px] uppercase tracking-[0.1em] text-(--ink-muted)">Check</p>
-            <h2 id="lesson-check" className="m-0 mt-[14px] text-[26px] font-medium leading-[1.15] tracking-[-0.015em] md:text-[36px]">
+            <h2 id="lesson-check" className="after-eyebrow m-0 text-[26px] font-medium leading-[1.15] tracking-[-0.015em] md:text-[36px]">
               {lesson.check.prompt}
             </h2>
             <Question

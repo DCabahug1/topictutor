@@ -84,7 +84,7 @@ export function Finish({ session, headingRef }: { session: DailySession; heading
   return (
     <div>
       <p className="t-eyebrow m-0">Lesson finished · {lesson.subject}</p>
-      <div className="mt-[18px] flex flex-wrap items-end gap-x-12 gap-y-4">
+      <div className="mt-(--eyebrow-gap) flex flex-wrap items-end gap-x-12 gap-y-4">
         <div className="relative h-[1em] min-w-[1.1em] overflow-hidden text-[120px] font-medium leading-none tracking-[-0.05em] md:text-[160px]">
           {/* Reserves the width of the widest number. */}
           <span aria-hidden="true" className="invisible">

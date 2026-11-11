@@ -3,7 +3,7 @@ import { CrossIcon } from "@/components/almanac/icons";
 
 /** A test question or a "writing" line, under its eyebrow. */
 export const QUESTION_HEADING =
-  "m-0 mt-[18px] text-[30px] font-medium leading-[1.1] tracking-[-0.02em] [overflow-wrap:anywhere] md:text-[48px]";
+  "after-eyebrow m-0 text-[30px] font-medium leading-[1.1] tracking-[-0.02em] [overflow-wrap:anywhere] md:text-[48px]";
 
 /** Reserved lines while a page reads its data. `label` is read aloud. */
 export function LoadingLines({ label }: { label: string }) {
