@@ -658,7 +658,9 @@ export const fixtureSource: AlmanacSource = {
   async *askTutor(context: TutorContext, question) {
     const answers = context.kind === "daily" ? DAILY.answers : SERIES_ANSWERS;
     const text = question === null ? answers.differently : answers.question;
-    yield* writeOut([text], forced("askFail") ? 12 : null, 32);
+    // The sample answers come from the leap-year rule in paragraph 3 and the cascade in paragraph 2.
+    if (question !== null) yield { kind: "source", paragraph: context.kind === "daily" ? 3 : 2 };
+    for await (const chunk of writeOut([text], forced("askFail") ? 12 : null, 32)) yield { kind: "text", text: chunk };
   },
 
   async getSubjects() {

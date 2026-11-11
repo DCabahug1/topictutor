@@ -14,6 +14,7 @@ import type {
   SeriesSummary,
   Stats,
   Subject,
+  TutorChunk,
 } from "./types";
 
 /** Which lesson the ask box is attached to. */
@@ -37,8 +38,11 @@ export interface AlmanacSource {
   getPastDailyLessons(): Promise<PastDailyLesson[]>;
   getPastDailyLesson(id: string): Promise<DailyLesson>;
 
-  /** `question` null means "Explain this differently". Nothing is stored. */
-  askTutor(context: TutorContext, question: string | null): AsyncIterable<string>;
+  /**
+   * `question` null means "Explain this differently". Nothing is stored. The
+   * answer names the paragraph it comes from before its text, when it has one.
+   */
+  askTutor(context: TutorContext, question: string | null): AsyncIterable<TutorChunk>;
 
   // Subjects
   getSubjects(): Promise<Subject[]>;

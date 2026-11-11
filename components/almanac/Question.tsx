@@ -131,7 +131,7 @@ export function Question({
         role="radiogroup"
         aria-label={label}
         onKeyDown={onKeyDown}
-        className={cx("flex flex-col gap-2", columns === 2 && "md:grid md:grid-cols-2 md:gap-[10px]")}
+        className={cx("flex flex-col gap-[10px]", columns === 2 && "md:grid md:grid-cols-2")}
       >
         {answers.map((answer, i) => (
           <AnswerOption
@@ -151,19 +151,11 @@ export function Question({
         ))}
       </div>
       {revealed && correctIndex !== undefined && (
-        <p
-          role="status"
-          className="almanac-rise mt-4 border-0 border-t border-solid border-(--rule) pt-[14px] text-[17px] leading-normal md:mt-6 md:pt-[18px] md:text-[20px]"
-        >
-          <span
-            className={cx(
-              "font-mono text-[12px] font-medium uppercase tracking-[0.06em]",
-              isCorrect ? "text-(--correct)" : "text-(--incorrect)"
-            )}
-          >
-            {isCorrect ? "Correct." : "Not quite."}
-          </span>{" "}
-          {explanation}
+        <p role="status" className="almanac-rise m-0 mt-6 text-[18px] leading-[1.55] md:mt-7 md:text-[20px]">
+          <strong className={cx("font-semibold", isCorrect ? "text-(--correct)" : "text-(--incorrect)")}>
+            {isCorrect ? "Right." : "Not quite."}
+          </strong>{" "}
+          <span className="text-(--ink-soft)">{explanation}</span>
         </p>
       )}
     </div>

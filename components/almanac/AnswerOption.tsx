@@ -1,17 +1,16 @@
 import { forwardRef } from "react";
 import { cx } from "./cx";
-import { CheckIcon, CrossIcon } from "./icons";
 
 export type AnswerResult = "none" | "correct" | "incorrect" | "dimmed";
 
 type AnswerOptionProps = {
-  /** A to D. Ignored for the Not sure option, which shows "?". */
+  /** A to D. The Not sure option shows N. */
   letter: string;
   text: string;
   selected?: boolean;
   /** Set after the answer is revealed. */
   result?: AnswerResult;
-  /** The fifth option in tests: dashed, italic, counts as wrong. */
+  /** The last option in tests: dashed, italic, counts as wrong. */
   unsure?: boolean;
   /** Locks the option once the answer is revealed. */
   locked?: boolean;
@@ -21,7 +20,8 @@ type AnswerOptionProps = {
 
 /**
  * One choice in a question. Always rendered inside a `radiogroup` (see Question).
- * State is carried by a glyph and a word, never by colour alone.
+ * Selected is a 2px ink border on raised paper, never the ink fill. Right and
+ * wrong carry a glyph and a word, never colour alone.
  */
 export const AnswerOption = forwardRef<HTMLButtonElement, AnswerOptionProps>(function AnswerOption(
   { letter, text, selected = false, result = "none", unsure = false, locked = false, tabIndex, onSelect },
@@ -30,11 +30,9 @@ export const AnswerOption = forwardRef<HTMLButtonElement, AnswerOptionProps>(fun
   const correct = result === "correct";
   const incorrect = result === "incorrect";
   const dimmed = result === "dimmed";
+  const plain = !correct && !incorrect;
 
-  let tag = "";
-  if (correct) tag = selected ? "Your answer · correct" : "Correct answer";
-  else if (incorrect) tag = "Your answer";
-  else if (selected && !dimmed) tag = "Selected";
+  const tag = correct ? (selected ? "✓ Your answer" : "✓ Correct") : incorrect ? "✕ Your answer" : "";
 
   return (
     <button
@@ -46,49 +44,34 @@ export const AnswerOption = forwardRef<HTMLButtonElement, AnswerOptionProps>(fun
       tabIndex={tabIndex}
       onClick={locked ? undefined : onSelect}
       className={cx(
-        "grid w-full grid-cols-[26px_minmax(0,1fr)] items-start gap-3 border-[1.5px] p-[14px] text-left font-serif text-[17px] leading-[1.4] text-(--ink) md:p-[18px] md:text-[19px] transition-colors duration-(--duration-instant) ease-out",
+        "grid min-h-16 w-full grid-cols-[28px_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 text-left font-serif text-[18px] font-medium leading-[1.3] md:grid-cols-[36px_minmax(0,1fr)_auto] md:px-5 md:text-[22px] transition-colors duration-(--duration-instant) ease-out",
         unsure ? "border-dashed italic" : "border-solid",
+        selected && plain && !dimmed ? "border-2" : "border-[1.5px]",
         locked ? "cursor-default" : "cursor-pointer",
-        correct && "border-(--correct) bg-(--correct-wash)",
-        incorrect && "border-(--incorrect) bg-(--incorrect-wash)",
-        !correct && !incorrect && "bg-(--paper-raised)",
-        !correct && !incorrect && (selected && !dimmed ? "border-(--ink)" : "border-(--rule)"),
-        !correct && !incorrect && !selected && !locked && "hover:border-(--ink-muted)"
+        correct && "border-(--correct) bg-(--correct-wash) text-(--ink)",
+        incorrect && "border-(--incorrect) bg-(--incorrect-wash) text-(--ink)",
+        plain && selected && !dimmed && "border-(--ink) bg-(--paper-raised) text-(--ink)",
+        plain && !(selected && !dimmed) && "border-(--rule) bg-transparent",
+        plain && !(selected && !dimmed) && (dimmed || locked ? "text-(--ink-muted)" : "text-(--ink-soft) hover:border-(--ink-muted)")
       )}
     >
       <span
         aria-hidden="true"
         className={cx(
-          "mt-px flex h-[22px] w-[22px] items-center justify-center rounded-(--radius-hairline) border-[1.5px] font-mono text-[12px] not-italic",
-          correct && "border-(--correct) bg-(--correct) text-(--paper)",
-          incorrect && "border-(--incorrect) bg-(--incorrect) text-(--paper)",
-          dimmed && "border-(--ink-muted) text-(--ink-muted)",
-          !correct && !incorrect && !dimmed && selected && "border-(--ink) bg-(--ink) text-(--on-ink)",
-          !correct && !incorrect && !dimmed && !selected && "border-(--ink) text-(--ink)"
+          "font-mono text-[13px] font-normal not-italic",
+          selected && plain && !dimmed ? "text-(--accent)" : "text-(--ink-muted)"
         )}
       >
-        {correct ? (
-          <CheckIcon size={12} strokeWidth={3} />
-        ) : incorrect ? (
-          <CrossIcon size={12} strokeWidth={3} />
-        ) : unsure ? (
-          "?"
-        ) : (
-          letter
-        )}
+        {unsure ? "N" : letter}
       </span>
-      <span className="flex flex-col gap-1">
-        <span className={cx((dimmed || (unsure && !selected)) && "text-(--ink-muted)")}>{text}</span>
-        {tag && (
-          <span
-            className={cx(
-              "font-mono text-[11px] uppercase not-italic tracking-[0.06em]",
-              correct ? "text-(--correct)" : incorrect ? "text-(--incorrect)" : "text-(--ink-muted)"
-            )}
-          >
-            {tag}
-          </span>
+      <span>{text}</span>
+      <span
+        className={cx(
+          "whitespace-nowrap font-mono text-[12px] font-normal uppercase not-italic tracking-[0.06em]",
+          correct ? "text-(--correct)" : "text-(--incorrect)"
         )}
+      >
+        {tag}
       </span>
     </button>
   );

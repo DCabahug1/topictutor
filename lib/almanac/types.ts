@@ -233,6 +233,15 @@ export type Mastery = {
   suggestions: Array<{ title: string; why: string }>;
 };
 
+// ---- Tutor ----
+
+/**
+ * One piece of a tutor answer as it is written. The paragraph the answer draws
+ * on (1-based) comes first, when there is one; "Explain this differently" has none.
+ * Text chunks carry their own spaces and are joined as they arrive.
+ */
+export type TutorChunk = { kind: "source"; paragraph: number } | { kind: "text"; text: string };
+
 // ---- Stats ----
 
 export type Stats = {

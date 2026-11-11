@@ -6,7 +6,7 @@ type SessionBarProps = {
   /** Where the close control goes. Use `onLeave` instead when leaving needs to do something first. */
   leaveHref?: string;
   onLeave?: () => void;
-  /** Says what is being left: "Leave lesson", "Leave test". */
+  /** Says what is being left: "Leave lesson", "Leave test", "Close". */
   leaveLabel?: string;
 };
 
@@ -17,16 +17,16 @@ type SessionBarProps = {
 export function SessionBar({ leaveHref = "/", onLeave, leaveLabel = "Leave lesson" }: SessionBarProps) {
   const content = (
     <>
-      <CloseIcon size={20} className="md:h-[18px] md:w-[18px]" />
-      <span className="sr-only md:not-sr-only">{leaveLabel}</span>
+      <CloseIcon size={16} strokeWidth={1.8} />
+      {leaveLabel}
     </>
   );
   const classes =
-    "inline-flex h-11 min-w-11 cursor-pointer items-center justify-center gap-[10px] border-0 bg-transparent font-mono text-[14px] text-(--ink) no-underline hover:text-(--accent) md:justify-start";
+    "inline-flex min-h-11 cursor-pointer items-center gap-2 whitespace-nowrap border-0 bg-transparent p-0 font-mono text-[14px] text-(--ink) no-underline hover:text-(--accent)";
 
   return (
-    <header className="mx-auto grid max-w-[1296px] grid-cols-[1fr_auto_1fr] items-center gap-4 pt-[6px] md:py-4">
-      <div className="flex justify-start">
+    <header className="mx-auto flex w-full max-w-(--content-max) items-center justify-between gap-3 pb-[10px] pt-2 md:pb-4 md:pt-5">
+      <div className="flex flex-[1_1_0] justify-start">
         {onLeave ? (
           <button type="button" onClick={onLeave} className={classes}>
             {content}
@@ -37,8 +37,8 @@ export function SessionBar({ leaveHref = "/", onLeave, leaveLabel = "Leave lesso
           </Link>
         )}
       </div>
-      <p className="m-0 text-[19px] font-semibold tracking-[-0.01em] md:text-[22px] md:tracking-[-0.015em]">TopicTutor</p>
-      <div className="flex justify-end">
+      <p className="m-0 text-[22px] font-semibold tracking-[-0.015em] md:text-[28px]">TopicTutor</p>
+      <div className="flex flex-[1_1_0] justify-end">
         <ThemeButton />
       </div>
     </header>

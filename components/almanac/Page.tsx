@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { cx } from "./cx";
+import { LeadActions } from "./LeadBlock";
 import { BottomTabs, Masthead, type MainSection } from "./Masthead";
 import { SessionBar } from "./SessionBar";
 import { useSession } from "./SessionProvider";
@@ -17,15 +18,15 @@ type PaperPageProps = {
 };
 
 /**
- * The frame for every page outside a session: gutters, the 1296px content
+ * The frame for every page outside a session: gutters, the 1200px content
  * width, the masthead, and the bottom tabs for signed-in learners on phones.
  */
 export function PaperPage({ current, dateline, tabs = true, children }: PaperPageProps) {
   const session = useSession();
   const user = tabs ? session : null;
   return (
-    <div className={cx("min-h-dvh px-6 md:px-[clamp(24px,5vw,72px)]", user ? "pb-[88px] md:pb-[72px]" : "pb-12 md:pb-[72px]")}>
-      <div className="mx-auto max-w-[1296px]">
+    <div className={cx("min-h-dvh px-(--gutter)", user ? "pb-[120px] md:pb-24" : "pb-16 md:pb-24")}>
+      <div className="mx-auto max-w-(--content-max)">
         <Masthead current={current} dateline={dateline} />
         <main>{children}</main>
       </div>
@@ -52,27 +53,26 @@ type SessionPageProps = {
   leaveHref?: string;
   onLeave?: () => void;
   leaveLabel?: string;
-  /** Sits under the bar, full width of the reading column: usually SessionProgress. */
+  /** Sits under the bar, the width of the reading column: usually a StepMeter. */
   rail?: ReactNode;
-  /**
-   * The actions for this step. On phones they are pinned to the bottom of the
-   * screen; from 768px they close the reading column under a 3px rule.
-   */
+  /** The step's one primary button. It closes the column under a hairline. */
   footer?: ReactNode;
-  /** A line beside the actions on desktop, for example what comes next. */
+  /** Quiet "or …" links beside the primary. */
+  footerQuiet?: ReactNode;
+  /** One italic line above the button, for example what comes next. */
   footerNote?: ReactNode;
-  /** False keeps the actions to the phone footer, when the desktop page offers them another way. */
+  /** Kept for callers; the actions now sit in the page at every width. */
   footerDesktop?: boolean;
   /** Change it to replay the step transition, for example the step name. */
   stepKey?: string;
-  /** wide drops the 680px reading column for two-column test layouts. */
+  /** reading is the 720px column for lessons, checks and tests. wide is 960px, for the finish. */
   width?: "reading" | "wide";
   children: ReactNode;
 };
 
 /**
  * The frame for the daily session, series lessons and tests: the session bar,
- * a centred reading column and the step's actions.
+ * a centred reading column and the step's one next action.
  */
 export function SessionPage({
   leaveHref,
@@ -80,37 +80,28 @@ export function SessionPage({
   leaveLabel,
   rail,
   footer,
+  footerQuiet,
   footerNote,
-  footerDesktop = true,
   stepKey,
   width = "reading",
   children,
 }: SessionPageProps) {
-  const column = width === "reading" ? "mx-auto max-w-[680px]" : "mx-auto max-w-[1296px]";
+  const column = cx("mx-auto w-full", width === "reading" ? "max-w-(--reading-col)" : "max-w-[960px]");
   return (
-    <div className="flex min-h-dvh flex-col">
-      <div className="px-2 md:px-[clamp(24px,5vw,72px)]">
-        <SessionBar leaveHref={leaveHref} onLeave={onLeave} leaveLabel={leaveLabel} />
+    <div className="flex min-h-dvh flex-col px-(--gutter) pb-16 md:pb-24">
+      <SessionBar leaveHref={leaveHref} onLeave={onLeave} leaveLabel={leaveLabel} />
+      {rail && <div className="mx-auto mt-2 w-full max-w-(--reading-col)">{rail}</div>}
+      <div className={column}>
+        <main key={stepKey} className="almanac-rise mt-12 md:mt-[88px]">
+          {children}
+        </main>
+        {footer && (
+          <div className="mt-14 border-0 border-t border-solid border-(--ink) pt-5 md:mt-16 md:pt-7">
+            {footerNote && <div className="m-0 text-[17px] italic text-(--ink-muted) md:text-[18px]">{footerNote}</div>}
+            <LeadActions primary={footer} quiet={footerQuiet} className={footerNote ? undefined : "mt-0!"} />
+          </div>
+        )}
       </div>
-      <div className="flex-auto px-6 pb-6 md:px-[clamp(24px,5vw,72px)] md:pb-[72px]">
-        <div className={column}>
-          {rail && <div className="mt-1 md:mt-6">{rail}</div>}
-          <main key={stepKey} className="almanac-rise">
-            {children}
-          </main>
-          {footer && footerDesktop && (
-            <div className="mt-12 hidden flex-wrap items-center justify-between gap-4 border-0 border-t-[3px] border-solid border-(--ink) pt-5 md:flex">
-              <div className="t-note min-w-0 flex-[1_1_240px] text-(--ink-muted)">{footerNote}</div>
-              <div className="flex flex-wrap items-center gap-3">{footer}</div>
-            </div>
-          )}
-        </div>
-      </div>
-      {footer && (
-        <footer className="sticky bottom-0 z-10 flex flex-col gap-[6px] border-0 border-t border-solid border-(--rule) bg-(--paper) px-6 pb-[22px] pt-[14px] md:hidden [&>*]:w-full">
-          {footer}
-        </footer>
-      )}
     </div>
   );
 }

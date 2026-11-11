@@ -25,7 +25,7 @@ export function LessonBody({ paragraphs, streaming = false, dropCap = false, slo
     <div
       aria-busy={streaming}
       className={cx(
-        "flex flex-col gap-[18px] text-[18.5px] leading-[1.55] md:gap-[22px] md:text-[21px] md:leading-[1.6]",
+        "flex flex-col gap-[18px] text-[19px] leading-[1.65] text-(--ink-soft) md:gap-[22px] md:text-[21px]",
         className
       )}
     >
@@ -48,7 +48,7 @@ export function LessonBody({ paragraphs, streaming = false, dropCap = false, slo
               <>
                 <span
                   aria-hidden="true"
-                  className="float-left pr-2 pt-[6px] text-[66px] font-medium leading-[0.82] md:pr-[10px] md:pt-2 md:text-[82px]"
+                  className="float-left pr-[10px] pt-[6px] text-[60px] font-medium leading-[0.82] text-(--ink) md:text-[76px]"
                 >
                   {text[0]}
                 </span>
