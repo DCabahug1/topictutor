@@ -101,8 +101,15 @@ function StartSeriesInner() {
 
   return (
     <PaperPage tabs={false}>
-      {fromToday && <BackLink href="/today/lesson">Today’s lesson</BackLink>}
-      <form onSubmit={start} className={fromToday ? "mt-10 md:mt-16" : "mt-(--lead-top)"}>
+      {fromToday ? (
+        <BackLink href="/today/lesson">Today’s lesson</BackLink>
+      ) : (
+        // Reached from Today, the Library or a lesson: back goes wherever that was.
+        <BackLink href="/library" history>
+          Back
+        </BackLink>
+      )}
+      <form onSubmit={start} className="mt-10 md:mt-16">
         <LeadBlock
           eyebrow="Go deeper · new series"
           title="What do you want to learn?"

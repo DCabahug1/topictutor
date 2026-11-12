@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { BackLink } from "@/components/almanac/BackLink";
 import { PaperPage } from "@/components/almanac/Page";
 
 /**
@@ -11,7 +12,11 @@ import { PaperPage } from "@/components/almanac/Page";
 export function AuthFrame({ children }: { children: ReactNode }) {
   return (
     <PaperPage tabs={false}>
-      <div className="mx-auto mt-14 max-w-[480px] md:mt-[100px]">{children}</div>
+      {/* Back to wherever sent them here (a lesson, the account offer), or the start. */}
+      <BackLink href="/" history>
+        Back
+      </BackLink>
+      <div className="mx-auto mt-8 max-w-[480px] md:mt-16">{children}</div>
     </PaperPage>
   );
 }

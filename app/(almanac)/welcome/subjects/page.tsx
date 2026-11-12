@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { BackLink } from "@/components/almanac/BackLink";
 import { Button } from "@/components/almanac/Button";
 import { SubjectAdderField, useSubjectAdder } from "@/components/almanac/CustomSubjects";
 import { LeadBlock } from "@/components/almanac/LeadBlock";
@@ -88,7 +89,8 @@ export default function WelcomeSubjectsPage() {
 
   return (
     <PaperPage tabs={false}>
-      <section className="mt-(--lead-top)">
+      <BackLink href="/today/lesson">Today’s lesson</BackLink>
+      <section className="mt-10 md:mt-16">
         <LeadBlock
           eyebrow={session?.finishedAt ? `Lesson finished · day ${Math.max(streak, 1)}` : "Your subjects"}
           title="What should tomorrow be about?"

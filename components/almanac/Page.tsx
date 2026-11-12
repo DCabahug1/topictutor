@@ -2,6 +2,8 @@
 
 import type { ReactNode } from "react";
 import { cx } from "./cx";
+// Records the page this tab opened on, for BackLink.
+import "./entry";
 import { LeadActions } from "./LeadBlock";
 import { BottomTabs, Masthead, type MainSection } from "./Masthead";
 import { SessionBar } from "./SessionBar";

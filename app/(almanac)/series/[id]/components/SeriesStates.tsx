@@ -1,24 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import type { ReactNode } from "react";
-import { BackIcon } from "@/components/almanac/icons";
 import { Notice } from "@/components/almanac/Notice";
 import { PaperPage } from "@/components/almanac/Page";
 import { useSession } from "@/components/almanac/SessionProvider";
 
-/** The link back, under the masthead: to the Library from a series, to the series from a lesson. */
-export function BackLink({ href, children }: { href: string; children: ReactNode }) {
-  return (
-    <Link
-      href={href}
-      className="mt-4 inline-flex min-h-11 items-center gap-2 font-label text-[13px] text-(--ink) no-underline hover:text-(--accent) md:mt-5"
-    >
-      <BackIcon size={16} />
-      {children}
-    </Link>
-  );
-}
+// The link back now lives with the other shared parts; series pages keep importing it from here.
+export { BackLink } from "@/components/almanac/BackLink";
 
 export function SeriesLoading({ label }: { label: string }) {
   return (

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { BackLink } from "@/components/almanac/BackLink";
 import { Button } from "@/components/almanac/Button";
 import { CheckIcon } from "@/components/almanac/icons";
 import { LeadBlock } from "@/components/almanac/LeadBlock";
@@ -45,7 +46,8 @@ export default function WelcomeAccountPage() {
 
   return (
     <PaperPage tabs={false}>
-      <div className="mt-(--lead-top) flex flex-wrap items-end justify-between gap-x-20 gap-y-14">
+      <BackLink href="/welcome/subjects">Your subjects</BackLink>
+      <div className="mt-10 flex md:mt-16 flex-wrap items-end justify-between gap-x-20 gap-y-14">
         <LeadBlock
           eyebrow="Free · no credit card"
           title="Keep your streak."
