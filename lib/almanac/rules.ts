@@ -25,6 +25,16 @@ export function splitSections(text: string, { streaming = false }: { streaming?:
   return parts.map((part) => part.trim()).filter(Boolean);
 }
 
+/**
+ * How many sections a lesson body draws. While the text is being written (or
+ * hasn't arrived) it holds `reserve` places so the page doesn't jump; once it is
+ * written, only the sections it has. A lesson can have fewer than `reserve`
+ * sections, and a reserved place left over would sit under the text as a blank.
+ */
+export function sectionSlots(written: number, reserve: number, writing: boolean): number {
+  return writing || written === 0 ? Math.max(reserve, written) : written;
+}
+
 /** Markdown with its marks taken out, for screen-reader announcements and plain previews. */
 export function plainText(markdown: string): string {
   return markdown

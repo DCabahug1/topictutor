@@ -1,3 +1,4 @@
+import { sectionSlots } from "@/lib/almanac/rules";
 import { cx } from "./cx";
 import { Markdown } from "./Markdown";
 
@@ -8,7 +9,7 @@ type LessonBodyProps = {
   streaming?: boolean;
   /** Daily lessons open with a drop cap. */
   dropCap?: boolean;
-  /** How many paragraphs to reserve room for. */
+  /** How many paragraphs to reserve room for while writing. */
   slots?: number;
   className?: string;
 };
@@ -18,7 +19,7 @@ type LessonBodyProps = {
  * are held as sunk lines so the page does not jump, and a caret follows the last word.
  */
 export function LessonBody({ paragraphs, streaming = false, dropCap = false, slots = 3, className }: LessonBodyProps) {
-  const count = Math.max(slots, paragraphs.length);
+  const count = sectionSlots(paragraphs.length, slots, streaming);
   const lastStarted = paragraphs.reduce((last, text, i) => (text ? i : last), -1);
 
   return (
