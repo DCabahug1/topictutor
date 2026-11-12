@@ -11,7 +11,12 @@ import { useSession } from "@/components/almanac/SessionProvider";
 import { almanac, joinList, subjectNames, useAlmanac } from "@/lib/almanac";
 import { authService } from "@/lib/auth";
 
-const ROW = "flex items-baseline justify-between gap-4 border-0 border-b border-solid border-(--rule) py-[14px] text-[17px]";
+// A label column sized to the longest label, so labels stay on one line and values line up.
+const ROWS = "m-0 grid list-none grid-cols-[auto_minmax(0,1fr)] gap-x-6 p-0";
+const ROW =
+  "col-span-2 grid grid-cols-subgrid items-baseline border-0 border-b border-solid border-(--rule) py-[14px] text-[17px]";
+const LABEL = "whitespace-nowrap text-(--ink-muted)";
+const VALUE = "text-right";
 
 // Offered to a guest after the finish. Signed-in learners never see it.
 export default function WelcomeAccountPage() {
@@ -64,30 +69,38 @@ export default function WelcomeAccountPage() {
           )}
         </LeadBlock>
 
-        <aside aria-labelledby="comes-with-you" className="min-w-0 flex-[0_1_340px]">
+        {/* Beside the lead it is 340px wide. The lead (560px) + gap (80px) + list (340px) fit from
+            980px; below that the list wraps under the lead and fills the row. */}
+        <aside
+          aria-labelledby="comes-with-you"
+          className="min-w-0 flex-[1_1_340px] max-w-[max(340px,calc((980px_-_100%)_*_999))]"
+        >
           <h2
             id="comes-with-you"
             className="m-0 border-0 border-b border-solid border-(--ink) pb-3 font-label text-[12px] uppercase tracking-[0.1em] text-(--ink-muted)"
           >
             What comes with you
           </h2>
-          <ul className="m-0 list-none p-0">
+          <ul className={ROWS}>
             {session?.finishedAt && (
               <li className={ROW}>
-                <span className="text-(--ink-muted)">Today’s lesson</span>
-                <span className="inline-flex items-center gap-[6px] text-right">
-                  <CheckIcon size={14} />
+                <span className={LABEL}>Today’s lesson</span>
+                <span className={VALUE}>
+                  {/* Inline, so the mark stays with the title's first line when it wraps. */}
+                  <CheckIcon size={14} className="mr-[6px] inline-block align-[-1px]" />
                   {session.lesson.title}
                 </span>
               </li>
             )}
             <li className={ROW}>
-              <span className="text-(--ink-muted)">Your streak</span>
-              <span>{streak === 1 ? "1 day" : `${streak} days`}</span>
+              <span className={LABEL}>Your streak</span>
+              <span className={VALUE}>{streak === 1 ? "1 day" : `${streak} days`}</span>
             </li>
             <li className={ROW}>
-              <span className="text-(--ink-muted)">Your subjects</span>
-              <span className="text-right">{subjects && subjectNames(subjects).length ? joinList(subjectNames(subjects)) : "None yet"}</span>
+              <span className={LABEL}>Your subjects</span>
+              <span className={VALUE}>
+                {subjects && subjectNames(subjects).length ? joinList(subjectNames(subjects)) : "None yet"}
+              </span>
             </li>
           </ul>
         </aside>
