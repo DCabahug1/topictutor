@@ -152,6 +152,33 @@
 
 /* Inline mode: one paragraph reads inline, a second one or one after a code box gets its own line. */
 .md-inline-p + .md-inline-p, .md-code + .md-inline-p { display: block; margin-top: 0.6em; }
+
+/*
+ * Maths drawn by KaTeX. KaTeX's own stylesheet loads after this one, so these
+ * rules start with `html` to win over it.
+ *
+ * Its own size runs large next to Newsreader. An equation never breaks across
+ * lines: one that doesn't fit moves to the next line whole, and the rare one
+ * wider than the column scrolls inside its section instead of making the page
+ * scroll sideways. An equation the writer set on its own lines gets about half
+ * a line of room above and below; the padding keeps tall glyphs from being
+ * clipped by its scroller.
+ */
+html .katex { font-size: 1.08em; white-space: nowrap; }
+html .md-block:has(.katex) { overflow-x: auto; overflow-y: hidden; }
+/*
+ * In lesson text and tutor answers, notation is drawn in full ink so it stands
+ * out from the softer words around it, and a paragraph holding maths gets taller
+ * lines, so a stacked fraction or a sum doesn't push one line apart from the rest.
+ */
+html .md-block .katex { color: var(--ink); }
+html .md-block :is(p, li):has(.katex) { line-height: 1.9; }
+html .katex-display { margin: 0; padding: 0.15em 0; overflow-x: auto; overflow-y: hidden; }
+html .md-block > .katex-display { margin-block: 0.6em; }
+html .md-block > .katex-display:first-child { margin-top: 0; }
+html .md-block > .katex-display:last-child { margin-bottom: 0; }
+html .md-block :is(li, blockquote) > .katex-display { margin-block: 0.4em; }
+html .katex-error { font-family: var(--font-code); font-size: 0.86em; }
 .md-drop-cap > p:first-child::first-letter {
   float: left; padding: 6px 10px 0 0; font-size: 60px; line-height: 0.82; font-weight: 500; color: var(--ink);
 }

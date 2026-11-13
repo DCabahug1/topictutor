@@ -6,20 +6,31 @@ import { SUBJECTS, type ChoiceQuestion } from "../types";
 // Prompts and output shapes for everything the Almanac writes. The house voice
 // is the same everywhere, so it lives once, here.
 
+/**
+ * How maths is written. It is drawn with KaTeX (components/almanac/Markdown.tsx),
+ * which reads LaTeX between double dollars. Single dollars stay money.
+ */
+const MATHS = `Write maths, formulas and notation in LaTeX between double dollar signs, never single ones, like $$x^2$$ or $$\\frac{1}{2}$$. Write money as plain $5.
+Notation goes inline in the sentence, the way a good textbook writes it. Set an equation on lines of its own (a line holding only $$, the LaTeX, a line holding only $$) only when it is the point of the section, like the formula being taught.
+Questions, options and explanations keep all maths inline.
+Readers may not know the notation. The first time a symbol appears, say what it stands for in a few words, like "where r is the ratio". After an equation on its own lines, say in one plain sentence what it means.
+Use notation only where the topic does; plain numbers like 5 or 12% stay plain. Never put maths in the code field.`;
+
 const VOICE = `Write for a curious adult reading on a phone. Plain, warm and a little dry. Short sentences.
 Sentence case in titles. No em dashes, no exclamation marks, no emoji, no headings.
 Be accurate. If something is uncertain or debated, say so plainly.
 Teach and test the topic the way people who know its field do, in that field's own terms, notation and examples. Don't bring in another field to make it fresh: no programming for a maths topic, no maths for a history topic unless the field itself uses it. Only go there if the learner asks for it.
-Titles, descriptions, topics, hints and suggestions are plain text, with no markdown at all.
+Titles, descriptions, topics, hints and suggestions are plain text, with no markdown and no LaTeX at all.
 Questions, options and explanations are plain text too, with **bold**, *italic* or \`code\` only where it truly helps.
 Questions show code only when the topic is about code, and then in the code field, never in the question sentence.
-Maths, formulas and notation go in the sentence as plain text, like 1/2 + 1/4 + 1/8 + ... or 5 ÷ 0, never in the code field.`;
+${MATHS}`;
 
 /** Markdown for prose: the lesson and the tutor's answers. */
 const MARKDOWN = `Write in markdown, but only where it helps a reader take it in:
 - **Bold** the one key term in a section.
 - A short bulleted or numbered list for steps, parts or reasons.
 - \`code\` or a fenced code block for code, only when the topic is about code, and a small table only to compare a few things side by side.
+- An equation on its own lines between $$ lines, only for the formula a section is about.
 Most sections are plain sentences. No headings, no horizontal rules, no images, no HTML.`;
 
 /** How sections are told apart, since a section can hold blank lines of its own. */
@@ -48,7 +59,7 @@ const choice = z.object({
   code: z
     .string()
     .describe(
-      "Only when the topic is about programming or markup and the question needs code: the code, exactly as in an editor, with real line breaks and indentation. No fences. Empty for every other topic. Never use it for maths, formulas or quotes."
+      "Only when the topic is about programming or markup and the question needs code: the code, exactly as in an editor, with real line breaks and indentation. No fences. Empty for every other topic. Never use it for maths, formulas or quotes: maths goes in the question as LaTeX."
     ),
   language: z
     .string()
@@ -57,7 +68,7 @@ const choice = z.object({
     .array(z.string())
     .length(4)
     .describe(
-      "Four short answers. Exactly one is right. Code in an answer goes in `backticks`. The app letters them A to D, so never start one with a letter, and never refer to code by letter: number versions instead (version 1, version 2)."
+      "Four short answers. Exactly one is right. Code in an answer goes in `backticks`, maths in $$double dollars$$. The app letters them A to D, so never start one with a letter, and never refer to code by letter: number versions instead (version 1, version 2)."
     ),
   correctIndex: z.number().int().min(0).max(3),
   explanation: z.string().describe("One or two sentences saying why the right answer is right. Code goes in `backticks`."),

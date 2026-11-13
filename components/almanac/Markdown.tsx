@@ -1,7 +1,11 @@
 import type { ComponentProps, ReactNode } from "react";
-import ReactMarkdown, { type Components } from "react-markdown";
+import "katex/dist/katex.min.css";
+import ReactMarkdown, { type Components, type Options } from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
+import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import { holdBackOpenMath, normalizeMath } from "@/lib/almanac/rules";
 import { cx } from "./cx";
 
 /**
@@ -9,6 +13,18 @@ import { cx } from "./cx";
  * or with "text", stays plain, so prose never gets guessed at.
  */
 const HIGHLIGHT: [typeof rehypeHighlight, { plainText: string[] }] = [rehypeHighlight, { plainText: ["text", "txt", "plain"] }];
+
+/**
+ * Maths is LaTeX between double dollars (see normalizeMath). Single dollars are
+ * left alone, so prices stay text.
+ */
+const MATH: [typeof remarkMath, { singleDollarTextMath: boolean }] = [remarkMath, { singleDollarTextMath: false }];
+
+/** KaTeX draws the maths. It runs before the highlighter, which would otherwise colour a maths block as code. */
+const KATEX: [typeof rehypeKatex, { errorColor: string }] = [rehypeKatex, { errorColor: "var(--danger)" }];
+
+const REMARK: Options["remarkPlugins"] = [remarkGfm, MATH];
+const REHYPE: Options["rehypePlugins"] = [KATEX, HIGHLIGHT];
 
 type MarkdownProps = {
   children: string;
@@ -26,8 +42,18 @@ type MarkdownProps = {
   className?: string;
 };
 
-// "span" is only ever the highlighter's colour spans: raw HTML is never rendered.
-const INLINE_ELEMENTS = ["p", "strong", "em", "code", "del", "pre", "span"];
+/**
+ * What KaTeX draws with: spans for the maths you see, MathML for screen readers,
+ * and SVG for stretchy marks like a long square root.
+ */
+const KATEX_ELEMENTS = [
+  "math", "semantics", "annotation", "mrow", "mi", "mn", "mo", "ms", "mtext", "mspace", "msup", "msub", "msubsup",
+  "mfrac", "msqrt", "mroot", "mover", "munder", "munderover", "mtable", "mtr", "mtd", "mstyle", "mpadded",
+  "mphantom", "menclose", "svg", "path", "line", "rect", "g",
+];
+
+// "span" is only ever the highlighter's colour spans and KaTeX's: raw HTML is never rendered.
+const INLINE_ELEMENTS = ["p", "strong", "em", "code", "del", "pre", "span", ...KATEX_ELEMENTS];
 
 /** A heading inside a lesson reads as a strong line, so the reading column stays flat. */
 const Heading = ({ children }: { children?: ReactNode }) => <p className="m-0 font-medium text-(--ink)">{children}</p>;
@@ -133,22 +159,23 @@ function repairFences(text: string): string {
 }
 
 /**
- * Markdown from the writer and the tutor, in the Almanac's own type. Raw HTML
- * is never rendered and links go through react-markdown's URL check, so text
- * from the model can't inject anything.
+ * Markdown from the writer and the tutor, in the Almanac's own type, with maths
+ * drawn by KaTeX. Raw HTML is never rendered and links go through
+ * react-markdown's URL check, so text from the model can't inject anything.
  */
 export function Markdown({ children, mode = "block", streaming = false, dropCap = false, className }: MarkdownProps) {
+  const text = streaming ? holdBackOpenMath(children) : children;
   if (mode === "inline") {
     return (
-      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[HIGHLIGHT]} allowedElements={INLINE_ELEMENTS} unwrapDisallowed components={inline}>
-        {repairFences(children)}
+      <ReactMarkdown remarkPlugins={REMARK} rehypePlugins={REHYPE} allowedElements={INLINE_ELEMENTS} unwrapDisallowed components={inline}>
+        {normalizeMath(repairFences(text), { inline: true })}
       </ReactMarkdown>
     );
   }
   return (
     <div className={cx("md-block", dropCap && "md-drop-cap", streaming && "md-streaming", className)}>
-      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[HIGHLIGHT]} components={block}>
-        {children}
+      <ReactMarkdown remarkPlugins={REMARK} rehypePlugins={REHYPE} components={block}>
+        {normalizeMath(text)}
       </ReactMarkdown>
     </div>
   );
