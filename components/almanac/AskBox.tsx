@@ -123,9 +123,10 @@ function AskBoxForLesson({ onAsk, onExplainDifferently, hint, className }: AskBo
         </div>
       )}
 
+      {/* The focus ring goes round the whole field, not the text box inside its padding. */}
       <form
         onSubmit={submit}
-        className="mt-6 flex min-h-[52px] items-center gap-3 border border-solid border-(--rule) bg-(--paper-raised) px-4"
+        className="mt-6 flex min-h-[52px] items-center gap-3 border border-solid border-(--rule) bg-(--paper-raised) px-4 has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-(--focus)"
       >
         <label htmlFor={`${id}-input`} className="sr-only">
           {asked ? "Ask a follow-up" : "Ask a question about this lesson"}
@@ -138,7 +139,7 @@ function AskBoxForLesson({ onAsk, onExplainDifferently, hint, className }: AskBo
           placeholder={asked ? "Ask a follow-up" : "Ask anything about this lesson"}
           autoComplete="off"
           maxLength={500}
-          className="h-12 min-w-0 flex-auto rounded-none border-0 bg-transparent p-0 font-serif text-[18px] italic text-(--ink)"
+          className="h-12 min-w-0 flex-auto rounded-none border-0 bg-transparent p-0 font-serif text-[18px] italic text-(--ink) focus-visible:outline-none"
         />
         <button
           type="submit"
