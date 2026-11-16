@@ -9,7 +9,15 @@ import { useSession } from "@/components/almanac/SessionProvider";
 import { FourWeekGrid } from "@/components/almanac/StreakMark";
 import { almanac, prefersReducedMotion, runLength, useAlmanac, type DailySession } from "@/lib/almanac";
 import { KEEP_TODAY_LOGIN } from "@/lib/next-path";
-import { DEEPER_ACTION, OWN_TOPIC_ACTION, OWN_TOPIC_HREF, deeperHref } from "./copy";
+import {
+  CONTINUE_SERIES_WRAP,
+  DEEPER_ACTION,
+  OWN_TOPIC_ACTION,
+  OWN_TOPIC_HREF,
+  continueSeriesHref,
+  continueSeriesLabel,
+  deeperHref,
+} from "./copy";
 import { DeeperSuggestion } from "./DeeperSuggestion";
 
 /** The subject picker is offered once, after the first lesson. */
@@ -63,14 +71,15 @@ export function Finish({ session, headingRef }: { session: DailySession; heading
 
   const head = finishHeadline(to);
   const next = series?.nextLesson
-    ? `Up next in your series is lesson ${series.nextLesson.number}: ${series.nextLesson.title}.`
+    ? // The button names the series, so this names the lesson.
+      `Up next is lesson ${series.nextLesson.number}: ${series.nextLesson.title}.`
     : pickSubjects
       ? "One more step and tomorrow’s lesson is set."
       : `Tomorrow’s lesson is ${session.tomorrowSubject}.`;
 
   const primary = series?.nextLesson ? (
-    <Button icon href={`/series/${series.id}/${series.nextLesson.number}`}>
-      Continue your series
+    <Button icon href={continueSeriesHref(series.id, series.nextLesson)} className={CONTINUE_SERIES_WRAP}>
+      {continueSeriesLabel(series)}
     </Button>
   ) : pickSubjects ? (
     <Button icon href="/welcome/subjects">

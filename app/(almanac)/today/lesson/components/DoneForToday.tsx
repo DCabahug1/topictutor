@@ -4,7 +4,15 @@ import { Button } from "@/components/almanac/Button";
 import { LeadBlock } from "@/components/almanac/LeadBlock";
 import { PaperPage } from "@/components/almanac/Page";
 import type { DailySession } from "@/lib/almanac";
-import { DEEPER_ACTION, OWN_TOPIC_ACTION, OWN_TOPIC_HREF, deeperHref } from "./copy";
+import {
+  CONTINUE_SERIES_WRAP,
+  DEEPER_ACTION,
+  OWN_TOPIC_ACTION,
+  OWN_TOPIC_HREF,
+  continueSeriesHref,
+  continueSeriesLabel,
+  deeperHref,
+} from "./copy";
 import { DeeperSuggestion } from "./DeeperSuggestion";
 
 /** What a guest sees for the rest of the day once the lesson is finished. */
@@ -22,8 +30,8 @@ export function DoneForToday({ session }: { session: DailySession }) {
           line={`Tomorrow’s lesson is ${session.tomorrowSubject}, at midnight.`}
           primary={
             series?.nextLesson ? (
-              <Button icon href={`/series/${series.id}/${series.nextLesson.number}`}>
-                Continue your series
+              <Button icon href={continueSeriesHref(series.id, series.nextLesson)} className={CONTINUE_SERIES_WRAP}>
+                {continueSeriesLabel(series)}
               </Button>
             ) : (
               <Button icon href={deeperHref(lesson.deeperTopic)}>

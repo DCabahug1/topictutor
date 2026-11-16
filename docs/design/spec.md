@@ -165,5 +165,5 @@ Streaming text (a lesson's first open, tutor answers, outlines):
 | Signed-in phone navigation | Bottom tab bar | Masthead links only |
 | Library opening | Leads with the most recent in-progress series and its Continue button | Lead with "Start a new series" |
 | Stats opening | Leads with the streak and "Start today's lesson" (hidden once today is done) | No button on Stats |
-| Today when done | The primary becomes "Continue your series" | No primary once done |
+| Today when done | The primary becomes Continue “<series name>”, naming the series it opens | No primary once done |
 | Email links | Work for one hour, once | Whatever the auth provider uses |
