@@ -4,7 +4,7 @@ import { createClient } from '@/utils/supabase/server'
 import { ensureProfileExists } from '@/lib/profiles'
 import type { User } from '@supabase/supabase-js'
 import { adoptGuest, adoptPending, hasOwnProgress } from '@/lib/almanac/server/adopt'
-import { safeNext } from '@/lib/next-path'
+import { isKeepToday, safeNext } from '@/lib/next-path'
 
 const SIGN_UP_MS = 10 * 60 * 1000
 
@@ -29,6 +29,8 @@ export async function GET(request: Request) {
   const code = searchParams.get('code')
   // Where the learner was headed before signing in, if it's a path on this site.
   const next = safeNext(searchParams.get('next')) ?? '/today'
+  // The learner asked for the guest's lesson to come along, from a finished lesson.
+  const keepToday = isKeepToday(searchParams.get('keep'))
 
   if (code) {
     const supabase = await createClient()
@@ -42,11 +44,14 @@ export async function GET(request: Request) {
       const { data: userData, error: userError } = await supabase.auth.getUser()
 
       if (!userError && userData?.user && !userData.user.is_anonymous) {
-        // The guest on this device moves in only when this sign-in signed the learner up and
-        // the account has no progress of its own yet. Folding a guest into an account someone
-        // already uses would mark a lesson as done in it that they never did.
+        // The guest on this device moves in when the learner asked for it from a finished
+        // lesson, or when this sign-in signed them up and the account has no progress of its
+        // own yet. Folding a guest into an account someone already uses, unasked, would mark a
+        // lesson as done in it that they never did.
         const user = userData.user
-        if (guestId && isSignUp(user) && !(await hasOwnProgress(user.id))) await adoptGuest(guestId, user.id)
+        if (guestId && (keepToday || (isSignUp(user) && !(await hasOwnProgress(user.id))))) {
+          await adoptGuest(guestId, user.id)
+        }
         // The guest recorded when this account was made by email, if any.
         await adoptPending(userData.user.id)
       }

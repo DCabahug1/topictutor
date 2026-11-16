@@ -16,8 +16,9 @@ export function DoneForToday({ session }: { session: DailySession }) {
     <PaperPage current="today">
       <section className="mt-(--lead-top) max-w-[780px]">
         <LeadBlock
+          // The lesson keeps its title; the eyebrow says it is finished.
           eyebrow={`✓ Done · Today in ${lesson.subjectName}`}
-          title="Done for today."
+          title={lesson.title}
           line={`Tomorrow’s lesson is ${session.tomorrowSubject}, at midnight.`}
           primary={
             series?.nextLesson ? (
