@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { cx } from "@/components/almanac/cx";
 import { Reveal } from "@/components/almanac/Reveal";
-import { FourWeekGrid } from "@/components/almanac/StreakMark";
-import { localDate, recentDays, shiftDate } from "@/lib/almanac/rules";
+import { MonthGrid } from "@/components/almanac/StreakMark";
+import { localDate, monthDays, shiftDate } from "@/lib/almanac/rules";
 import { useInView } from "@/components/almanac/useInView";
 import { useReducedMotion } from "./useReducedMotion";
 
@@ -20,15 +20,14 @@ const STEPS = [
 ];
 
 /**
- * Four weeks for the demo finish: a 12-day run before today, a few earlier days, and today.
+ * This month for the demo finish: a 12-day run before today, a few earlier days, and today.
  * Built only when the finish step shows, which is never on the first render.
  */
 function demoMonth() {
   const today = localDate();
   const ago = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 16, 19, 22, 23, 26];
-  return recentDays(
+  return monthDays(
     ago.map((n) => shiftDate(today, -n)),
-    28,
     today
   );
 }
@@ -181,7 +180,7 @@ export function SessionPlayer() {
                   </div>
                   <p className="t-title m-0 mt-5">Another day done!</p>
                 </div>
-                <FourWeekGrid
+                <MonthGrid
                   days={demoMonth()}
                   count={flipped ? 13 : 12}
                   todayDone={flipped}

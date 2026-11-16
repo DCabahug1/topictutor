@@ -410,21 +410,32 @@ export function lastSevenDays(finishedDates: Iterable<string>, today: string = l
   return recentDays(finishedDates, 7, today);
 }
 
+/** One day of the streak grid. */
+function streakDay(date: string, done: Set<string>, today: string): StreakDay {
+  const name = parseLocalDate(date).toLocaleDateString("en-US", { weekday: "long" });
+  return {
+    letter: name[0],
+    short: name.slice(0, 3),
+    name,
+    date,
+    done: done.has(date),
+    isToday: date === today,
+    upcoming: date > today,
+  };
+}
+
 /** The last `length` days, oldest first, ending today. */
 export function recentDays(finishedDates: Iterable<string>, length: number, today: string = localDate()): StreakDay[] {
   const done = new Set(finishedDates);
-  return Array.from({ length }, (_, i) => {
-    const date = shiftDate(today, i - (length - 1));
-    const name = parseLocalDate(date).toLocaleDateString("en-US", { weekday: "long" });
-    return {
-      letter: name[0],
-      short: name.slice(0, 3),
-      name,
-      date,
-      done: done.has(date),
-      isToday: date === today,
-    };
-  });
+  return Array.from({ length }, (_, i) => streakDay(shiftDate(today, i - (length - 1)), done, today));
+}
+
+/** Every day of today's month, the 1st first. Days after today are `upcoming`. */
+export function monthDays(finishedDates: Iterable<string>, today: string = localDate()): StreakDay[] {
+  const done = new Set(finishedDates);
+  const [y, m] = today.split("-").map(Number);
+  const length = new Date(y, m, 0).getDate();
+  return Array.from({ length }, (_, i) => streakDay(localDate(new Date(y, m - 1, i + 1)), done, today));
 }
 
 /** "1", "1 and 2", "1, 2 and 3". */

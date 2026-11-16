@@ -9,123 +9,109 @@ import { cx } from "./cx";
 const SIZE =
   "[--num:56px] [--label:18px] [--gap:6px] [--pad:24px] md:[--num:72px] md:[--label:20px] md:[--pad:28px]";
 
-/** Seven columns (four weeks of rows), or --cols:14 for two rows of two weeks. */
-const GRID = "grid grid-cols-[repeat(var(--cols,7),var(--cell))] gap-(--gap)";
+/** Seven columns, Sunday first: one row per week of the month. */
+const GRID = "grid grid-cols-[repeat(7,var(--cell))] gap-(--gap)";
 
-function shortDate(iso: string): string {
-  return parseLocalDate(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+/** "Su", "Mo": two letters, so T and S days can't be confused. */
+const WEEKDAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+
+/** "Thu, Nov 12", for the hover label on each square. */
+function hoverDate(iso: string): string {
+  return parseLocalDate(iso).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
 }
 
-/** "Mo", "Tu": two letters, so T and S days can't be confused. */
-const dayLabel = (day: StreakDay) => day.short.slice(0, 2);
-
-type FourWeekGridProps = {
-  /** The last 28 days, oldest first, ending today (Streak.month). */
+type MonthGridProps = {
+  /** Every day of the current month, the 1st first (Streak.month). */
   days: StreakDay[];
   /** The current run. Includes today only once today is done. */
   count: number;
   todayDone: boolean;
   /** Names what each kind of square means, under the grid. */
   legend?: boolean;
-  /**
-   * Dates down the left: each row's first day. Takes --axis (the column's width)
-   * from a parent and replaces the range row under the grid.
-   */
-  axis?: boolean;
   className?: string;
 };
 
 const SWATCH = "box-border block size-[10px] flex-none border-[1.5px]";
 
-/**
- * The 4 x 7 grid of the last 28 days, with weekday names above and the range below
- * (or row dates on the left, with `axis`). Sized by the --cell, --gap and --meta
- * (label size, 11px by default) variables on a parent. A parent can set --cols:14,
- * --rows:2, --early-letters:block and --odd-weeks:none to lay the same days out as 2 x 14.
- */
-export function FourWeekGrid({ days, count, todayDone, legend = false, axis = false, className }: FourWeekGridProps) {
-  if (!days.length) return null;
-  const last = days.length - 1;
+// Three looks and a mark: a day with its lesson done is filled in accent, an
+// earlier day without one is a quiet sunk fill, a day still to come is an empty
+// outline, and today is ringed in accent, filled once it's done.
+const DONE = "border-solid border-(--accent) bg-(--accent)";
+const MISSED = "border-solid border-(--paper-sunk) bg-(--paper-sunk)";
+const UPCOMING = "border-solid border-(--rule)";
+const TODAY_RING = "outline-2 outline-offset-2 outline-solid outline-(--accent)";
 
-  const earlierDone = days.slice(0, last).filter((d) => d.done).length;
+/**
+ * The current month as a calendar: the month's name, weekday names (Sunday first)
+ * and one square per day, the 1st under its weekday. Hovering a square names its
+ * date. Sized by the --cell, --gap and --meta (label size, 11px by default)
+ * variables on a parent.
+ */
+export function MonthGrid({ days, count, todayDone, legend = false, className }: MonthGridProps) {
+  if (!days.length) return null;
+
+  const first = parseLocalDate(days[0].date);
+  const monthName = first.toLocaleDateString("en-US", { month: "long" });
+  const today = days.find((d) => d.isToday);
+  const todayWeekday = today ? parseLocalDate(today.date).getDay() : -1;
+
+  const earlier = days.filter((d) => !d.isToday && !d.upcoming);
+  const earlierDone = earlier.filter((d) => d.done).length;
   const label =
-    `Last four weeks: ${earlierDone} of ${last} earlier days done, ` +
+    `${monthName}: ` +
+    (earlier.length ? `${earlierDone} of ${earlier.length} earlier days done, ` : "") +
     `current streak ${count} ${count === 1 ? "day" : "days"}, today ${todayDone ? "done" : "not done yet"}.`;
 
-  // Two looks and a mark: a day with its lesson done is filled in accent, any
-  // other day is blank, and today is ringed in accent, filled once it's done.
-  const DONE = "border-solid border-(--accent) bg-(--accent)";
-  const BLANK = "border-solid border-(--rule)";
-  const TODAY_RING = "outline-2 outline-offset-2 outline-solid outline-(--accent)";
-  const TODAY = cx(todayDone ? DONE : "border-solid border-(--accent)", TODAY_RING);
-
   function cellClass(day: StreakDay): string {
-    if (day.isToday) return TODAY;
-    return day.done ? DONE : BLANK;
+    if (day.isToday) return cx(todayDone ? DONE : "border-solid border-(--accent)", TODAY_RING);
+    if (day.upcoming) return UPCOMING;
+    return day.done ? DONE : MISSED;
+  }
+
+  function hoverLabel(day: StreakDay): string {
+    const date = hoverDate(day.date);
+    if (day.isToday) return todayDone ? `Today, ${date} · Lesson done` : `Today, ${date}`;
+    if (day.upcoming) return `${date} · Upcoming`;
+    return `${date} · ${day.done ? "Lesson done" : "No lesson"}`;
   }
 
   const meta = "font-label text-[length:var(--meta,11px)]";
 
   return (
     <div role="img" aria-label={label} className={cx("w-fit", className)}>
-      <div className={cx(axis && "grid grid-cols-[var(--axis)_auto] gap-x-2")}>
-        {axis && <span aria-hidden="true" />}
-        <div aria-hidden="true" className={cx(GRID, meta, "text-center")}>
-          {/* Two weeks of names: the first week's only show in the two-row layout. */}
-          {days.slice(-14).map((day, i) => (
-            <span
-              key={day.date}
-              className={cx(
-                day.isToday ? "font-medium text-(--ink)" : "text-(--ink-muted)",
-                i < 7 && "[display:var(--early-letters,none)]"
-              )}
-            >
-              {dayLabel(day)}
-            </span>
-          ))}
-        </div>
-        {axis && (
-          // One date per row: the week it starts. In two rows of two weeks, every other date goes.
-          <div
-            aria-hidden="true"
-            className={cx(meta, "mt-2 grid grid-rows-[repeat(var(--rows,4),var(--cell))] gap-y-(--gap) text-right text-(--ink-muted)")}
-          >
-            {[0, 7, 14, 21].map((start) => (
-              <span
-                key={start}
-                className={cx("self-center whitespace-nowrap", start % 14 === 7 && "[display:var(--odd-weeks,block)]")}
-              >
-                {shortDate(days[start].date)}
-              </span>
-            ))}
-          </div>
-        )}
-        <div aria-hidden="true" className={cx(GRID, "mt-2")}>
-          {days.map((day) => (
-            <span
-              key={day.date}
-              className={cx(
-                "box-border block h-(--cell) w-(--cell) border-[1.5px] transition-colors duration-(--duration-step) ease-(--ease-enter)",
-                cellClass(day)
-              )}
-            />
-          ))}
-        </div>
+      <p aria-hidden="true" className={cx(meta, "m-0 mb-2 font-medium uppercase tracking-[0.04em] text-(--ink)")}>
+        {monthName}
+      </p>
+      <div aria-hidden="true" className={cx(GRID, meta, "text-center")}>
+        {WEEKDAYS.map((name, i) => (
+          <span key={name} className={i === todayWeekday ? "font-medium text-(--ink)" : "text-(--ink-muted)"}>
+            {name}
+          </span>
+        ))}
       </div>
-      {!axis && (
-        <div aria-hidden="true" className={cx(meta, "mt-2.5 flex justify-between uppercase tracking-[0.04em] text-(--ink-muted)")}>
-          <span>{shortDate(days[0].date)}</span>
-          <span>Today</span>
-        </div>
-      )}
+      <div aria-hidden="true" className={cx(GRID, "mt-2")}>
+        {days.map((day, i) => (
+          <span
+            key={day.date}
+            title={hoverLabel(day)}
+            // The 1st sits under its weekday; the slots before it stay empty.
+            style={i === 0 ? { gridColumnStart: first.getDay() + 1 } : undefined}
+            className={cx(
+              "box-border block h-(--cell) w-(--cell) border-[1.5px] transition-colors duration-(--duration-step) ease-(--ease-enter)",
+              cellClass(day)
+            )}
+          />
+        ))}
+      </div>
       {legend && (
         <ul
           aria-hidden="true"
-          className={cx(meta, "m-0 mt-3 flex list-none flex-wrap gap-x-4 gap-y-1.5 p-0 text-(--ink-muted)")}
+          className={cx(meta, "m-0 mt-3 grid list-none grid-cols-[auto_auto] justify-start gap-x-4 gap-y-1.5 p-0 text-(--ink-muted)")}
         >
           {[
             { look: DONE, text: "Lesson done" },
-            { look: BLANK, text: "No lesson" },
+            { look: MISSED, text: "No lesson" },
+            { look: UPCOMING, text: "Upcoming" },
             // A smaller ring, so the swatch keeps the same proportions as the square.
             { look: "border-solid border-(--accent) outline-[1.5px] outline-offset-1 outline-solid outline-(--accent)", text: "Today" },
           ].map((item) => (
@@ -143,7 +129,7 @@ export function FourWeekGrid({ days, count, todayDone, legend = false, axis = fa
 type StreakMarkProps = {
   /** The current run. Includes today only once today is done. */
   count: number;
-  /** The last 28 days, oldest first, ending today (Streak.month). */
+  /** Every day of the current month, the 1st first (Streak.month). */
   days: StreakDay[];
   todayDone: boolean;
   /** The longest run ever, for the note. */
@@ -152,14 +138,16 @@ type StreakMarkProps = {
 };
 
 /**
- * The streak card, "Four weeks": the count, a grid of the last 28 days with a
- * legend, one italic note. Days with the lesson done are filled in accent, other
- * days are blank, and today is ringed in accent (filled once it's done).
+ * The streak card: the count, this month's calendar with a legend, one italic
+ * note. Days with the lesson done are filled in accent, earlier days without one
+ * are muted, days still to come are empty outlines, and today is ringed in accent
+ * (filled once it's done).
  *
  * It lays itself out by its own width (container queries), so the page decides
- * how wide it is: a narrow card (beside the lesson on Today, or a small phone)
- * is 4 x 7 with the squares filling the width; a wide one (below the lesson)
- * puts the count and note on one line over a 2 x 14 grid that fills the card.
+ * how wide it is: a narrow card (beside the lesson on Today, or a phone) stacks
+ * the count, the note and the calendar (its squares filling the width); a wide
+ * one (below the lesson) puts the count and note on the left and the calendar
+ * on the right.
  */
 export function StreakMark({ count, days, todayDone, longest, className }: StreakMarkProps) {
   // The longest run is worth naming only when it is longer than this one. Once
@@ -181,7 +169,7 @@ export function StreakMark({ count, days, todayDone, longest, className }: Strea
         className
       )}
     >
-      <div className="grid grid-cols-1 @min-[21rem]:grid-cols-[auto_minmax(0,1fr)] @min-[21rem]:items-end @min-[21rem]:gap-x-6 @min-[21rem]:[--cols:14] @min-[21rem]:[--early-letters:block]">
+      <div className="grid grid-cols-1 @min-[34rem]:grid-cols-[minmax(0,1fr)_auto] @min-[34rem]:grid-rows-[auto_1fr] @min-[34rem]:gap-x-8">
         <div className="flex items-baseline gap-3">
           <p
             className={cx(
@@ -194,31 +182,30 @@ export function StreakMark({ count, days, todayDone, longest, className }: Strea
           <p className="m-0 text-(length:--label) text-(--ink-muted)">day streak</p>
         </div>
 
-        <FourWeekGrid
-          days={days}
-          count={count}
-          todayDone={todayDone}
-          legend
-          axis
-          className={cx(
-            "mt-6 [--meta:12px] [--axis:3rem]",
-            // Narrow: the dates, then seven squares filling the rest of the card's width.
-            "[--cell:calc((100cqi_-_var(--axis)_-_0.5rem_-_6_*_var(--gap))_/_7)]",
-            // Wide: two rows of fourteen across the full width, under the count and note.
-            "@min-[21rem]:col-span-2 @min-[21rem]:row-start-2 @min-[21rem]:[--gap:5px] @min-[21rem]:[--rows:2] @min-[21rem]:[--odd-weeks:none] @min-[21rem]:[--cell:calc((100cqi_-_var(--axis)_-_0.5rem_-_13_*_var(--gap))_/_14)]"
-          )}
-        />
-
         {note && (
           <p
             className={cx(
-              "m-0 mt-[18px] text-[16px] italic leading-[1.4] text-(--ink-muted)",
-              "@min-[21rem]:col-start-2 @min-[21rem]:row-start-1 @min-[21rem]:mt-0 @min-[21rem]:text-right"
+              "m-0 mt-4 text-[16px] italic leading-[1.4] text-(--ink-muted)",
+              "@min-[34rem]:col-start-1 @min-[34rem]:row-start-2 @min-[34rem]:mt-[18px] @min-[34rem]:self-start"
             )}
           >
             {note}
           </p>
         )}
+
+        <MonthGrid
+          days={days}
+          count={count}
+          todayDone={todayDone}
+          legend
+          className={cx(
+            "mt-6 [--meta:12px]",
+            // Narrow: seven squares filling the card's width, up to 48px each.
+            "[--cell:min(48px,calc((100cqi_-_6_*_var(--gap))_/_7))]",
+            // Wide: beside the count and note, at a fixed size.
+            "@min-[34rem]:col-start-2 @min-[34rem]:row-span-2 @min-[34rem]:row-start-1 @min-[34rem]:mt-0 @min-[34rem]:[--cell:40px]"
+          )}
+        />
       </div>
     </aside>
   );

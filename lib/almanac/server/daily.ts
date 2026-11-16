@@ -1,6 +1,6 @@
 import "server-only";
 import { GenerationError, HAIKU, generateStructured, streamText } from "@/lib/claude";
-import { SECTION_BREAK, lastSevenDays, longestStreak, parseLocalDate, recentDays, shiftDate, streakCount } from "../rules";
+import { SECTION_BREAK, lastSevenDays, longestStreak, monthDays, parseLocalDate, shiftDate, streakCount } from "../rules";
 import {
   AlmanacError,
   type ChoiceQuestion,
@@ -254,7 +254,7 @@ export function streakFrom(finishes: Finish[], today: string): Streak {
     todayDone: dates.includes(today),
     longest: longestStreak(dates),
     week: lastSevenDays(dates, today),
-    month: recentDays(dates, 28, today),
+    month: monthDays(dates, today),
   };
 }
 
