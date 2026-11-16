@@ -85,6 +85,7 @@ export default function TodayPage() {
   const started = !done && (session.recallAnswer !== null || session.checkAnswers.some((a) => a !== null));
   const firstName = user?.name.trim().split(/\s+/)[0] ?? "";
   const greeting = `${isNew ? "Welcome" : timeOfDay(hour)}${firstName ? `, ${firstName}` : ""}`;
+  // Done, the lesson keeps its title and the eyebrow says it is finished.
   const eyebrow = done ? `✓ Done · Today in ${lesson.subjectName}` : `${greeting} · Today in ${lesson.subjectName}`;
 
   // In progress first. A series that was started but never opened still belongs here.
@@ -120,7 +121,7 @@ export default function TodayPage() {
         <LeadBlock
           headingId="today-heading"
           eyebrow={eyebrow}
-          title={done ? "Done for today." : lesson.title}
+          title={lesson.title}
           line={leadLine(session, isNew, started)}
           className="max-w-[780px] flex-[1_1_620px]"
           primary={primary}
