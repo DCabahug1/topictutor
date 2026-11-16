@@ -9,15 +9,8 @@ import { useSession } from "@/components/almanac/SessionProvider";
 import { FourWeekGrid } from "@/components/almanac/StreakMark";
 import { almanac, prefersReducedMotion, runLength, useAlmanac, type DailySession } from "@/lib/almanac";
 import { KEEP_TODAY_LOGIN } from "@/lib/next-path";
-import {
-  CONTINUE_SERIES_WRAP,
-  DEEPER_ACTION,
-  OWN_TOPIC_ACTION,
-  OWN_TOPIC_HREF,
-  continueSeriesHref,
-  continueSeriesLabel,
-  deeperHref,
-} from "./copy";
+import { ContinueSeriesButton } from "./ContinueSeriesButton";
+import { DEEPER_ACTION, OWN_TOPIC_ACTION, OWN_TOPIC_HREF, deeperHref } from "./copy";
 import { DeeperSuggestion } from "./DeeperSuggestion";
 
 /** The subject picker is offered once, after the first lesson. */
@@ -78,9 +71,7 @@ export function Finish({ session, headingRef }: { session: DailySession; heading
       : `Tomorrow’s lesson is ${session.tomorrowSubject}.`;
 
   const primary = series?.nextLesson ? (
-    <Button icon href={continueSeriesHref(series.id, series.nextLesson)} className={CONTINUE_SERIES_WRAP}>
-      {continueSeriesLabel(series)}
-    </Button>
+    <ContinueSeriesButton seriesId={series.id} seriesTitle={series.title} next={series.nextLesson} />
   ) : pickSubjects ? (
     <Button icon href="/welcome/subjects">
       Pick tomorrow’s subjects

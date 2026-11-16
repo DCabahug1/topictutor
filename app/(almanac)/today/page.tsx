@@ -10,7 +10,7 @@ import { SeriesRow } from "@/components/almanac/SeriesRow";
 import { useSession } from "@/components/almanac/SessionProvider";
 import { StreakMark } from "@/components/almanac/StreakMark";
 import { almanac, useAlmanac, type DailySession, type SeriesSummary } from "@/lib/almanac";
-import { CONTINUE_SERIES_WRAP, continueSeriesHref, continueSeriesLabel } from "./lesson/components/copy";
+import { ContinueSeriesButton } from "./lesson/components/ContinueSeriesButton";
 import { MoreTopics } from "./lesson/components/MoreTopics";
 import { OwnTopicStart } from "./lesson/components/OwnTopicStart";
 
@@ -101,9 +101,7 @@ export default function TodayPage() {
       {started ? "Continue today’s lesson" : isNew ? "Start your first lesson" : "Start today’s lesson"}
     </Button>
   ) : continueTo?.nextLesson ? (
-    <Button icon href={continueSeriesHref(continueTo.id, continueTo.nextLesson)} className={CONTINUE_SERIES_WRAP}>
-      {continueSeriesLabel(continueTo)}
-    </Button>
+    <ContinueSeriesButton seriesId={continueTo.id} seriesTitle={continueTo.title} next={continueTo.nextLesson} />
   ) : undefined;
   // Done with no series to continue: the next step is a series on a topic of the learner's own.
   const ownTopic = done && !continueTo?.nextLesson;
