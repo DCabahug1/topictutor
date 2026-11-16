@@ -70,7 +70,7 @@ Match `proto-session-*` and `desk-lesson`, `desk-check-dark`, `desk-finish`, `de
 
 - Replace the labeled step tabs with the step meter. Lesson, check and tests sit in a 720px reading column.
 - The tutor is a recessed `--paper-sunk` block after the lesson. The answer shows "↳ From paragraph 3".
-- Finish: the streak numeral flips in accent, with the one exclamation, then one button, "Continue your series". "or go deeper on calendars" and "or stop for today" are quiet links.
+- Finish: the streak numeral flips in accent, with the one exclamation, then one button that names the series, Continue *“How a Web Page Gets Built”*, with the name in italics. "or go deeper on calendars" and "or stop for today" are quiet links.
 - **Done when:** each step has exactly one filled button, at 320px, in both themes, with reduced motion on.
 
 ## Phase 4: Go Deeper
@@ -85,7 +85,7 @@ Match `proto-deeper-*` and the `desk-series-*`, `desk-placement-*`, `desk-master
 ## Phase 5: Landing, Today, Library, Stats
 
 - **Landing** (`desk-landing`, `phone-landing`) is the final C1 page: hero, today's lesson card, session player, Go Deeper staircase, tutor band, then the dark closing band. The tutor band runs straight into the closing band with no gap. Signed in, the buttons say "Go to today's lesson".
-- **Today:** the lesson title is the lead heading, with the greeting in the eyebrow. The streak sits to the right in ink. Series follow after the section gap as rows. When done, the button becomes "Continue your series".
+- **Today:** the lesson title is the lead heading, with the greeting in the eyebrow. The streak sits to the right in ink. Series follow after the section gap as rows. When done, the button becomes Continue *“<series name>”*, with the name in italics, so the learner can see which series it opens.
 - **Library:** leads with the most recent in-progress series and its Continue button. "or start a new series" is a quiet link. Then "All series" with an underlined search field, text filter tabs and rows, then past daily lessons in two columns.
 - **Stats:** leads with the streak numeral and "Start today's lesson". The week chart and by-subject bars are muted. Recall and series completed sit side by side. Profile has the subject tiles in the selected style, one Save button and a small Sign out link.
 

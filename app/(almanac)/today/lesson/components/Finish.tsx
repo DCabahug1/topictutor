@@ -9,6 +9,7 @@ import { useSession } from "@/components/almanac/SessionProvider";
 import { FourWeekGrid } from "@/components/almanac/StreakMark";
 import { almanac, prefersReducedMotion, runLength, useAlmanac, type DailySession } from "@/lib/almanac";
 import { KEEP_TODAY_LOGIN } from "@/lib/next-path";
+import { ContinueSeriesButton } from "./ContinueSeriesButton";
 import { DEEPER_ACTION, OWN_TOPIC_ACTION, OWN_TOPIC_HREF, deeperHref } from "./copy";
 import { DeeperSuggestion } from "./DeeperSuggestion";
 
@@ -63,15 +64,14 @@ export function Finish({ session, headingRef }: { session: DailySession; heading
 
   const head = finishHeadline(to);
   const next = series?.nextLesson
-    ? `Up next in your series is lesson ${series.nextLesson.number}: ${series.nextLesson.title}.`
+    ? // The button names the series, so this names the lesson.
+      `Up next is lesson ${series.nextLesson.number}: ${series.nextLesson.title}.`
     : pickSubjects
       ? "One more step and tomorrow’s lesson is set."
       : `Tomorrow’s lesson is ${session.tomorrowSubject}.`;
 
   const primary = series?.nextLesson ? (
-    <Button icon href={`/series/${series.id}/${series.nextLesson.number}`}>
-      Continue your series
-    </Button>
+    <ContinueSeriesButton seriesId={series.id} seriesTitle={series.title} next={series.nextLesson} />
   ) : pickSubjects ? (
     <Button icon href="/welcome/subjects">
       Pick tomorrow’s subjects
