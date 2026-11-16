@@ -11,6 +11,7 @@ import { PaperPage } from "@/components/almanac/Page";
 import { useSession } from "@/components/almanac/SessionProvider";
 import { almanac, joinList, subjectNames, useAlmanac } from "@/lib/almanac";
 import { authService } from "@/lib/auth";
+import { KEEP_TODAY_LOGIN } from "@/lib/next-path";
 
 // A label column sized to the longest label, so labels stay on one line and values line up.
 const ROWS = "m-0 grid list-none grid-cols-[auto_minmax(0,1fr)] gap-x-6 p-0";
@@ -37,7 +38,8 @@ export default function WelcomeAccountPage() {
   const withGoogle = async () => {
     setFailed(false);
     setStarting(true);
-    const result = await authService.signInWithGoogle();
+    // This page is about keeping the streak, so it comes along even into an older account.
+    const result = await authService.signInWithGoogle(null, true);
     if (!result.success) {
       setFailed(true);
       setStarting(false);
@@ -110,7 +112,7 @@ export default function WelcomeAccountPage() {
 
       <p className="m-0 mt-(--section-gap) text-[17px] text-(--ink-muted)">
         Already have an account?{" "}
-        <Link href="/login" className="text-(--ink) underline-offset-4">
+        <Link href={KEEP_TODAY_LOGIN} className="text-(--ink) underline-offset-4">
           Log in
         </Link>{" "}
         and today is added to it. ·{" "}

@@ -4,15 +4,18 @@ import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/almanac/Button";
 import { TextField } from "@/components/almanac/TextField";
-import { authService } from "@/lib/auth";
+import { logInWithEmailAndPasswordAction } from "@/lib/actions";
 import { withNext } from "@/lib/next-path";
 import { AuthFrame } from "./AuthFrame";
 import { FootLine, FormAlert, FormHeader, GoogleSignIn, emailProblem, focusField } from "./AuthParts";
 
 type Errors = { email?: string; password?: string };
 
-/** `next` is a checked same-site path to go to once logged in. */
-export function LoginForm({ next = null }: { next?: string | null }) {
+/**
+ * `next` is a checked same-site path to go to once logged in. `keepToday` is set when a
+ * guest came from a finished lesson: it moves into the account and counts toward its streak.
+ */
+export function LoginForm({ next = null, keepToday = false }: { next?: string | null; keepToday?: boolean }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<Errors>({});
@@ -35,9 +38,10 @@ export function LoginForm({ next = null }: { next?: string | null }) {
     }
 
     setBusy(true);
-    const result = await authService
-      .signInWithEmailAndPassword(email.trim(), password)
-      .catch(() => ({ success: false as const, error: null }));
+    const result = await logInWithEmailAndPasswordAction(email.trim(), password, keepToday).catch(() => ({
+      success: false as const,
+      error: null,
+    }));
 
     if (result.success) {
       // A full page load, so the server picks up the new session.
@@ -62,9 +66,13 @@ export function LoginForm({ next = null }: { next?: string | null }) {
   return (
     <AuthFrame>
       <form noValidate onSubmit={submit}>
-        <FormHeader kicker="Welcome back" title="Log in" />
+        <FormHeader
+          kicker="Welcome back"
+          title="Log in"
+          lead={keepToday ? "Today’s lesson is added to your account and counts toward your streak." : undefined}
+        />
         {alert && <FormAlert kicker="Couldn’t log in">{alert}</FormAlert>}
-        <GoogleSignIn fallback="log in with your email" next={next} />
+        <GoogleSignIn fallback="log in with your email" next={next} keepToday={keepToday} />
 
         <div className="mt-7 flex flex-col gap-6">
           <TextField

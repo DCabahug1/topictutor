@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState, type Ref } from "react";
 import { Button } from "@/components/almanac/Button";
 import { cx } from "@/components/almanac/cx";
@@ -7,6 +8,7 @@ import { LeadActions } from "@/components/almanac/LeadBlock";
 import { useSession } from "@/components/almanac/SessionProvider";
 import { FourWeekGrid } from "@/components/almanac/StreakMark";
 import { almanac, prefersReducedMotion, runLength, useAlmanac, type DailySession } from "@/lib/almanac";
+import { KEEP_TODAY_LOGIN } from "@/lib/next-path";
 import { DEEPER_ACTION, OWN_TOPIC_ACTION, OWN_TOPIC_HREF, deeperHref } from "./copy";
 import { DeeperSuggestion } from "./DeeperSuggestion";
 
@@ -141,6 +143,16 @@ export function Finish({ session, headingRef }: { session: DailySession; heading
           }
           quiet={quiet}
         />
+        {/* The actions above assume a first visit. Someone with an account brings today into it. */}
+        {!user && (
+          <p className="m-0 mt-6 text-[17px] text-(--ink-muted)">
+            Already have an account?{" "}
+            <Link href={KEEP_TODAY_LOGIN} className="text-(--ink) underline-offset-4">
+              Log in
+            </Link>{" "}
+            and today counts toward your streak.
+          </p>
+        )}
         {deeperIsSecond && (
           <DeeperSuggestion
             topic={lesson.deeperTopic}
