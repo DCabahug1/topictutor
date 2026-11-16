@@ -75,30 +75,13 @@ const signUpWithEmailAndPasswordServer = async (email: string, password: string,
   return { success: true, data: { authData } };
 };
 
-const signInWithEmailAndPassword = async (email: string, password: string) => {
+/**
+ * `next` is where to land after signing in, for example the series a guest asked for.
+ * `keepToday` brings the guest on this device into the account, even one that already existed.
+ */
+const signInWithGoogle = async (next?: string | null, keepToday = false) => {
   const supabase = createClient();
-
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  if (error) {
-    return { success: false, error };
-  }
-
-  // A guest on this device is never folded into an account that already existed: it would
-  // mark someone else's lesson as done. Only a guest recorded when this account was made
-  // (an email sign-up confirmed elsewhere) moves over. A failure never blocks the log-in.
-  await fetch("/api/almanac/adopt", { method: "POST" }).catch(() => undefined);
-
-  return { success: true, data };
-};
-
-/** `next` is where to land after signing in, for example the series a guest asked for. */
-const signInWithGoogle = async (next?: string | null) => {
-  const supabase = createClient();
-  const redirectUrl = window.origin + callbackPath({ next });
+  const redirectUrl = window.origin + callbackPath({ next, keepToday });
 
   console.log("Redirect URL:", redirectUrl);
 
@@ -137,7 +120,6 @@ const signOut = async () => {
 export const authService = {
   signUpWithEmailAndPassword,
   signUpWithEmailAndPasswordServer,
-  signInWithEmailAndPassword,
   signInWithGoogle,
   signOut,
   getUserAndProfile,

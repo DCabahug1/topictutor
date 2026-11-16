@@ -6,6 +6,10 @@ import { createAdminClient } from "@/utils/supabase/admin";
  * user, and an account is a different user, so the rows move across and the
  * guest is deleted. Where both have the same thing, the account's copy wins.
  *
+ * A guest goes into an account that already existed only when the learner asks,
+ * by logging in from a finished lesson (`keep=today`). The guest is always the
+ * one on this device's own session, never one named by a link.
+ *
  * Nothing here ever stops a sign-in: a failure is logged and the account
  * simply starts without the guest's progress.
  */

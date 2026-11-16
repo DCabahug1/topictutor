@@ -1,6 +1,6 @@
 "use server";
 
-import { adoptGuest, recordPendingAdoption } from "./almanac/server/adopt";
+import { adoptGuest, adoptPending, recordPendingAdoption } from "./almanac/server/adopt";
 import { callbackPath } from "./next-path";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { createClient } from "@/utils/supabase/server";
@@ -39,6 +39,35 @@ export async function signUpWithEmailAndPasswordAction(
     if (data.session) await adoptGuest(guestId, data.user.id);
     else await recordPendingAdoption(data.user.id, guestId);
   }
+  return { success: true };
+}
+
+export type LogInResult = { success: true } | { success: false; error: { code: string; message: string } };
+
+/**
+ * Logs in by email. The guest on this device moves into the account only when the
+ * learner asked for it (`keepToday`, from a finished lesson): an account that already
+ * existed is otherwise never given a lesson someone else may have done here. A guest
+ * recorded when this account was made by email always moves over. Neither ever stops
+ * the log-in.
+ */
+export async function logInWithEmailAndPasswordAction(
+  email: string,
+  password: string,
+  keepToday = false
+): Promise<LogInResult> {
+  const supabase = await createClient();
+  // Read before the log-in replaces the guest's session.
+  const { data: before } = await supabase.auth.getClaims();
+  const guestId = before?.claims?.is_anonymous && typeof before.claims.sub === "string" ? before.claims.sub : null;
+
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error || !data.user) {
+    return { success: false, error: { code: error?.code ?? "", message: error?.message ?? "" } };
+  }
+
+  if (keepToday && guestId) await adoptGuest(guestId, data.user.id);
+  await adoptPending(data.user.id);
   return { success: true };
 }
 

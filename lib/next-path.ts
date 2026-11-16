@@ -21,12 +21,36 @@ export function withNext(path: string, next: string | null): string {
   return next ? `${path}?next=${encodeURIComponent(next)}` : path;
 }
 
-/** The address auth links come back to: the name for a new profile, and where to go next. */
-export function callbackPath({ name, next }: { name?: string | null; next?: string | null }): string {
+/**
+ * Logging in from a guest's finished lesson. Only then does the guest on this device
+ * move into an account that already exists, so today's lesson counts toward its streak.
+ * A guest left on a shared device is never folded into someone's account unasked.
+ */
+export const KEEP_TODAY_LOGIN = "/login?keep=today";
+
+/** The `keep` search param asks for today's lesson to come along. */
+export function isKeepToday(value: string | string[] | null | undefined): boolean {
+  return value === "today";
+}
+
+/**
+ * The address auth links come back to: the name for a new profile, where to go next,
+ * and whether the guest's lesson comes along.
+ */
+export function callbackPath({
+  name,
+  next,
+  keepToday = false,
+}: {
+  name?: string | null;
+  next?: string | null;
+  keepToday?: boolean;
+}): string {
   const params = new URLSearchParams();
   if (name) params.set("name", name);
   const back = safeNext(next);
   if (back) params.set("next", back);
+  if (keepToday) params.set("keep", "today");
   const query = params.toString();
   return `/auth/callback${query ? `?${query}` : ""}`;
 }
