@@ -34,11 +34,11 @@ type MonthGridProps = {
 const SWATCH = "box-border block size-[10px] flex-none border-[1.5px]";
 
 // Three looks and a mark: a day with its lesson done is filled in accent, an
-// earlier day without one is blank, a day still to come is a quiet sunk fill,
-// and today is ringed in accent, filled once it's done.
+// earlier day without one is a quiet sunk fill, a day still to come is an empty
+// outline, and today is ringed in accent, filled once it's done.
 const DONE = "border-solid border-(--accent) bg-(--accent)";
-const BLANK = "border-solid border-(--rule)";
-const UPCOMING = "border-solid border-(--paper-sunk) bg-(--paper-sunk)";
+const MISSED = "border-solid border-(--paper-sunk) bg-(--paper-sunk)";
+const UPCOMING = "border-solid border-(--rule)";
 const TODAY_RING = "outline-2 outline-offset-2 outline-solid outline-(--accent)";
 
 /**
@@ -65,7 +65,7 @@ export function MonthGrid({ days, count, todayDone, legend = false, className }:
   function cellClass(day: StreakDay): string {
     if (day.isToday) return cx(todayDone ? DONE : "border-solid border-(--accent)", TODAY_RING);
     if (day.upcoming) return UPCOMING;
-    return day.done ? DONE : BLANK;
+    return day.done ? DONE : MISSED;
   }
 
   function hoverLabel(day: StreakDay): string {
@@ -110,7 +110,7 @@ export function MonthGrid({ days, count, todayDone, legend = false, className }:
         >
           {[
             { look: DONE, text: "Lesson done" },
-            { look: BLANK, text: "No lesson" },
+            { look: MISSED, text: "No lesson" },
             { look: UPCOMING, text: "Upcoming" },
             // A smaller ring, so the swatch keeps the same proportions as the square.
             { look: "border-solid border-(--accent) outline-[1.5px] outline-offset-1 outline-solid outline-(--accent)", text: "Today" },
@@ -140,8 +140,8 @@ type StreakMarkProps = {
 /**
  * The streak card: the count, this month's calendar with a legend, one italic
  * note. Days with the lesson done are filled in accent, earlier days without one
- * are blank, days still to come are muted, and today is ringed in accent (filled
- * once it's done).
+ * are muted, days still to come are empty outlines, and today is ringed in accent
+ * (filled once it's done).
  *
  * It lays itself out by its own width (container queries), so the page decides
  * how wide it is: a narrow card (beside the lesson on Today, or a phone) stacks
