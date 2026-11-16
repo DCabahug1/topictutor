@@ -6,7 +6,7 @@ import { Button } from "@/components/almanac/Button";
 import { cx } from "@/components/almanac/cx";
 import { LeadActions } from "@/components/almanac/LeadBlock";
 import { useSession } from "@/components/almanac/SessionProvider";
-import { FourWeekGrid } from "@/components/almanac/StreakMark";
+import { MonthGrid } from "@/components/almanac/StreakMark";
 import { almanac, prefersReducedMotion, runLength, useAlmanac, type DailySession } from "@/lib/almanac";
 import { KEEP_TODAY_LOGIN } from "@/lib/next-path";
 import { ContinueSeriesButton } from "./ContinueSeriesButton";
@@ -166,7 +166,7 @@ export function Finish({ session, headingRef }: { session: DailySession; heading
         )}
       </div>
       {/* Today's square fills in accent as the number flips. Phones keep just the number. */}
-      <FourWeekGrid
+      <MonthGrid
         days={streak.month}
         count={flipped ? to : from}
         todayDone={flipped}
