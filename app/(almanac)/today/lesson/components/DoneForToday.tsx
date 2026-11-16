@@ -4,6 +4,7 @@ import { Button } from "@/components/almanac/Button";
 import { LeadBlock } from "@/components/almanac/LeadBlock";
 import { PaperPage } from "@/components/almanac/Page";
 import type { DailySession } from "@/lib/almanac";
+import { ContinueSeriesButton } from "./ContinueSeriesButton";
 import { DEEPER_ACTION, OWN_TOPIC_ACTION, OWN_TOPIC_HREF, deeperHref } from "./copy";
 import { DeeperSuggestion } from "./DeeperSuggestion";
 
@@ -22,9 +23,7 @@ export function DoneForToday({ session }: { session: DailySession }) {
           line={`Tomorrow’s lesson is ${session.tomorrowSubject}, at midnight.`}
           primary={
             series?.nextLesson ? (
-              <Button icon href={`/series/${series.id}/${series.nextLesson.number}`}>
-                Continue your series
-              </Button>
+              <ContinueSeriesButton seriesId={series.id} seriesTitle={series.title} next={series.nextLesson} />
             ) : (
               <Button icon href={deeperHref(lesson.deeperTopic)}>
                 {DEEPER_ACTION}
