@@ -37,10 +37,10 @@ import {
   LESSONS_PER_SERIES,
   focusLine,
   lastSevenDays,
-  recentDays,
   localDate,
   longestStreak,
   masteryPassed,
+  monthDays,
   parseLocalDate,
   percentComplete,
   SECTION_BREAK,
@@ -399,7 +399,7 @@ function streakOf(store: Store): Streak {
     todayDone: dates.includes(today),
     longest: Math.max(store.baseline.longest, longestStreak(dates)),
     week: lastSevenDays(dates, today),
-    month: recentDays(dates, 28, today),
+    month: monthDays(dates, today),
   };
 }
 

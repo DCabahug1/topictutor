@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { drawnWidth, holdBackOpenMath, normalizeMath, plainText, sectionSlots } from "./rules";
+import { drawnWidth, holdBackOpenMath, monthDays, normalizeMath, plainText, sectionSlots } from "./rules";
 
 describe("sectionSlots", () => {
   it("holds the reserved places while the lesson is being written", () => {
@@ -98,5 +98,30 @@ describe("plainText with maths", () => {
   it("reads LaTeX as symbols", () => {
     expect(plainText(String.raw`The series $$\sum_{n=1}^\infty \frac{1}{2^n} = 1$$.`)).toBe("The series Σ_(n=1)^∞ 1/(2ⁿ) = 1.");
     expect(plainText(String.raw`Area is $$\pi r^2$$ and $$\int_0^1 x\,dx = \tfrac12$$`)).toBe("Area is π r² and ∫₀¹ x dx = 1/2");
+  });
+});
+
+describe("monthDays", () => {
+  it("lists every day of today's month, with the days after today upcoming", () => {
+    const days = monthDays(["2026-10-31", "2026-11-11", "2026-11-12", "2026-11-16"], "2026-11-16");
+    expect(days).toHaveLength(30);
+    expect(days[0].date).toBe("2026-11-01");
+    expect(days[29].date).toBe("2026-11-30");
+    expect(days.filter((d) => d.done).map((d) => d.date)).toEqual(["2026-11-11", "2026-11-12", "2026-11-16"]);
+    expect(days.filter((d) => d.isToday).map((d) => d.date)).toEqual(["2026-11-16"]);
+    expect(days.slice(0, 16).some((d) => d.upcoming)).toBe(false);
+    expect(days.slice(16).every((d) => d.upcoming)).toBe(true);
+    expect(days[0].short).toBe("Sun");
+  });
+
+  it("knows the length of a leap-year February", () => {
+    expect(monthDays([], "2028-02-10")).toHaveLength(29);
+  });
+
+  it("has nothing upcoming on the last day of the month", () => {
+    const days = monthDays([], "2026-12-31");
+    expect(days).toHaveLength(31);
+    expect(days.some((d) => d.upcoming)).toBe(false);
+    expect(days[30].isToday).toBe(true);
   });
 });

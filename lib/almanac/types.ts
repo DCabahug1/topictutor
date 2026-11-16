@@ -57,6 +57,8 @@ export type StreakDay = {
   date: string;
   done: boolean;
   isToday: boolean;
+  /** After today: still to come. */
+  upcoming: boolean;
 };
 
 export type Streak = {
@@ -65,7 +67,7 @@ export type Streak = {
   longest: number;
   /** The last seven days, oldest first, ending today. */
   week: StreakDay[];
-  /** The last 28 days (four weeks), oldest first, ending today. For the streak card. */
+  /** Every day of the current month, the 1st first. For the streak calendar. */
   month: StreakDay[];
 };
 
